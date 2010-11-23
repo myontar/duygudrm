@@ -1,0 +1,130 @@
+{% extends "base_template.html" %}
+
+
+{% block login %}
+	hoşgeldin {{me.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
+{% endblock %}
+
+{% block body %}
+	<div class="leftContent">
+		<form action="/" method="post" id="postform">
+		<div id="mood_vi">0</div>
+		<div id="slider"></div>
+		<input type="hidden" id="mood" value="5.0" name="mood" />
+			<textarea id="msg" name="msg"></textarea>
+			{% csrf_token %}
+			<button>yolla</button>
+		</form>
+		<h2>{{user.user}}</h2>
+		<div class="userpro">
+			{% if user.avatar == '' %}
+			<img src="/statics/images/defuser.png" />
+			{% else %}
+			<img src="{{user.avatar}}" />
+			{% endif %}
+			
+			<div class="sta"><span>Girdi</span> <br />{{user.getStat.total}}</div>
+			<div class="sta"><span>En Yüksek</span> <br />{{user.getStat.big}}</div>
+			<div class="sta"><span>En düşük</span> <br />{{user.getStat.min}}</div>
+			<div class="sta"><span>Ortalama</span> <br />{{user.getStat.ort}}</div>
+			<br class="clr" />
+			{% if takip == 0 %}
+			<a href="javascript:;">Takip Et</a>
+			{% else %}
+			<a href="javascript:;">Peşini Bırak</a>
+			{% endif %}
+			{% if me.user.username == user.user.username %} 
+			<a href="javascript:;" rel="#photoup">Resim Yükle</a>
+			{% endif %}
+			
+			
+			
+		</div>
+		<div id="allpost">
+			
+			
+			
+			
+			
+			
+			{%for x in user.getSelf %}
+			<div id="{{x.id}}" class="post">
+			{% if x.user.avatar == '' %}
+			<img src="/statics/images/defuser.png" />
+			{% else %}
+			<img src="{{x.user.avatar}}" />
+			{% endif %}
+			<span><b>{{x.user}}</b> {% if x.user != x.from_user %} (<b>{{x.from_user}}</b> aracılığı ile) {% endif %}</span>
+			<div class="moodText">{{x.mood}}</div>
+			
+			<div>
+				{{x.text}}
+			</div>
+			{% if x.likes.count > -1 %}
+			{{x.likes.likes.from_user}} {% if x.likes.count > 0 %} ve  {{x.likes.count}} kişi daha {% endif %} beğendi.
+			<br />
+			{%endif%}
+			
+			
+			<a href="javascript:;" class="like">Beğen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a> {% if x.user == user.user %} | <a href="javascript:;" class="dispost">Sil</a>{%endif%} 
+			<br class="clr" />
+			
+			
+				{% for i in x.comments.first %}
+					<div class="comm" id="{{i.id}}">
+					{% if i.from_user.avatar == '' %}
+					<img src="/statics/images/defuser.png" />
+					{% else %}
+					<img src="{{i.from_user.avatar}}" />
+					{% endif %}
+						<span>{{i.from_user}}</span><br/>
+						<div>{{i.text}}</div>
+						{% if i.from_user == user.user %}<a href="javascript:;" class="discomment">sil</a>{%endif%}
+					</div>
+				{% endfor %}
+			{% if x.comments.count >= 3 %}
+				<span class="morecomment"><b>diğer {{x.comments.count2}} yorumu göster</b></span>
+				{% for i in x.comments.last %}
+					<div class="comm" id="{{i.id}}">
+					{% if i.from_user.avatar == '' %}
+					<img src="/statics/images/defuser.png" />
+					{% else %}
+					<img src="{{i.from_user.avatar}}" />
+					{% endif %}
+						<span>{{i.from_user}}</span><br/>
+						<div>{{i.text}}</div> 
+						{% if i.from_user == user.user %}<a href="javascript:;" class="discomment">sil</a>{%endif%}
+					</div>
+				{% endfor %}
+			{% endif %}
+			</div>
+			<br class="clr" />
+			{%endfor%}
+		</div>
+	</div>
+	
+	<div class="rightContent">
+		<div class="umenu">
+		<a href="/fallowers">Takip Ettiklerim ({{user.fallwoersCount}})</a>
+		<a href="/fallowers">Takipçiler ({{user.fallowedCount}})</a>
+		</div>
+	</div>
+	<br class="clr" />
+	<div id="gotToken">
+	{% csrf_token %}
+	</div>
+	<script>
+		timex = {{time}}
+		jQuery(document).ready(function(){
+			$("a[rel]").overlay();
+			
+		});
+		
+	</script> 
+	<div id="photoup" class="simple_overlay">
+		<form action="" method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+			<input type="file" name="file" id="file"/><button>Gönder</button>
+		</form>
+	</div>
+{% endblock %}
