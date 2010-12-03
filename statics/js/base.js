@@ -51,10 +51,11 @@ jQuery(document).ready(function() {
 	    'onOpen'      : function(event,ID,fileObj) {
 	        $('#file_t').text(fileObj.name);
 	        $('.perc').width("1%");
+                $('.uploadifyQueue').css("display","none");
 	        $("#uploadprogress").show();
 	      },
 	      'onComplete' : function(event, ID, fileObj, response, data) {
-	    	alert(fileObj.type);
+	    	  //alert(fileObj.type);
 	    	  if (fileObj.type==".jpg" || fileObj.type==".png" || fileObj.type==".gif" || fileObj.type==".bmp") {
 	    		  var o = fileObj;
 	    		  jQuery("#files").append(jQuery("<a href='' class='file_"+fileObj.type.replace(".","")+"'><img src='/statics/users/"+fileObj.name+"' width='120'/></a>"));
@@ -101,6 +102,8 @@ jQuery(document).ready(function() {
 				
 				var all;
 				eval("all="+data+";")
+                                main.hadlex();
+
 				all = main.compareUser(all,"id");
 				
 				//alert(all);
@@ -155,7 +158,22 @@ jQuery(document).ready(function() {
 	jQuery(".ui-slider-handle").append(jQuery("<div id='inslider'>5.0</div>"));
 	
 	jQuery("#postform").bind("submit",function() {
-		jQuery.post("/",jQuery("#postform").serialize(true),function() {
+            if( jQuery("#postform").find("textarea").val().length < 2) {
+                alert("birseyler yazmalisin");
+                return false;
+            }
+            d = jQuery("#postform").serialize(true) ;
+            jQuery("#postform").find("button").attr("disabled","disabled");
+            jQuery("#postform").find("textarea").val("");
+            //button
+            d += "&token="+token;
+		jQuery.post("/",d,function(data) {
+                       var e;
+                       jQuery("#postform").find("button").attr("disabled","");
+                        eval("e="+data+";");
+                        //token = e['token'];
+                        main.hadlex();
+                        if(e['response'] == "err") alert('Sistem hatasi');
 			main.Update();
 			
 		});	
@@ -163,13 +181,43 @@ jQuery(document).ready(function() {
 	});
 	$( "#mood" ).val($( "#slider" ).slider( "value" ) );
 	main.bind();
-	//if (updateStart)main.UpdateTimer();
+	if (updateStart)main.UpdateTimer();
 });
 var wait_update = 0;
 var animate_scroll = 0;
 main = {
 		
-		
+		hadlex:function() {
+                  token = main.readCookie('token');
+                  main.eraseCookie('token');
+                },
+
+                createCookie:function (name,value,days) {
+                        if (days) {
+                                var date = new Date();
+                                date.setTime(date.getTime()+(days*24*60*60*1000));
+                                var expires = "; expires="+date.toGMTString();
+                        }
+                        else var expires = "";
+                        document.cookie = name+"="+value+expires+"; path=/";
+                },
+
+                readCookie:function (name) {
+                        var nameEQ = name + "=";
+                        var ca = document.cookie.split(';');
+                        for(var i=0;i < ca.length;i++) {
+                                var c = ca[i];
+                                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                        }
+                        return null;
+                },
+
+                eraseCookie:function (name) {
+                        main.createCookie(name,"",-1);
+                },
+
+
 		sederEvent:function(){
 	
 			jQuery(".sender > a").unbind("click");
@@ -191,7 +239,13 @@ main = {
 			});
 	
 		},
-		
+		postloader:function(url,postdata,endfunc) {
+                    jQuery.post(url,postdata,function(data) {
+                        csrfmiddlewaretoken = data['csrfmiddlewaretoken'];
+                        data2 = data;
+                        eval('endfunc('+data2+');');
+                    });
+                },
 		isHave:function(elm) {
 			if(jQuery(elm).html() != null) return true;
 			return false;
@@ -220,21 +274,27 @@ main = {
 			return tmp;
 		}
 		,
+                maketoken:function() {
+
+                },
 		Update:function() {
 			e = new Date();
 			t = e.getTime() / 1000;
 			csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
 			upelement = updaters[upchose];
 			var elm;
-			eval("elm = {'"+upelement+"':'"+timex+"',\"t_time\":'"+t+"',\"csrfmiddlewaretoken\":'"+csrfmiddlewaretoken+"'};");
+			eval("elm = {'token':'"+token+"','"+upelement+"':'"+timex+"',\"t_time\":'"+t+"',\"csrfmiddlewaretoken\":'"+csrfmiddlewaretoken+"'};");
 		//	alert(elm);
+
 			jQuery.post("/",elm,function(data) {
 				var d = null;
 				eval("d ="+data);
+
+                                main.hadlex();
 				//alert(d);
 				//alert(d['time']);
 				
-				if (d['result'] != null) {
+				if (d['result'] != null && d['result'] != "err") {
 					if (d['result'].length > 0) {
 						timex = d['time'];
 						//alert(d['result'].length );
@@ -247,7 +307,9 @@ main = {
 							}
 						}
 					}
-				}
+				} else if (d['result'] == "err") {
+                                    alert("Sistem Hatasi");
+                                }
 			});
 			
 		},
@@ -256,7 +318,7 @@ main = {
 			datax.html(html);
 			jQuery("#"+data['id']).hide("slow",function() {
 				jQuery(this).remove();
-				datax.css("display","none");
+				datax.css("visiblity","hidden");
 				datax.append('<br class="clr" />');
 				jQuery("#allpost").prepend(datax);
 				jQuery("#"+data['id']).show("slow");
@@ -283,8 +345,10 @@ main = {
 						csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
 						parent = jQuery(this).parent()
 						text = jQuery(this).parent().find("textarea").val()
-						jQuery.post("/",{"reply":id,"text":text,"csrfmiddlewaretoken":csrfmiddlewaretoken},function(data) {
+						jQuery.post("/",{"token":token,"reply":id,"text":text,"csrfmiddlewaretoken":csrfmiddlewaretoken},function(data) {
 							//alert(data);
+                                                        eval("all="+data+";")
+                                                        main.hadlex();
 							parent.remove();
 							animate_scroll = 1;
 							main.Update();
@@ -299,7 +363,11 @@ main = {
 				pr =  jQuery(this).parent();
 				csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
 				jQuery.post("/",{'csrfmiddlewaretoken':csrfmiddlewaretoken,'comment':id}, function(data) {
-					if (data =="ok") {
+					
+                                        eval("all="+data+";")
+                                        //token = all['token'];
+                                        main.hadlex();
+                                        if (all['response'] =="ok") {
 						pr.hide("slow",function() { jQuery(this).remove();});
 						alert("Yorumun Silindi");
 						main.Update();
@@ -319,7 +387,11 @@ main = {
 				csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
 				parent = jQuery(this).parent();
 				jQuery.post("/",{"like":id,"csrfmiddlewaretoken":csrfmiddlewaretoken},function(data) {
-					if (data == "err") {
+					
+                                        eval("all="+data+";")
+                                        //token = all['token'];
+                                        main.hadlex();
+                                        if (all['response'] == "err") {
 						alert("Daha önce beyenmişsin.");
 					} else {
 						parent.find(".like").remove();
@@ -333,7 +405,7 @@ main = {
 		create:function(html) {
 			ht = jQuery('<div id="'+html['id']+'" class="post" style="display:none;">'+html['html']+'</div><br class="clr" />');
 			jQuery("#allpost").prepend(ht);
-			jQuery("#"+html['id']).show("slow");
+			jQuery("#"+html['id']).fadeIn("slow");
 			main.bind();
 			if (animate_scroll) {
 				$('html, body').animate({

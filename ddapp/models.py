@@ -1,14 +1,21 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 04.Kas.2010
 
 @author: Administrator
 '''
-# -*- coding: utf-8 -*-
+
+
 from django.db import models
 from django.db.models.signals import post_save  
 from django.contrib.auth.models import User
-
-
+from django.core.context_processors import csrf
+from datetime import datetime
+from duygudrm.ddapp.extras.mtoken import makeToken
+import time
+def md():
+    dd = datetime.now()
+    return time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
 def avatar(av):
     if av == "":
         return "/statics/images/defuser.png"
@@ -21,6 +28,8 @@ def findAll(arr,key,val):
         if i[key] == val:
             return True
     return False
+
+
 
 def getLive(timex,ahuser,user):
     asx = list()
@@ -94,7 +103,9 @@ def getLive(timex,ahuser,user):
     #print asx
     return asx
 
-def getLastest(timex,user):
+def getLastest(timex,user,request):
+    from django.template import Context, loader
+
     s = []
     s.append(user)
     #print user.user
@@ -112,59 +123,27 @@ def getLastest(timex,user):
             ##print str(st)
             kr = int(z.post.last_update)
             sss = int(timex)
+            token = None
             if kr > sss:
                 #print str(st)
                 if st == False:
                     ##print z.post.id
                     
-                    html = """<img src="%s"><span><b>%s</b>""" % (avatar(z.post.from_user.avatar),z.post.from_user)
-                    if z.from_user != z.post.from_user:
-                        html = html + ("""(<b>%s</b> araciligi ile)""" % z.from_user)
-                        
-                    ht ="""</span> <div class="moodText">%s</div>
-                                    <div>
-                                        %s
-                                    </div>""" % (z.post.mood_point,z.post.text)
-                    html = html + ht
-                    
-                    x = z.post.likes()
-                    if z.post.likes() != None:
-                        if x['count'] > -1:
-                            html = html + str(x['likes'].from_user) 
-                            if x['count'] > 0 :
-                                html = html + " ve  "+str(x['count'])+" kisi daha begendi."
-                            html= html+"<br />"
-                        
-                    html= html +  u"""<a href="javascript:;" class="like">Begen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a>"""
-                    if z.post.from_user == user.user:
-                       html = html + """ | <a href="javascript:;" class="dispost">Sil</a>           <br class="clr" />"""
-                    
-                    for i in z.post.getCommentsCount()['first']:
-                        html= html + """<div class="comm" id="""+i.id+"""">"""
-                        html= html + """<img src='"""+avatar(i.from_user.avatar)+"""' />"""
+                    u2 = {"id":z.post.id,"rewrite":z.post.rewrite,"text":  z.post.text,"last_update":z.post.last_update,"from_user":z.post.from_user,"user":z.post.from_user,"attachments":z.post.attachments,"mood":z.post.mood_point,"comments":z.post.comment_list,"time":z.post.send_time}
 
-                        html= html + """<span>"""+str(i.from_user)+"""</span><br/>"""
-                        html= html + """<div>"""+i.text+"""</div>"""
-                        if i.from_user == user.user:
-                            html =  html + """<a href="javascript:;" class="discomment">sil</a>"""
-                        html= html + """</div>"""
-                    if z.post.getCommentsCount()['count'] >= 3:  
-                        html = html + """<span class="morecomment"><b>diger """+str(z.post.getCommentsCount()['count'])+""" yorumu goster</b></span>"""
-                        for i in z.post.getCommentsCount()['last']:
-                            html= html + """<div class="comm" id="""+i.id+"""">"""
-                            html= html + """<img src='"""+avatar(i.from_user.avatar)+"""' />"""
-                            html= html + """<span>"""+str(i.from_user)+"""</span><br/>"""
-                            html= html + """<div>"""+i.text+"""</div>"""
-                            if i.from_user == user.user:
-                                html =  html + """<a href="javascript:;" class="discomment">sil</a>"""
-                            html= html + """</div>"""
-                        
-                    
+                    t = loader.get_template("single_post.html")
+
+                    c = {'x': u2,"user":user}
+                    c =Context(c)
+                    html = t.render(c)
+                    #token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
+                    #print html
                     u = {"id":z.post.id,"last_update":z.post.last_update,"html":html}
                     #print "burda"                
                     asx.append(u)
                     #print asx
         except Exception as inst:
+            print "errrrrrrrrr"
             print type(inst)
             print inst   
             #print "err"
@@ -172,69 +151,43 @@ def getLastest(timex,user):
     a = Status.objects.filter(from_user=user.user).all()
     for z in a:
         
-        try:
+        #try:
             ##print findAll(asx,"id",z.post.id)
-            st = findAll(asx,"id",z.id)
-            ##print str(st)
-            kr = int(z.last_update)
-            sss = int(timex)
-            if kr > sss:
-                #print str(st)
-                if st == False:
-                    ##print z.post.id
-                    
-                    html = """<span><b>%s</b>""" % z.from_user
-                    if z.from_user != z.from_user:
-                        html = html + ("""(<b>%s</b> araciligi ile)""" % z.from_user)
-                    html = html + ("""</span> <div class="moodText">%s</div>
-                                    <div>
-                                        %s
-                                    </div>""" % (z.mood_point,z.text))
-                    
-                    x = z.likes()
-                    if z.likes() != None:
-                        if x['count'] > -1:
-                            html = html + str(x['likes'].from_user) 
-                            if x['count'] > 0 :
-                                html = html + " ve  "+str(x['count'])+" kisi daha begendi."
-                            html= html+"<br />"
-                        
-                    html= html +  u"""<a href="javascript:;" class="like">Begen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a>"""
-                    if z.from_user == user.user:
-                       html = html + """ | <a href="javascript:;" class="dispost">Sil</a>           <br class="clr" />"""
-                    
-                    for i in z.getCommentsCount()['first']:
-                        html= html + """<div class="comm" id="""+i.id+"""">"""
-                        html= html + """<span>"""+str(i.from_user)+"""</span><br/>"""
-                        html= html + """<div>"""+i.text+"""</div>"""
-                        if i.from_user == user.user:
-                            html =  html + """<a href="javascript:;" class="discomment">sil</a>"""
-                        html= html + """</div>"""
-                    if z.getCommentsCount()['count'] >= 3:  
-                        for i in z.getCommentsCount()['last']:
-                            html= html + """<div class="comm" id="""+i.id+"""">"""
-                            html= html + """<span>"""+str(i.from_user)+"""</span><br/>"""
-                            html= html + """<div>"""+i.text+"""</div>"""
-                            if i.from_user == user.user:
-                                html =  html + """<a href="javascript:;" class="discomment">sil</a>"""
-                            html= html + """</div>"""
-                   
-                        
-                    
-                    u = {"id":z.id,"last_update":z.last_update,"html":html}
-                    #print "burda"                
-                    asx.append(u)
+        st = findAll(asx,"id",z.id)
+        ##print str(st)
+        kr = int(z.last_update)
+        sss = int(timex)
+        if kr > sss:
+            #print str(st)
+            if st == False:
+                ##print z.post.id
+                #x = []
+                u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point}
+                #x.append(u2)
+                t = loader.get_template("single_post.html")
+                c = {'x': u2,"user":user}
+               
+                c =Context(c)
+                #print x
+                html = t.render(c)
+                token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
+
+                #print html
+                u = {"id":z.id,"last_update":z.last_update,"html":html}
+                #print "burda"
+                asx.append(u)
                     #print asx
-        except Exception as inst:
-            print type(inst)
-            print inst   
+        #except Exception as inst:
+        #    print type(inst)
+        #    print inst
         
         
-        
+    r = csrf(request)
+    token = makeToken(request)
     #asx.sort( key="last_update" )
     asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
     #print asx
-    return asx
+    return [asx,token]
 
 
 class UserProfiles(models.Model):
@@ -304,7 +257,7 @@ class UserProfiles(models.Model):
                 
                 #print str(st)
                 if st == False:
-                    u = {"id":z.id,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.likes(),"comments":z.getCommentsCount()}
+                    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
             ##print z.post
             #u.update('user',z.from_user})
             # u.user = z.from_user
@@ -336,7 +289,7 @@ class UserProfiles(models.Model):
                 st = findAll(asx,"id",z.post.id)
                 #print str(st)
                 if st == False:
-                    u = {"id":z.post.id,"text":  z.post.text,"time":z.post.send_time,"last_update":z.post.last_update,"from_user":z.post.from_user,"user":z.from_user,"attachments":z.post.attachments,"send_time":z.post.send_time,"mood":z.post.mood_point,"likes":z.post.like_list,"comments":z.post.comment_list}
+                    u = {"id":z.post.id,"rewrite":z.post.rewrite,"text":  z.post.text,"time":z.post.send_time,"last_update":z.post.last_update,"from_user":z.post.from_user,"user":z.from_user,"attachments":z.post.attachments,"send_time":z.post.send_time,"mood":z.post.mood_point,"likes":z.post.like_list,"comments":z.post.comment_list}
                 ##print z.post
                 #u.update('user',z.from_user})
                 # u.user = z.from_user
@@ -385,6 +338,11 @@ class fallowers(models.Model):
     def GetStatus(self):
         a = Status.objects.filter(from_user =self.to_user).order_by("last_update").all()
         return a
+
+class shorturi(models.Model):
+    short           = models.CharField(max_length=100)
+    user            = models.CharField(max_length=200)
+    post            = models.CharField(max_length=200)
 class Status(models.Model):
     from_user       = models.ForeignKey(UserProfiles)
     send_time       = models.IntegerField()
@@ -393,8 +351,46 @@ class Status(models.Model):
     mood_point      = models.FloatField()
     last_update     = models.IntegerField()
     like_list       = models.TextField(null=True,default="[]")
+    rewrite         = models.CharField(null=True,default="piii",max_length=1000)
     comment_list    = models.TextField(null=True,default="[]")
-    
+
+    def save(self):
+        try:
+            if len(self.text) > 100:
+                rewrite = self.text[:100]
+            else:
+                rewrite = self.text
+            import re
+
+            import sys
+            rewrite = u"%s" % rewrite
+            re_strip = re.compile(r'[^\w\s-]')
+
+            #text =  text.decode("utf-8")
+
+            tmp = rewrite.lower() #.replace("ý","i").replace("ç","c").replace("þ","s").replace("ö","o").replace("ü","u").replace("ð","g")
+            #tmp = text.lower()
+
+            re_dashify = re.compile(r'[-\s]+')
+            cleanup= re_strip.sub('', tmp).strip().lower()
+            rewrite =  re_dashify.sub('-', cleanup)
+            k = True
+
+            while k:
+                s = Status.objects.filter(rewrite=rewrite , from_user=self.from_user).count()
+                if s > 0:
+                    rewrite = rewrite +"-1"
+                else:
+                    k = False
+            self.rewrite = rewrite
+        except Exception as e:
+            print e
+        try:
+            super(Status, self).save() # Call the "real" save() method
+        except Exception as e:
+            print e
+
+
     def saveComment(self,user,text,time):
         import json
         data = json.loads(self.comment_list)
@@ -509,7 +505,7 @@ class userActions(models.Model):
     post        = models.ForeignKey(Status)
     times       = models.IntegerField(null=True,default=1289068211)
     action_type = models.IntegerField(null=True,default=0)
-    post_id     = models.CharField(null=True,default="",max_length=255)
+    posts_id     = models.CharField(null=True,default="",max_length=255)
 class myAlerts(models.Model):
     from_user   = models.ForeignKey(UserProfiles)
     post        = models.IntegerField()

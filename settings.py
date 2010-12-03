@@ -12,13 +12,13 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django_mongodb_engine',
-        'NAME': 'dd-go',
-        'USER': '',
+        'ENGINE': 'mysql',
+        'NAME': 'ddgo',
+        'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
-        'PORT': '27017',
-        'SUPPORTS_TRANSACTIONS': False,
+        'PORT': '',
+        #'SUPPORTS_TRANSACTIONS': False,
     },
 }
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
@@ -114,8 +114,4 @@ INSTALLED_APPS = (
     'djangotoolbox'
 )
 
-DATABASE_ROUTERS = ['django_mongodb_engine.router.MongoDBRouter']
-MONGODB_MANAGED_APPS = ['duygudrm.ddapp', ]
-MONGODB_MANAGED_MODELS = ['mixed.record', ]
 
-SOUTH_DATABASE_ADAPTERS = { "mongodb" : "django_mongodb_engine.south"}

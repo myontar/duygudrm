@@ -4,7 +4,7 @@
 {% load html%}
 {% load generateTool%}
 {% block login %}
-	hoşgeldin {{user.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
+	hosgeldin {{user.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
 {% endblock %}
 
 {% block body %}
@@ -18,7 +18,7 @@
 		mood'un ne durumda ?
 		</div>
 		<div class="desc">
-			Moralin yüksekse 10’a, düşükse 0’a yaklaştır. Moral durumuna göre barın rengi de değişecek
+			Moralin yuksekse 10'a, dusukse 0'a yaklastir. Moral durumuna gore barin rengi de degisecek
 		</div>
 		<br class="clr" />
 		<br />
@@ -33,7 +33,7 @@
 			<div class="msgsend">
 			<div class="toarea" style="display:none;">
 				<div class="sender">
-					<a href="javascript:;">Herkese <span rel="all">x</span></a><a href="javascript:;">Herkese <span rel="all">x</span></a>
+					<a href="javascript:;">Herkese <span rel="all">x</span></a>
 				</div>
 				<input type="hidden" id="tousers" name="tousers" value="['all']" />
 				<input type="hidden" id="hash" name="hash" value="{{user.id}}" />
@@ -44,6 +44,7 @@
 			
 			<textarea id="msg" name="msg" onclick="jQuery('.toarea').fadeIn('slow');"></textarea>
 			{% csrf_token %}
+                        <script>token = '{{ttoken}}';</script>
 			<button>yolla</button>
 			<br class="clr" /><br />
 				<div class="up"><input id="file_upload" name="file_upload" type="file" style="display:none;" /> </div> 
@@ -61,83 +62,24 @@
 			<br />
 		</form>
 		<div id="allpost">
-			{%for x in user.myStatusList %}
-			<div id="{{x.id}}" class="post">
-			{% if x.user != x.from_user %}
-			{% if x.from_user.avatar == '' %}
-			<img class="img" src="/statics/images/defuser.png" />
-			{% else %}
-			<img class="img" src="{{x.from_user.avatar}}" />
-			{% endif %}
-			{% else %}
-			{% if x.user.avatar == '' %}
-			<img class="img" src="/statics/images/defuser.png" />
-			{% else %}
-			<img class="img" src="{{x.user.avatar}}" />
-			{% endif %}
-			{% endif %}
 			
-			<div class="post_right">
-			<span><b>
-			{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}">{{x.from_user}}</a>{% else %}
-			<a href="/{{x.user.rewrite}}">{{x.user}}</a>{% endif %}
-			</b> {% if x.user != x.from_user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b> aracılığı ile)</span>{% endif %}{% endif %}
-			{% autoescape off %}
-			{{x.mood|mood}}
-			{% endautoescape %}
-			
-			<div>
-				{{x.text|phtml }}
-			</div>
-			
-			
-			<br />
-			<br />
-			<span class="date">{{x.time|tdate}}</span><a href="javascript:;" class="like">Beğen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a> {% if x.user == user.user %} | <a href="javascript:;" class="dispost">Sil</a>{%endif%} 
-			<br class="clr" />
-			
-			
-			
-			
-			<div class="comments">
-			{% for i in x.comments|comments %}
-				<div class="comm" id="comm_{{i.id}}">
-					<img src="/statics/users/avatar/{{i.username}}.jpg" />
-					{{i.text}} <br /><a href="/{{i.rewrite}}">{{i.username}}</a> <span class="date">{{i.date|tdate}}</span> {% if i.username == user.user|strto %} <a href="javascript:;">Yorumu Sil</a> | <a href="javascript:;">Düzenle</a> {% endif %}
-				</div>
-			{% endfor %}
-			</div>
-			
-			{{x.likes|comments}}
-			
-			</div><br class="clr" />
-			</div>
-			
-			<br class="clr" />
-			{%endfor%}
+			{{user.myStatusList|generatepost:user}}
 		</div>
 	</div>
 	
 	<div class="rightContent">
 		<div class="umenu">
-		<a href="/live">Şu Anda Neler oluyor</a>
+		<a href="/live">su Anda Neler oluyor</a>
 		<a href="/fallowed">Takip Ettiklerim ({{user.fallwoersCount}})</a>
-		<a href="/fallowers">Peşimdekiler ({{user.fallowedCount}})</a>
+		<a href="/fallowers">Pesimdekiler ({{user.fallowedCount}})</a>
 		<a href="/messages">Mesajlar</a>
-		<a href="/likes">Beğendiklerim</a>
-		<a href="/comments">Yorumlarım</a>
+		<a href="/likes">Begendiklerim</a>
+		<a href="/comments">Yorumlarim</a>
 		</div>
 	</div>
 	<br class="clr" />
 	<div id="listto">
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
-	<a href="javascript:;"><span rel="all">Herkese</span></a>
+	
 	</div>
 	<div id="gotToken">
 	{% csrf_token %}

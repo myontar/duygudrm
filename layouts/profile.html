@@ -1,5 +1,5 @@
 {% extends "base_template.html" %}
-
+{% load generateTool%}
 
 {% block login %}
 	hoşgeldin {{me.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
@@ -7,13 +7,42 @@
 
 {% block body %}
 	<div class="leftContent">
+		<div id="sliderico"></div>
 		<form action="/" method="post" id="postform">
-		<div id="mood_vi">0</div>
-		<div id="slider"></div>
+
+		<div id="slider_top"><div id="slider"></div></div>
 		<input type="hidden" id="mood" value="5.0" name="mood" />
-			<textarea id="msg" name="msg"></textarea>
+
+			<div class="msgsend">
+			<div class="toarea" style="display:none;">
+				<div class="sender">
+					<a href="javascript:;">Herkese <span rel="all">x</span></a><a href="javascript:;">Herkese <span rel="all">x</span></a>
+				</div>
+				<input type="hidden" id="tousers" name="tousers" value="['all']" />
+				<input type="hidden" id="hash" name="hash" value="{{user.id}}" />
+				<input type="text" id="totext" name="totext" />
+
+				<br class="clr" />
+			</div>
+
+			<textarea id="msg" name="msg" onclick="jQuery('.toarea').fadeIn('slow');"></textarea>
 			{% csrf_token %}
+                        <script>token = '{{ttoken}}';</script>
 			<button>yolla</button>
+			<br class="clr" /><br />
+				<div class="up"><input id="file_upload" name="file_upload" type="file" style="display:none;" /> </div>
+				<div class="up">|</div>
+				<div class="up"><input id="file_upload2" name="file_upload2" type="file" style="display:none;" /> </div>
+			<br class="clr" />
+
+			</div>
+			<br />
+			<br />
+			<div id="uploadprogress" style="display:none;"><span id="file_t">filename.mp3</span><div id="progbar"><div class="perc"></div></div><span id="file_s">uploading...</span><img src="/statics/images/share-loading-w.gif" /><br class="clr" /></div>
+
+			<div id="files"></div>
+			<br />
+			<br />
 		</form>
 		<h2>{{user.user}}</h2>
 		<div class="userpro">
@@ -43,63 +72,11 @@
 		<div id="allpost">
 			
 			
+			{{user.getSelf|generatepost:user}}
 			
 			
 			
 			
-			{%for x in user.getSelf %}
-			<div id="{{x.id}}" class="post">
-			{% if x.user.avatar == '' %}
-			<img src="/statics/images/defuser.png" />
-			{% else %}
-			<img src="{{x.user.avatar}}" />
-			{% endif %}
-			<span><b>{{x.user}}</b> {% if x.user != x.from_user %} (<b>{{x.from_user}}</b> aracılığı ile) {% endif %}</span>
-			<div class="moodText">{{x.mood}}</div>
-			
-			<div>
-				{{x.text}}
-			</div>
-			{% if x.likes.count > -1 %}
-			{{x.likes.likes.from_user}} {% if x.likes.count > 0 %} ve  {{x.likes.count}} kişi daha {% endif %} beğendi.
-			<br />
-			{%endif%}
-			
-			
-			<a href="javascript:;" class="like">Beğen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a> {% if x.user == user.user %} | <a href="javascript:;" class="dispost">Sil</a>{%endif%} 
-			<br class="clr" />
-			
-			
-				{% for i in x.comments.first %}
-					<div class="comm" id="{{i.id}}">
-					{% if i.from_user.avatar == '' %}
-					<img src="/statics/images/defuser.png" />
-					{% else %}
-					<img src="{{i.from_user.avatar}}" />
-					{% endif %}
-						<span>{{i.from_user}}</span><br/>
-						<div>{{i.text}}</div>
-						{% if i.from_user == user.user %}<a href="javascript:;" class="discomment">sil</a>{%endif%}
-					</div>
-				{% endfor %}
-			{% if x.comments.count >= 3 %}
-				<span class="morecomment"><b>diğer {{x.comments.count2}} yorumu göster</b></span>
-				{% for i in x.comments.last %}
-					<div class="comm" id="{{i.id}}">
-					{% if i.from_user.avatar == '' %}
-					<img src="/statics/images/defuser.png" />
-					{% else %}
-					<img src="{{i.from_user.avatar}}" />
-					{% endif %}
-						<span>{{i.from_user}}</span><br/>
-						<div>{{i.text}}</div> 
-						{% if i.from_user == user.user %}<a href="javascript:;" class="discomment">sil</a>{%endif%}
-					</div>
-				{% endfor %}
-			{% endif %}
-			</div>
-			<br class="clr" />
-			{%endfor%}
 		</div>
 	</div>
 	
@@ -124,7 +101,7 @@
 	<div id="photoup" class="simple_overlay">
 		<form action="" method="post" enctype="multipart/form-data">
 		{% csrf_token %}
-			<input type="file" name="file" id="file"/><button>Gönder</button>
+			<input type="file" name="file" id="file"/><button>Gonder</button>
 		</form>
 	</div>
 {% endblock %}

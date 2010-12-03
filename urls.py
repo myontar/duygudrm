@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     (r'^imgproxy$', 'duygudrm.ddapp.views.imgproxy'),
 
     #(r'^logout$',"duygudrm.ddapp.views.logout"),
-    
+    (r'^avatar/(.*)$', 'duygudrm.ddapp.views.avatarControl'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^statics/(?P<path>.*)$', 'django.views.static.serve',{'document_root': 'statics/'}),
@@ -29,5 +29,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     #(r'^admin/', include(admin.site.urls)),
     (r'^admin_001/', include(admin.site.urls)),
+    (r'^s/(.*)$',"duygudrm.ddapp.views.short"),
+    
     (r'^(.*)$',"duygudrm.ddapp.views.user"),
+    (r'^(.*)/$',"duygudrm.ddapp.views.getsinglepost"),
 )

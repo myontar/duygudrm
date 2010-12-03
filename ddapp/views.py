@@ -4,6 +4,9 @@ Created on 04.Kas.2010
 
 @author: Administrator
 '''
+import os.path
+from django.utils.encoding import *
+from duygudrm.ddapp.extras.mtoken import makeToken , controltoken
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import Context, loader
@@ -16,9 +19,10 @@ from django.views.decorators.csrf import  csrf_protect
 from duygudrm.ddapp.models import *
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-import json , os
+import json , os ,sys
 import time , StringIO , Image
 import memcache
+
 from duygudrm.ddapp.models import UserProfiles
 
 cache = memcache.Client(['192.168.1.3:11211'])
@@ -29,7 +33,7 @@ def MakingRender(template,request=None,params={}):
     c = params
     c.update(csrf(request))
     c['time'] = md()
-    
+    c['ttoken'] = makeToken(request,0)
     return render_to_response(template, c)
 
 def md():
@@ -53,7 +57,7 @@ def thumbnail(filename, size=(120, 120), output_filename=None):
     # get the thumbnail data in memory.
     if not output_filename:
         output_filename = filename
-    image.save(output_filename, image.format) 
+    image.save(output_filename, image.JPEG)
     return output_filename
 
 def handle_uploaded_file2(f):
@@ -69,18 +73,29 @@ def handle_uploaded_file2(f):
     return f.name
 
 
-def handle_uploaded_file(f,id):
+def handle_uploaded_file(f,username):
     print f.name
-    destination = open('statics/images/users/'+id+"_"+f.name, 'wb+')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
-    #i = open('statics/images/users/'+id+"_"+f.name, 'r')
-    #imagefile  = StringIO.StringIO(i.read())
-    thumbnail('statics/images/users/'+id+"_"+f.name)
+    print 'statics/users/avatar/'+username
+    e = str(f.name).split(".")[len(str(f.name).split("."))-1]
+    print 'statics/users/avatar/'+username+"."+e
+    
+    try:
+        destination = open('statics/users/avatar/'+username+"."+e, 'ab+')
+        for chunk in f.chunks():
+            destination.write(chunk)
+        destination.close()
+        #i = open('statics/images/users/'+id+"_"+f.name, 'r')
+        #imagefile  = StringIO.StringIO(i.read())
+    except:
+        print "edeee"
+    print "geldik"
+    thumbnail('statics/users/avatar/'+username+"."+e,(120,120),'statics/users/avatar/'+username+".jpg")
 
     
-    return 'statics/images/users/'+id+"_"+f.name
+    return '/home/django/duygudrm/statics/users/avatar/'+username
+def short(request,s):
+    k = shorturi.objects.filter(short=s).get()
+    return HttpResponseRedirect("/"+str(k.user)+"/"+str(k.post))
 
 def live(request):
     u = 0
@@ -99,19 +114,30 @@ def live(request):
     
     return MakingRender("live.html",request,{'user':u2,"isuser":u,"html":html})
     
+def getsinglepost(request,x,y):
+    z = Status.objects.filter(from_user__user__username=x,rewrite=y).get()
+    asx = []
+    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+            ##print z.post
+            #u.update('user',z.from_user})
+            # u.user = z.from_user
 
-
+    asx.append(u)
+    print asx
+    return MakingRender("profile_1.html",request,{'user':user,'post':asx})
 def user(request,x):
     if not request.user.is_authenticated():
         return MakingRender("index.html",request)
     else:
         u2 = UserProfiles.objects.filter(user=request.user).get()
         try:
-            file = handle_uploaded_file(request.FILES['file'],u2.id)
+            print u2.id
+            file = handle_uploaded_file(request.FILES['file'],u2.user.username)
             u2.avatar = file
             u2.save()
             return HttpResponse("ok")
         except Exception as inst:
+                print "avatar errr"
                 print type(inst)
                 print inst
         uname = request.path.replace("/","")
@@ -202,8 +228,17 @@ def imgproxy(request):
         thumbnail("/home/django/duygudrm/statics/imgproxy/"+h)
         f = open("/home/django/duygudrm/statics/imgproxy/"+h,"rb").read()
         return HttpResponse(f)
+
+
+
+def avatarControl(request,avat):
+    if os.path.exists("statics/users/avatar/"+avat):
+        return redirect("statics/users/avatar/"+avat+".jpg")
+    else:
+        return redirect("statics/users/avatar/default.jpg")
 @csrf_protect 
 def index(request):
+    request.encoding = 'utf-8'
     if not request.user.is_authenticated():
         return MakingRender("index.html",request)
     else:
@@ -211,20 +246,32 @@ def index(request):
         if len(request.POST) > 0:
             u = UserProfiles.objects.filter(user=request.user).get()
             try:
+                if controltoken(request) != 1:
+                    
+                    response =  HttpResponse(json.dumps({'response':'err','oi':'poi',"token":""}))
+                    response.set_cookie("token",makeToken(request,0),365)
+                    print response
+                    return response
                 t = request.POST['t']
                 print md(),t
                 
                 all = []
                 try:
-                    all = getLastest(t,u)
+                    all = getLastest(t,u,request)
                 except:
+                    print "err"
                     pass
                 #if len(all) == 0:
                 #    all = None
-                print all
-                k = {'time':md(),"result":all}
+                #print all
+                k = {'time':md(),"result":all[0],"token":all[1]}
+                print "##############################"
                 print json.dumps(k)
-                return HttpResponse(json.dumps(k))
+
+                response =  HttpResponse(json.dumps(k))
+                response.set_cookie("token",makeToken(request,0))
+                return response
+
             except:
                 pass
             
@@ -252,31 +299,60 @@ def index(request):
                 s.saveComment(u,request.POST['text'],md())
                 
                 
-                return HttpResponse("ok")
+                response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                response.set_cookie("token",makeToken(request,0))
+                return response
             except Exception as inst:
                 pass
                 #return HttpResponse( str(inst))
             try:
+                if controltoken(request) != 1:
+                   
+                    response =  HttpResponse(json.dumps({'response':'err',"page":"post","token":makeToken(request)}))
+                    response.set_cookie("token",makeToken(request,0))
+                    print response
+                    return response
                 
+               
                 html = getLive(0,0,None)
                 cache.delete("live_html_0")
                 cache.set("live_html_0",html,3600)
                 post = request.POST['msg']
-                s = Status()
-                s.from_user = u
-                dd = datetime.now()
-                s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                s.text = request.POST['msg']
-                s.mood_point = float(request.POST['mood'])
-                s.save()
-                k = userActions()
-                k.from_user = u
-                k.post = s
-                k.times = md()
-                k.save()
-                return HttpResponse("ok")
+                try:
+                    s = Status()
+                    s.from_user = u
+                    dd = datetime.now()
+                    s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                    s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                    s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
+                    s.mood_point = float(request.POST['mood'])
+                    s.save()
+                    k = userActions()
+                    k.from_user = u
+                    k.post = s
+                    k.times = md()
+                    k.save()
+                    #print u[0]
+                except Exception as e:
+                    s = Status()
+                    s.from_user = u
+                    dd = datetime.now()
+                    s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                    s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                    s.text = "buuuu"
+                    s.mood_point = float(request.POST['mood'])
+                    s.save()
+                    k = userActions()
+                    k.from_user = u
+                    k.post = s
+                    k.times = md()
+                    k.save()
+                    pass
+                response = HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                response.set_cookie("token",makeToken(request,0))
+                return response
             except:
+                print "err cached"
                 pass
             
             try:
@@ -284,7 +360,7 @@ def index(request):
                 c= Comments.objects.filter(from_user = u , id=post)
                 if c.count() > 0:
                     c.delete()
-                    return HttpResponse("ok")
+                    return HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                 else:
                     return HttpResponse("err")
             except:

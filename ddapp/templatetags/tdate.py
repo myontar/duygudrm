@@ -16,6 +16,11 @@ register = Library()
 def tdate(tim):
     now = time.localtime()
     tm_hour = now.tm_hour + 1
+    if type(tim) == type("str"):
+        if tim != "":
+            tim = int(tim)
+        else:
+            tim = 1289068211.0
     tim = tim + 3600
     #print "tim geldi" 
     #print tim 

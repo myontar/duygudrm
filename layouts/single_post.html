@@ -1,0 +1,61 @@
+{% load mood %}
+{% load tdate %}
+{% load generateTool%}
+{% load html %}
+
+
+
+			<div id="{{x.id}}" class="post">
+
+			{% if x.user != x.from_user %}
+			{% if x.from_user.avatar == '' %}
+			<img class="img" src="/statics/images/defuser.png" />
+			{% else %}
+			<img class="img" src="/statics/users/avatar/{{x.from_user}}.jpg" />
+			{% endif %}
+			{% else %}
+			{% if x.user.avatar == '' %}
+			<img class="img" src="/statics/images/defuser.png" />
+			{% else %}
+			<img class="img" src="/statics/users/avatar/{{x.user}}.jpg" />
+			{% endif %}
+			{% endif %}
+
+			<div class="post_right">
+			<span><b>
+			{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}">{{x.from_user}}</a>{% else %}
+			<a href="/{{x.user.rewrite}}">{{x.user}}</a>{% endif %}
+			</b> {% if x.user != x.from_user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile)</span>{% endif %}{% endif %}
+			{% autoescape off %}
+			{{x.mood|mood}}
+			{% endautoescape %}
+
+			<div>
+				{{x.text|phtml }}
+			</div>
+
+
+			<br />
+			<br />
+			<span class="date">{{x.time|tdate}}</span><a href="javascript:;" class="like">Begen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a> {% if x.user|strto == user.user|strto %} | <a href="javascript:;" class="dispost">Sil</a>{%endif%}
+			<br class="clr" />
+
+
+
+
+			<div class="comments">
+			{% for i in x.comments|comments %}
+				<div class="comm" id="comm_{{i.id}}">
+					<img src="/statics/users/avatar/{{i.username}}.jpg" />
+					{{i.text}} <br /><a href="/{{i.rewrite}}">{{i.username}}</a> <span class="date">{{i.date|tdate}}</span> {% if i.username == user.user|strto %} <a href="javascript:;">Yorumu Sil</a> | <a href="javascript:;">Düzenle</a> {% endif %}
+				</div>
+			{% endfor %}
+			</div>
+
+
+
+			</div><br class="clr" />
+			</div>
+
+			<br class="clr" />
+			

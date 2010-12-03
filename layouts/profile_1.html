@@ -1,0 +1,107 @@
+{% extends "base_template.html" %}
+{% load generateTool%}
+
+{% block login %}
+	hoşgeldin {{me.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
+{% endblock %}
+
+{% block body %}
+	<div class="leftContent">
+		<div id="sliderico"></div>
+		<form action="/" method="post" id="postform">
+
+		<div id="slider_top"><div id="slider"></div></div>
+		<input type="hidden" id="mood" value="5.0" name="mood" />
+
+			<div class="msgsend">
+			<div class="toarea" style="display:none;">
+				<div class="sender">
+					<a href="javascript:;">Herkese <span rel="all">x</span></a><a href="javascript:;">Herkese <span rel="all">x</span></a>
+				</div>
+				<input type="hidden" id="tousers" name="tousers" value="['all']" />
+				<input type="hidden" id="hash" name="hash" value="{{user.id}}" />
+				<input type="text" id="totext" name="totext" />
+
+				<br class="clr" />
+			</div>
+
+			<textarea id="msg" name="msg" onclick="jQuery('.toarea').fadeIn('slow');"></textarea>
+			{% csrf_token %}
+                        <script>token = '{{ttoken}}';</script>
+			<button>yolla</button>
+			<br class="clr" /><br />
+				<div class="up"><input id="file_upload" name="file_upload" type="file" style="display:none;" /> </div>
+				<div class="up">|</div>
+				<div class="up"><input id="file_upload2" name="file_upload2" type="file" style="display:none;" /> </div>
+			<br class="clr" />
+
+			</div>
+			<br />
+			<br />
+			<div id="uploadprogress" style="display:none;"><span id="file_t">filename.mp3</span><div id="progbar"><div class="perc"></div></div><span id="file_s">uploading...</span><img src="/statics/images/share-loading-w.gif" /><br class="clr" /></div>
+
+			<div id="files"></div>
+			<br />
+			<br />
+		</form>
+		<h2>{{user.user}}</h2>
+		<div class="userpro">
+			{% if user.avatar == '' %}
+			<img src="/statics/images/defuser.png" />
+			{% else %}
+			<img src="{{user.avatar}}" />
+			{% endif %}
+			
+			<div class="sta"><span>Girdi</span> <br />{{user.getStat.total}}</div>
+			<div class="sta"><span>En Yüksek</span> <br />{{user.getStat.big}}</div>
+			<div class="sta"><span>En düşük</span> <br />{{user.getStat.min}}</div>
+			<div class="sta"><span>Ortalama</span> <br />{{user.getStat.ort}}</div>
+			<br class="clr" />
+			{% if takip == 0 %}
+			<a href="javascript:;">Takip Et</a>
+			{% else %}
+			<a href="javascript:;">Peşini Bırak</a>
+			{% endif %}
+			{% if me.user.username == user.user.username %} 
+			<a href="javascript:;" rel="#photoup">Resim Yükle</a>
+			{% endif %}
+			
+			
+			
+		</div>
+		<div id="allpost">
+			
+			
+			{{post|generatepost:user}}
+			
+			
+			
+			
+		</div>
+	</div>
+	
+	<div class="rightContent">
+		<div class="umenu">
+		<a href="/fallowers">Takip Ettiklerim ({{user.fallwoersCount}})</a>
+		<a href="/fallowers">Takipçiler ({{user.fallowedCount}})</a>
+		</div>
+	</div>
+	<br class="clr" />
+	<div id="gotToken">
+	{% csrf_token %}
+	</div>
+	<script>
+		timex = {{time}}
+		jQuery(document).ready(function(){
+			$("a[rel]").overlay();
+			
+		});
+		
+	</script> 
+	<div id="photoup" class="simple_overlay">
+		<form action="" method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+			<input type="file" name="file" id="file"/><button>Gonder</button>
+		</form>
+	</div>
+{% endblock %}
