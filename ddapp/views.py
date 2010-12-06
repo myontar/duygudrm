@@ -28,6 +28,7 @@ import memcache
 from django.contrib.auth.models import User
 from duygudrm.ddapp.models import UserProfiles
 from oauthtwitter import OAuthApi
+from duygudrm.ddapp.extras.friendfeed import *
 import oauth.oauth as oauth
 cache = memcache.Client(['192.168.1.3:11211'])
 
@@ -169,6 +170,60 @@ def twitterreturn(request):
             print "asdasd asd asd "
 	# authentication was successful, use is now logged in
 	return HttpResponse("You are logged in")
+
+def friendfeed(request):
+        FRIENDFEED_API_TOKEN = dict(
+                                key="1f6618554afd47eda4786a0984f25ba7",
+                                secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
+                            )
+        facelogin = fetch_oauth_request_token(FRIENDFEED_API_TOKEN)
+        #print facelogin
+        #print facelogin["key"]
+        data = "|".join([facelogin["key"], facelogin["secret"]])
+        #print data
+        #cookieutil = LilCookies(self.parent
+        #                                        , "kaiytbluewyth8ceywpbtdrskcutcoatlceutlbueatbice")
+        #cookieutil.set_cookie(name = 'FF_API_REQ_A', value = data, expires_days= 365*100)
+        request.session['FF_API_REQ_A'] = data
+        fflogin_url = get_oauth_authentication_url(facelogin)
+        return  HttpResponseRedirect(fflogin_url)
+
+def ffauth(request):
+    FRIENDFEED_API_TOKEN = dict(
+                            key="1f6618554afd47eda4786a0984f25ba7",
+                            secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
+                        )
+    #if self.parent.get("oauth_token"):
+    #cookieutil = LilCookies(self.parent
+    #                        , "kaiytbluewyth8ceywpbtdrskcutcoatlceutlbueatbice")
+    #set_cookie(self.parent.response,"Login","FF|%s" % self.parent.request.get("oauth_token"))
+    request_key = request.GET["oauth_token"]
+    cookie_val = request.session['FF_API_REQ_A'] #self.parent.request.cookies.get("")
+    cookie_key, cookie_secret = cookie_val.split("|")
+    if cookie_key != request_key:
+        #logging.warning("Request token does not match cookie")
+        #self.redirect("/")
+        return  HttpResponse("err1")
+    req_token = dict(key=cookie_key, secret=cookie_secret)
+    #try:
+    access_token = fetch_oauth_access_token(
+        FRIENDFEED_API_TOKEN, req_token)
+    datax = "|".join(access_token[k] for k in ["key", "secret", "username"])
+    key, secret, username = datax.split("|")
+    feed = FriendFeed(
+            FRIENDFEED_API_TOKEN, dict(key=key, secret=secret))
+    #self.friendfeed_username = username
+    data = feed.fetch_feed_info(username)
+
+
+
+    request.sesion['friendfeed_sessions'] = "{'key':'"+key+"','secret':'"+secret+"','username':'"+username+"'}";
+    request.sesion['friendfeed_data'] = data;
+    #except:
+
+    #    return "err2"
+    # @TODO : Burasý yapýlmasý lazým
+    return HttpResponseRedirect("/registerask")
 
 def signin(request):
 	twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")

@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     (r'^login$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
     (r'^loginfacebook$', "duygudrm.ddapp.views.loginfacebook"),
     (r'^signin_twitter$', "duygudrm.ddapp.views.signin"),
+    (r'^signin_friendfeed$', "duygudrm.ddapp.views.friendfeed"),
+    (r'^ffauth$', "duygudrm.ddapp.views.ffauth"),
+
     (r'^twitter_return$', "duygudrm.ddapp.views.twitterreturn"),
 
     (r'^proxy$', 'duygudrm.ddapp.views.proxy'),
