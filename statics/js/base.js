@@ -6,6 +6,7 @@ var r = 255;
 var g = 255;
 var b = 0;
 jQuery(document).ready(function() {
+    main.fbinit();
 	$( "#slider" ).slider({
 		value:5.0,
 		min: 0.0,
@@ -158,7 +159,7 @@ jQuery(document).ready(function() {
 	jQuery(".ui-slider-handle").append(jQuery("<div id='inslider'>5.0</div>"));
 	
 	jQuery("#postform").bind("submit",function() {
-            if( jQuery("#postform").find("textarea").val().length < 2) {
+            if( jQuery("#msg").val().length < 2) {
                 alert("birseyler yazmalisin");
                 return false;
             }
@@ -181,12 +182,65 @@ jQuery(document).ready(function() {
 	});
 	$( "#mood" ).val($( "#slider" ).slider( "value" ) );
 	main.bind();
+        
 	if (updateStart)main.UpdateTimer();
 });
 var wait_update = 0;
 var animate_scroll = 0;
 main = {
-		
+
+                
+                handleSessionResponse:function(response) {
+                     // if we dont have a session, just hide the user info
+                    if (!response.session) {
+                      clearDisplay();
+                      return;
+                    }
+
+                    // if we have a session, query for the user's profile picture and name
+                    if (response.perms) {
+                        var perms;
+                        eval("perms = "+response.perms);
+                        perms_req = "read_stream,email,publish_stream,offline_access,photo_upload,video_upload".split(",");
+                        
+                        nonex = 0
+                        allperms = perms['extended']+perms['user'];
+                       
+                        for(i=0;i<perms_req.length;i++) {
+                            if (allperms.indexOf(perms_req[i]) == -1) {
+                               alert(perms_req[i]);
+                               nonex = 1
+                            }
+                        }
+                        
+                       
+                        if (nonex == 1) {
+                            FB.login(main.handleSessionResponse,{perms:'read_stream,user_birthday,email,publish_stream,offline_access,photo_upload,video_upload'});
+                            return;
+                        }
+                        
+                       if(!loggedUSER)document.location = '/loginfacebook';
+                    } else {
+                        FB.login(main.handleSessionResponse,{perms:'read_stream,user_birthday,email,publish_stream,offline_access,photo_upload,video_upload'});
+                        return;
+                    }
+                },
+                fbinit:function() {
+                  $('#login_fb').bind('click', function() {
+                    FB.login(main.handleSessionResponse,{perms:'read_stream,user_birthday,email,publish_stream,offline_access,photo_upload,video_upload'});
+                   });
+                  FB.init({apiKey: '535c96a06491b8e94bd16eafc32cf3b2' ,
+                     status : true, // check login status
+                     cookie : true, // enable cookies to allow the server to access the session
+                     xfbml  : true  // parse XFBML
+                     //
+                     });
+
+                    // fetch the status on load
+                   FB.getLoginStatus(main.handleSessionResponse);
+                },
+
+
 		hadlex:function() {
                   token = main.readCookie('token');
                   main.eraseCookie('token');
@@ -368,7 +422,7 @@ main = {
                                         //token = all['token'];
                                         main.hadlex();
                                         if (all['response'] =="ok") {
-						pr.hide("slow",function() { jQuery(this).remove();});
+						pr.hide("slow",function() {jQuery(this).remove();});
 						alert("Yorumun Silindi");
 						main.Update();
 						$('html, body').animate({

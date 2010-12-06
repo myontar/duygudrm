@@ -3,6 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>DuyguDurum Clone | {% block title %} {% endblock %}</title>
+        <script  type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/statics/js/base.js"></script>
@@ -27,16 +28,21 @@
 					<input type="text" id="usr" name="usr" />
 					<input type="text" id="pss" name="pss" />
 				</form>
+                        <a href="#" id="login_fb">login via facebook</a>
+                        <script>loggedUSER=false;</script>
 			{% endblock %}
 		</div>
 	<br class="clr" />
 	</div>
 	
 	<div class="body">
+            {{ugent}}
 		{% block body %}
 		
 		{% endblock %}
 	</div>
-	
+	<div id="fb-root"></div>
+        
+        
 </body>
 </html>

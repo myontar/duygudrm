@@ -4,6 +4,9 @@ Created on 04.Kas.2010
 
 @author: Administrator
 '''
+from django.contrib.auth import authenticate
+from django.contrib.auth import  login
+
 import os.path
 from django.utils.encoding import *
 from duygudrm.ddapp.extras.mtoken import makeToken , controltoken
@@ -22,19 +25,158 @@ from django.contrib.auth.decorators import login_required
 import json , os ,sys
 import time , StringIO , Image
 import memcache
-
+from django.contrib.auth.models import User
 from duygudrm.ddapp.models import UserProfiles
-
+from oauthtwitter import OAuthApi
+import oauth.oauth as oauth
 cache = memcache.Client(['192.168.1.3:11211'])
 
 
 def MakingRender(template,request=None,params={}):
     
     c = params
+    template = template
     c.update(csrf(request))
     c['time'] = md()
     c['ttoken'] = makeToken(request,0)
+    c['ugent'] = request.META['HTTP_USER_AGENT']
+    if request.META['HTTP_USER_AGENT'].lower().find("apple") > -1:
+        if request.META['HTTP_USER_AGENT'].lower().find("qt/") > -1:
+            template = "qt_"+template
     return render_to_response(template, c)
+
+
+def loginfacebook(request):
+    
+    cokie = request.COOKIES['fbs_535c96a06491b8e94bd16eafc32cf3b2'].split("&")
+    cookies = {}
+
+    for c in cokie:
+        cookies[c.split("=")[0]] = c.split("=")[1]
+
+    access_token = cookies['access_token']
+    uid = cookies['uid']
+
+    import urllib2
+    std_headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.11) Gecko/20101019 Firefox/3.6.11',
+            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-us,en;q=0.5',
+        }
+    #print request.GET['p']
+    urequest = urllib2.Request("https://graph.facebook.com/me?access_token="+access_token, None, std_headers)
+    video_info_webpage = urllib2.urlopen(urequest).read()
+
+    data = json.loads(video_info_webpage)
+    gender = 2
+    if data['gender'] == "male":
+        gender = 1
+
+    brit_date  = data['birthday']
+    name       = data['name']
+    last_name  = data['last_name']
+    first_name = data['first_name']
+    locale     = data['locale']
+    email     = data['email']
+
+    pu = userLoginService.objects.filter(service_uid = uid)
+
+
+    if pu.count() == 0:
+
+        #try:
+            u = User()
+            u.username = first_name+"_"+last_name
+            u.first_name = first_name
+            u.last_name = last_name
+            u.email     = email
+            u.is_active    = True
+            u.set_password('admin001')
+            u.save()
+            u2 = UserProfiles.objects.filter(user=u).get()
+            u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+            u2.rewrite = first_name+"_"+last_name
+            u2.save()
+            user = authenticate(username=first_name+"_"+last_name, password='admin001')
+            uys = userLoginService()
+            uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+            uys.service_uid = uid
+            uys.user = u2
+            uys.save()
+        
+    else:
+        u = pu.get()
+        print u.user.user_id
+
+        userx = User.objects.filter(id=u.user.user_id).get()
+        print userx
+        userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+        
+        #account = get_account_from_hash(ux.hash)
+        user = authenticate(username=userx.username,external=1)
+        print user
+        #user = ux
+    #request.session
+    login(request,user)
+    
+    return HttpResponseRedirect("/")
+
+
+def twitterreturn(request):
+	request_token = request.session.get('request_token', None)
+
+	# If there is no request_token for session,
+	#    means we didn't redirect user to twitter
+	if not request_token:
+		# Redirect the user to the login page,
+		# So the user can click on the sign-in with twitter button
+		return HttpResponse("We didn't redirect you to twitter...")
+
+	token = oauth.OAuthToken.from_string(request_token)
+
+	# If the token from session and token from twitter does not match
+	#   means something bad happened to tokens
+	if token.key != request.GET.get('oauth_token', 'no-token'):
+		del request.session['request_token']
+		# Redirect the user to the login page
+		return HttpResponse("Something wrong! Tokens do not match...")
+        try:
+            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
+            access_token = twitter.getAccessToken()
+        except:
+            print "uuu"
+
+	#request.session['access_token'] = access_token.to_string()
+	#auth_user = authenticate(access_token=access_token)
+
+	# if user is authenticated then login user
+	#if auth_user:
+	#	login(request, auth_user)
+	#else:
+		# We were not able to authenticate user
+		# Redirect to login page
+	#	del request.session['access_token']
+    	#	del request.session['request_token']
+	#	return HttpResponse("Unable to authenticate you!")
+        
+        try:
+            twitter = oauthtwitter.OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA", access_token)
+            userinfo = twitter.GetUserInfo()
+            print userinfo
+        except:
+            # If we cannot get the user information, user cannot be authenticated
+            print "asdasd asd asd "
+	# authentication was successful, use is now logged in
+	return HttpResponse("You are logged in")
+
+def signin(request):
+	twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
+	request_token = twitter.getRequestToken()
+	request.session['request_token'] = request_token.to_string()
+	signin_url = twitter.getSigninURL(request_token)
+	return HttpResponseRedirect(signin_url)
+
 
 def md():
     dd = datetime.now()
@@ -418,8 +560,5 @@ def register(request):
     
     return MakingRender("register.html",request)
 
-def login(request):
-    
-    return MakingRender("login.html",request)
 
         

@@ -5,6 +5,7 @@
 {% load generateTool%}
 {% block login %}
 	hosgeldin {{user.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
+        <script>loggedUSER = '{{user.user}}';</script>
 {% endblock %}
 
 {% block body %}

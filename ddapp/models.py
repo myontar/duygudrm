@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 '''
 Created on 04.Kas.2010
@@ -12,7 +13,39 @@ from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from datetime import datetime
 from duygudrm.ddapp.extras.mtoken import makeToken
+from django.contrib.auth.backends import ModelBackend
+
+
 import time
+
+
+class MyLoginBackend(ModelBackend):
+    """Return User record if username + (some test) is valid.
+       Return None if no match.
+    """
+
+    def authenticate(self, username=None, password=None, request=None, external=None):
+        try:
+            print "auth "
+            user = User.objects.get(username=username)
+            print user.username
+            #user.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+            if external == None and user.password == None:
+                print "external error"
+                return None
+            if user.password != None and external == None:
+                print "pass error"
+                if user.password != password:
+                    return None
+            # plus any other test of User/UserProfile, etc.
+            return user # indicates success
+        except User.DoesNotExist:
+            print username
+            print "errr"
+            return None
+    # authenticate
+# class MyLoginBackend
+
 def md():
     dd = datetime.now()
     return time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
@@ -305,6 +338,12 @@ class UserProfiles(models.Model):
          
         return asx
 
+
+class userLoginService(models.Model):
+    user            = models.ForeignKey(UserProfiles)
+    service         = models.CharField(max_length=200)
+    service_param   = models.CharField(max_length=2000)
+    service_uid     = models.CharField(max_length=200)
 
 class UserMessages(models.Model):
     from_user   = models.ForeignKey(UserProfiles)
