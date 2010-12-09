@@ -1,0 +1,441 @@
+/* 
+    Document   : default
+    Created on : 09.Ara.2010, 10:30:57
+    Author     : John
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+root { 
+    display: block;
+}
+
+body {
+	font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+	unicode-bidi: embed;
+	font-size:11px;
+	margin:0;
+	padding:0;
+	background:#ededed;
+	text-align:center;
+}
+
+
+#header {
+	background:url(../images/bg.png);
+	height:54px;
+	text-align:left;
+}
+
+#logo {
+	width:122px;
+	height:22px;
+	margin-top:15px;
+	float:left;
+}
+.wrapper {
+	width:800px;
+	margin:auto;
+}
+ #search_but {
+ float:left;
+
+ }
+ #search_but a{
+	background:url(../images/search_but.png) left;
+	height:22px;
+	color:#fff;
+	line-height:22px;
+	padding:5px;
+	text-decoration:none;
+	padding-right:1px;
+}
+
+#search_txt {
+	float:left;
+	width:120px;
+	border:none;
+	background:#F7F7F7;
+	outline:none;
+	text-indent:6px;
+}
+#body {
+	background:#ffffff url(../images/body_top.png) no-repeat;
+	padding:8px;
+	padding-right:8px;
+	width:584px;
+	float:left;
+	color:#666;
+	text-align:left;
+}
+#tolist {
+    max-height: 150px;
+    width:120px;
+    border:1px solid #ededed;
+    background: #fff;
+    position: absolute;
+    text-align: left;
+}
+#tolist a {
+    display:block;
+    line-height: 22px;
+    width: 100%;
+    text-indent: 10px;
+    color:#4978C7;
+    text-decoration: none;
+}
+#tolist a:hover {
+    display:block;
+    line-height: 22px;
+    width: 100%;
+    text-indent: 10px;
+    color:#fff;
+    background: #4978C7;
+}
+#tolist a.selected {
+    color:#fff;
+    background: #4978C7;
+}
+.right_box a {
+display:block;
+line-height:22px;
+width:100%;
+text-indent:15px;
+font-size:13px;
+color:#335EA4;
+text-decoration:none;
+}
+#right {
+float:right;
+width:150px;
+margin-left:30px;
+text-align: left;
+}
+.post_image {
+	float:left;
+	width:48px;
+	height:48px;
+	padding:2px;
+	margin-right:5px;
+	border:1px solid #ccc;
+}
+.tools  , .tools a{
+	margin-top:5px;
+	color:#999;
+	font-size:9px;
+	line-height:22px;
+	text-decoration:none;
+}
+.tools a:hover{
+	color:#003366;
+}
+
+.plikes {
+	margin-top:5px;
+}
+.comments a{
+font-size:11px;
+margin-left:10px;
+color:#aaa;
+text-decoration:none;
+}
+.comments a:hover{
+	color:#4978C7;
+}
+.comments {
+	padding-left:18px;
+	line-height:16px;
+	margin-top:10px;
+	font-size:12px;
+	color:#aaa;
+	background:url(../images/comment.png) no-repeat;
+}
+.plikes , .plikes  a{
+	font-size:10px;
+}
+.plikes  a{
+	color:#003366
+}
+a.first {
+	padding-left:16px;
+	background:url(../images/likes.png) no-repeat;
+}
+a.pshare {
+	margin-left:10px;
+	padding-left:16px;
+	background:url(../images/share_but.png) no-repeat;
+	display:inline;
+}
+
+a.plike {
+	margin-left:10px;
+	padding-left:16px;
+	background:url(../images/like_but.png) no-repeat;
+	display:inline;
+	color:#aaa;
+}
+a.plike_on{
+	margin-left:10px;
+	padding-left:16px;
+	background:url(../images/like_but_on.png) no-repeat;
+	display:inline;
+	color:#4978C7;
+}
+a.pcmmd {
+	margin-left:20px;
+	padding-left:16px;
+	background:url(../images/comment_but.png) no-repeat;
+	display:inline;
+}
+
+.mainpost  {
+	float:left;
+	color:#666;
+	font-size:12px;
+	margin-bottom:10px;
+}
+.post {
+	margin-bottom:10px;
+	border-bottom:1px solid #ddd;
+
+}
+.pname {
+	font-size:13px;
+	font-weight:bold;
+	text-decoration:none;
+	color:#003366;
+	display:block;
+}
+
+.pimage {
+	width:48px;
+	height:48px;
+	overflow:hidden;
+}
+
+.right_box  h2{
+	font-size:14px;
+	color:#666;
+	margin:0;
+	padding:0;
+	margin-top:5px;
+	margin-bottom:5px;
+	text-align:center;
+	display:block inline;
+	width:100%;
+
+}
+#slider {
+	width:550px;
+	margin-left:8px;
+	height:34px;
+}
+#inslider {
+	margin-top:4px;
+	font-size:10px;
+	font-weight:bold;
+	text-decoration:none;
+	text-align:center;
+}
+#to_all{
+	display:none;
+}
+#tolid {
+	display:none;
+	position:absolute;
+	height:25px;
+}
+#to_text {
+	float:left;
+	width:75px;
+	height:25px;
+	font-size:12px;
+	font-weight:bold;
+	margin-bottom:3px;
+	margin-top:3px;
+}
+#tos {
+	float:left;
+	height:25px;
+	margin-right:2px;
+	margin-bottom:3px;
+	padding:2px;
+	width:500px;
+
+}
+
+
+#tos a {
+
+	border:1px solid #ccc;
+	background:#ededed;
+	padding:4px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	color:#666;
+	text-decoration:none;
+}
+#tos a span {
+	margin:3px;
+	padding:3px;
+	margin-right:0;
+	color:#111;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+#tos a span:hover {
+	margin:3px;
+	padding:3px;
+	margin-right:0;
+	color:#111;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	background:#aaa;
+}
+#tox {
+    float:left;
+    margin-top:5px;
+}
+#tos input{
+	border:none;
+	outline:none;
+        float:left;
+        width:120px;
+
+}
+#slider a {
+	background:url(../images/sprite.png);
+	background-position:-16px -75px;
+	height:24px;
+	width:32px;
+	border:none;
+	outline:none;
+	margin-left:-13px;
+	margin-top:-10px;
+	text-decoration:none;
+	cursor:pointer;
+}
+
+.cuser {
+	color:#4978C7;
+}
+
+
+#movbar .ui-slider-handle , #movbar .ui-state-default  {
+	background:url(../images/slider.png);
+	height:24px;
+	width:32px;
+	border:none;
+}
+#movbar .ui-widget-content {
+background:none;
+border:none;
+}
+.right_box_fin {
+	width:150px;
+	height:20px;
+	background:#ffffff url(../images/right_bg_bot.png) no-repeat;
+	margin-bottom:15px;
+}
+.right_box {
+	width:146px;
+	padding:2px;
+	background:#ffffff url(../images/right_bg.png) no-repeat;
+}
+#cmd {
+	width:400px;
+	display:block;
+}
+#movbar {
+	width:582px;
+	height:34px;
+	background:#ccc url(../images/movbar.png) no-repeat;
+	margin-bottom:4px;
+	display:none;
+}
+.atch {
+float:left;
+}
+.rbtn {
+float:right;
+}
+.btn {
+	background:#4978C7;
+	border-color:#4978C7;
+	color:#fff;
+}
+
+#topbr textarea {
+	width:576px;
+	height:22px;
+	border:1px solid #AAC0E6;
+	outline:none;
+}
+#search_but span{
+	background:url(../images/search_but.png) 0 right;
+	height:22px;
+	line-height:22px;
+	text-indent:-100;
+	padding:5px;
+	color:#666666;
+	padding-left:1px;
+	padding-right:1px;
+}
+
+#search {
+
+	float:right;
+	margin-top:15px;
+	background:url(../images/search_bg.png) 0 left;
+	padding:2px;
+	padding-top:4px;
+	padding-right:0;
+	height:24px;
+}
+
+#sline {
+background:url(../images/search_bg.png) 0 right;
+float:right;
+width:5px;
+height:30px;
+margin-top:15px;
+}
+#user_image {
+	width:24px;
+	height:26px;
+	overflow:hidden;
+}
+#user_name {
+position:relative;
+margin-top:-24px;
+margin-left:30px;
+color:#ededed;
+}
+#user_mask {
+	position:relative;
+
+	margin-top:-26px;
+	width:24px;
+	height:26px;
+	background:url(../images/user_pic.png);
+}
+#user {
+	float:right;
+	padding:2px;
+	margin-right:40px;
+	background:url(../images/user_bg.png);
+	width:188px;
+	height:26px;
+	margin-top:15px;
+}
+.clear {
+	clear:both;
+}

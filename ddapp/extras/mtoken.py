@@ -9,7 +9,7 @@ import memcache
 
 from datetime import datetime
 import time
-cache = memcache.Client(['192.168.1.3:11211'])
+cache = memcache.Client(['192.168.1.4:11211'])
 def md():
     dd = datetime.now()
     return time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))

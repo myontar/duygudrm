@@ -1,4 +1,4 @@
-{% extends "base_template.html" %}
+﻿{% extends "base_template.html" %}
 {% load tdate%}
 {% load mood%}
 {% load html%}
@@ -9,79 +9,34 @@
 {% endblock %}
 
 {% block body %}
-	<div class="leftContent">
-	
-		<br />
-		<br />
-		<br />
-		
-		<div class="how">
-		mood'un ne durumda ?
-		</div>
-		<div class="desc">
-			Moralin yuksekse 10'a, dusukse 0'a yaklastir. Moral durumuna gore barin rengi de degisecek
-		</div>
-		<br class="clr" />
-		<br />
-		<br />
-		<br />
-		<div id="sliderico"></div>
-		<form action="/" method="post" id="postform">
-		
-		<div id="slider_top"><div id="slider"></div></div>
-		<input type="hidden" id="mood" value="5.0" name="mood" />
-		
-			<div class="msgsend">
-			<div class="toarea" style="display:none;">
-				<div class="sender">
-					<a href="javascript:;">Herkese <span rel="all">x</span></a>
+                    <div id="movbar">
+
 				</div>
-				<input type="hidden" id="tousers" name="tousers" value="['all']" />
-				<input type="hidden" id="hash" name="hash" value="{{user.id}}" />
-				<input type="text" id="totext" name="totext" />
-				
-				<br class="clr" />
-			</div>
-			
-			<textarea id="msg" name="msg" onclick="jQuery('.toarea').fadeIn('slow');"></textarea>
-			{% csrf_token %}
-                        <script>token = '{{ttoken}}';</script>
-			<button>yolla</button>
-			<br class="clr" /><br />
-				<div class="up"><input id="file_upload" name="file_upload" type="file" style="display:none;" /> </div> 
-				<div class="up">|</div> 
-				<div class="up"><input id="file_upload2" name="file_upload2" type="file" style="display:none;" /> </div> 
-			<br class="clr" />
-			
-			</div>
-			<br />
-			<br />
-			<div id="uploadprogress" style="display:none;"><span id="file_t">filename.mp3</span><div id="progbar"><div class="perc"></div></div><span id="file_s">uploading...</span><img src="/statics/images/share-loading-w.gif" /><br class="clr" /></div>
-			
-			<div id="files"></div>
-			<br />
-			<br />
-		</form>
-		<div id="allpost">
+
+				<div id="to_all">
+				<div id="tolid"> Ekle / Duzenle </div>
+					<div id="to_text">Alici :</div>
+					<div id="tos">
+                                            <div id="tox"><a rel="all">herkese<span>x</span></a></div><input type="text" id="getu" />
+                                            <br class="clear" />
+					</div>
+					<br class="clear" />
+				</div>
+				<form id="topbr">
+					
+                                        <textarea id="msg" name="msg"></textarea>
+                                        <input type="hidden" id="mood" name="mood" value="5.0" />
+                                        <input type="hidden" id="to" value="all" />
+				</form>
+				<div class="atch">Ekle : <a href="">Fotoğraf</a> | <a href="">Diğer</a> </div><div class="rbtn"><button class="btn" id="gomood">Send</button></div>
+				<br class="clear" />
+				<div class="posts">
 			
 			{{user.myStatusList|generatepost:user}}
 		</div>
-	</div>
-	
-	<div class="rightContent">
-		<div class="umenu">
-		<a href="/live">su Anda Neler oluyor</a>
-		<a href="/fallowed">Takip Ettiklerim ({{user.fallwoersCount}})</a>
-		<a href="/fallowers">Pesimdekiler ({{user.fallowedCount}})</a>
-		<a href="/messages">Mesajlar</a>
-		<a href="/likes">Begendiklerim</a>
-		<a href="/comments">Yorumlarim</a>
-		</div>
-	</div>
-	<br class="clr" />
-	<div id="listto">
-	
-	</div>
+				
+
+
 	<div id="gotToken">
 	{% csrf_token %}
 	</div>

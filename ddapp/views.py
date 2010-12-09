@@ -20,7 +20,7 @@ from django.core.context_processors import csrf
 from django.contrib.csrf.middleware import csrf_exempt
 from django.views.decorators.csrf import  csrf_protect
 from duygudrm.ddapp.models import *
-from datetime import datetime
+import datetime
 from django.contrib.auth.decorators import login_required
 import json , os ,sys
 import time , StringIO , Image
@@ -30,7 +30,7 @@ from duygudrm.ddapp.models import UserProfiles
 from oauthtwitter import OAuthApi
 from duygudrm.ddapp.extras.friendfeed import *
 import oauth.oauth as oauth
-cache = memcache.Client(['192.168.1.3:11211'])
+cache = memcache.Client(['192.168.1.4:11211'])
 
 
 def MakingRender(template,request=None,params={}):
@@ -145,8 +145,8 @@ def twitterreturn(request):
         try:
             twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
             access_token = twitter.getAccessToken()
-        except:
-            print "uuu"
+        except Exception as e:
+            print e
 
 	#request.session['access_token'] = access_token.to_string()
 	#auth_user = authenticate(access_token=access_token)
@@ -234,7 +234,11 @@ def signin(request):
 
 
 def md():
-    dd = datetime.now()
+    print datetime
+    try:
+        dd = datetime.datetime.now()
+    except:
+        print "eeeeee"
     return time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
 def scale_dimensions(width, height, longest_side):
     if width > height:
@@ -473,9 +477,9 @@ def index(request):
                 pass
             
             try:
-                rep = request.POST['getU']
+                rep = request.POST['getU'].lower()
                 
-                s = UserProfiles.objects.filter(rewrite__startswith=rep).all()[:20]
+                s = UserProfiles.objects.filter(rewrite__contains=rep).all()[:20]
                 r = list()
                 r.append({'id':"all",'name':"Herkese"})
                 for i in s:
@@ -518,7 +522,7 @@ def index(request):
                 try:
                     s = Status()
                     s.from_user = u
-                    dd = datetime.now()
+                    dd = datetime.datetime.now()
                     s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                     s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                     s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
@@ -533,7 +537,7 @@ def index(request):
                 except Exception as e:
                     s = Status()
                     s.from_user = u
-                    dd = datetime.now()
+                    dd = datetime.datetime.now()
                     s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                     s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                     s.text = "buuuu"
@@ -548,8 +552,8 @@ def index(request):
                 response = HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                 response.set_cookie("token",makeToken(request,0))
                 return response
-            except:
-                print "err cached"
+            except Exception as e:
+                print e
                 pass
             
             try:

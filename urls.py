@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     #(r'^admin/', include(admin.site.urls)),
     (r'^admin_001/', include(admin.site.urls)),
     (r'^s/(.*)$',"duygudrm.ddapp.views.short"),
-    
+    (r'^(.*)/(.*)$',"duygudrm.ddapp.views.getsinglepost"),
     (r'^(.*)$',"duygudrm.ddapp.views.user"),
-    (r'^(.*)/$',"duygudrm.ddapp.views.getsinglepost"),
+    
 )

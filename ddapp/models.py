@@ -421,7 +421,7 @@ class Status(models.Model):
                     rewrite = rewrite +"-1"
                 else:
                     k = False
-            self.rewrite = rewrite
+            self.rewrite = rewrite.lower()
         except Exception as e:
             print e
         try:

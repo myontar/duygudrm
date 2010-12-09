@@ -1,4 +1,368 @@
-var timex;
+var r = 255;
+var g = 255;
+var b = 100;
+var token = 0;
+var seli = 0;
+var activeteToall = 0;
+var activeMovbar=0;
+jQuery(document).ready(function() {
+	jQuery("#topbr > textarea").bind("click",main.showSalt);
+	jQuery("#topbr > textarea").bind("focus",main.showSalt);
+	jQuery("#topbr > textarea").bind("keyup",main.movText);
+	jQuery("#topbr > textarea").bind("keypress",main.movText);
+	jQuery("#topbr > textarea").bind("keydown",main.movText);
+	jQuery(".posts").click(main.hideSalt);
+	jQuery("#movbar").click(main.activeMovbar);
+	jQuery("#to_all").hover(main.toAllHover,main.toAllHover);
+	jQuery("#to_all").click(main.toActive);
+	jQuery("#tolid").click(main.toActive);
+	jQuery("body").click(main.bodyHide);
+	jQuery(".pcmmd").click(main.addComment);
+	jQuery(".plike").click(main.sendLike);
+	jQuery(".pshare").click(main.share);
+	jQuery("#gomood").click(main.sendMood);
+        jQuery("#getu").bind("keyup",main.getuser);
+        main.tox();
+        jQuery("img").lazyload({
+             placeholder : "/statics/images/grey.gif"
+         });
+});
+
+var main = {
+        sendMood:function() {
+          main.sendPost("/",jQuery("#topbr").serialize(true));
+        },
+	rebindLike:function() {
+		jQuery(".plike").unbind("click");
+		jQuery(".plike").click(main.sendLike);
+		jQuery(".plike_on").unbind("click");
+		jQuery(".plike_on").click(main.sendLikeOff);
+	},
+
+        toListRemove:function(id) {
+            var all = jQuery("#to").val().split(",");
+            var st = id;
+            var tmp = "";
+            for(var i=0;i<all.length;i++) {
+                if(all[i] != st) {
+                    if (tmp != "") tmp +=",";
+                    tmp += all[i];
+                }
+
+            }
+            jQuery("#to").val(tmp);
+        },
+        toListCheck:function(to) {
+            var all = jQuery("#to").val().split(",");
+            var st = to;
+            var tmp = "";
+            no_add = false;
+            for(var i=0;i<all.length;i++) {
+                if(all[i] == st) {
+                   
+                    no_add = true;
+                }
+
+            }
+            return no_add;
+        },
+        toListAdd:function(to) {
+            if(!main.toListCheck(to)) {
+                tmp = jQuery("#to").val();
+                if(tmp != "") tmp +=",";
+                tmp += to;
+                jQuery("#to").val(tmp);
+            }
+        },
+        tox:function() {
+            jQuery("#tox > a > span").unbind("click");
+            jQuery("#tox > a > span").click(function() {
+                id = jQuery(this).parent().attr("rel");
+                main.toListRemove(id);
+                jQuery(this).parent().hide("slow",function() {
+                    jQuery(this).remove();
+                    jQuery("#getu").focus();
+                });
+            });
+
+        }
+        ,
+        toList:function(data) {
+            var d;
+            jQuery("#tolist > a").unbind("click");
+            jQuery("#tolist").html("");
+            eval("d="+data);
+            count = 0;
+            for(var i=0;i<d.length;i++) {
+                if(!main.toListCheck(d[i]['id'])) {
+                    sel = "";
+                     if(count==0)sel=" class='selected' "
+                     jQuery("#tolist").append('<a'+sel+' href="#" rel="'+d[i]['id']+'">'+d[i]['name']+'</a>');
+                     count++;
+                }
+            }
+            seli = 0;
+            var pos = jQuery("#getu").position();
+
+            jQuery("#tolist").css({top:pos.top+25,left:pos.left});
+             if(jQuery("#tolist").css("display") == "none" && count > 0) jQuery("#tolist").slideDown();
+             jQuery("#tolist > a").click(function(){
+                 to = jQuery(this).attr("rel");
+                 name = jQuery(this).text();
+                 if(!main.toListCheck(to)) {
+                  main.toListAdd(to);
+                  jQuery("#tox").append('<a rel="'+to+'" style="margin-left:3px;">'+name+'<span>x</span></a>');
+                  jQuery("#tolist").slideUp();
+                  jQuery("#getu").val("");
+                   jQuery("#getu").focus();
+                  main.tox();
+                 }
+             });
+            
+        },
+	movText:function() {
+		jQuery(this).css("overflow","hidden");
+		t= jQuery(this).scrollTop();
+		if(jQuery(this).scrollTop() > 0) {
+			t = jQuery(this).scrollTop()+20;
+		}
+		h = (t)+jQuery(this).height();
+		if(h > 100) {
+			jQuery(this).css("overflow","visible");
+		} else {
+			jQuery(this).css({height:h});
+		}
+	},
+
+	share:function() {
+		val = jQuery(this).attr("rel").split(";")
+		main.modal("Paylaş",'<p style="text-align:left;"><label>Kısa URL:<br /><input type="text" value="'+val[0]+'" /><br /></label><label>URL:<br /><input type="text" value="'+val[1]+'" /></label></p>');
+	},
+
+	sendLike:function() {
+		jQuery(this).removeClass("plike").addClass("plike_on");
+		jQuery(this).text("Beğeniyi kaldır");
+		main.rebindLike();
+                main.sendPost("/root");
+	},
+	sendLikeOff:function() {
+
+		jQuery(this).removeClass("plike_on").addClass("plike");
+		jQuery(this).text("Beğen");
+		main.rebindLike();
+
+	},
+
+        sendKeyList:function(code) {
+
+
+           var liste = new Array();
+           
+           jQuery("#tolist > a").each(function() {
+
+               liste.push(jQuery(this));
+           });
+           if(liste.length > 0) {
+               if(code == 40) {
+                   seli++;
+                   if(liste.length > seli) {
+                       liste[seli-1].removeClass("selected");
+                       liste[seli].addClass("selected");
+                   } else if(liste.length == seli) {
+                       liste[seli-1].removeClass("selected");
+                       liste[0].addClass("selected");
+                       seli = 0;
+                   }
+               }else if(code == 13) {
+                   to = liste[seli].attr("rel");
+                   name=liste[seli].text();
+                   if(!main.toListCheck(to)) {
+                      main.toListAdd(to);
+                      jQuery("#tox").append('<a rel="'+to+'" style="margin-left:3px;">'+name+'<span>x</span></a>');
+                      jQuery("#tolist").slideUp();
+                      jQuery("#getu").val("");
+                       jQuery("#getu").focus();
+                      main.tox();
+                     }
+               }else if(code == 38) {
+                   
+                   if(seli - 1 >= 0) {
+                       liste[seli].removeClass("selected");
+                       liste[seli - 1].addClass("selected");
+                       seli--;
+                   } else {
+                       liste[0].removeClass("selected");
+                       liste[liste.length - 1].addClass("selected");
+                       seli=liste.length - 1;
+                   }
+               }
+           }
+        },
+
+        getuser:function(e) {
+            if(e.keyCode == 38 || e.keyCode == 40 || e.keyCode == 13) {
+                main.sendKeyList(e.keyCode);
+                return;
+            }
+            var val=jQuery("#getu").val();
+            main.sendPost("/","getU="+val,main.toList);
+        }
+        ,
+
+	bodyHide:function(e) {
+
+		var pos = jQuery("#body").position();
+		if(e.pageX < pos.left || e.pageX > pos.left + jQuery("#body").width() || e.pageY < pos.top) {
+			main.hideSalt();
+
+		}
+	}
+	,
+	sendPost:function(url,param,fu) {
+		var p = "";
+		var f = null;
+                //alert(param);
+		if(param != null)p = param;
+                
+                
+		if(fu != null) f = fu;
+		jQuery.ajax({
+                type: "POST",
+                url: url,
+                dataType:"html",
+                data:p,
+                success:f,
+                error:function (xhr, ajaxOptions, thrownError){
+                    main.ajaxError();
+                }
+            });
+	},
+	ajaxError:function() {
+		main.modal("Hata!","Sunucu beklenmeyen bir hata olu�turdu. L�tfen tekrar deneyiniz.")
+	},
+	toActive:function() {
+		jQuery("#tos").css("border","1px inset #ccc");
+		jQuery("#tos > input").focus();
+		jQuery("#tolid").css("display","none");
+		activeteToall = 1;
+	},
+	toAllHover:function() {
+		if(activeteToall == 0) {
+			if(jQuery("#tolid").css("display") == "none") {
+
+				var pos = jQuery("#tos > input").position();
+				jQuery("#tolid").css({top:pos.top,left:pos.left,display:'block'});
+
+			} else {
+				jQuery("#tolid").css("display","none");
+			}
+		}
+	},
+
+	modal:function(title,message) {
+	$( "#dialog-message" ).attr("title",title);
+	$( "#dialog-message" ).html(message);
+
+	$( "#dialog-message" ).dialog({
+			modal: true,
+			buttons: {
+				Ok: function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
+
+
+	},
+
+	
+	addComment:function() {
+		var parent = jQuery(this).parent().parent().parent().attr("id");
+		jQuery(".cigo").find("textarea").slideUp(500,function() {
+			jQuery(this).parent().find("button").hide("slow",function() {jQuery(this).remove()});
+			jQuery(this).remove();
+
+		});
+		if(jQuery('#'+parent).find("button").text() == '') {
+			jQuery("#"+parent).find(".cigo").css("display","none");
+			jQuery("#"+parent).find(".cigo").append(jQuery('<textarea id="cmd"></textarea><button class="btn">Deneme</button>'));
+			jQuery("#"+parent).find(".cigo").slideDown(500);
+                        jQuery("#"+parent).find(".cigo").find("button").click(function() {
+                            text = jQuery(this).parent().find("textarea").val();
+                            id = jQuery(this).parent().parent().parent().attr("id");
+                            main.sendPost("/","reply="+id+"&text="+text);
+                        });
+		}
+	},
+	activeMovbar:function() {
+		if(activeMovbar == 0) {
+			jQuery(this).css("background-color","#ffff00");
+			activeMovbar = 1;
+			jQuery(this).append(jQuery("<div id='slider'></div>"));
+			$( "#slider" ).slider({
+				value:5.0,
+				min: 0.0,
+				max: 10.0,
+				step: 0.1,
+				slide: function( event, ui ) {
+				$( "#mood" ).val( parseFloat(ui.value) );
+				$( "#inslider" ).text( parseFloat(ui.value) );
+
+				if(ui.value < 5) {
+					var u = 5/100;
+					var p = ui.value / u;
+					g = parseInt((200/100) * p);
+				}
+
+				if(ui.value > 5) {
+					var u = 5/100;
+					var p = (ui.value - 5) / u;
+					r = 200 - parseInt((200/100) * p);
+					if(ui.value > 7) {
+						b = 200 - r;
+						r = 120;
+						g =0;
+					}
+
+				}
+				if(ui.value == 5) {
+					r = 200;
+					g =200;
+				}
+				jQuery("#movbar").css("background-color","rgb("+r+","+g+","+b+")")
+			}
+			});
+			jQuery(".ui-slider-handle").append(jQuery("<div id='inslider'>5.0</div>"));
+		}
+	},
+
+	showSalt:function() {
+		activeteToall = 0;
+		jQuery("#tos").css("border","none");
+		if(jQuery("#movbar").css("display") == "none") jQuery("#movbar").slideDown("slow");
+		if(jQuery("#to_all").css("display") == "none") jQuery("#to_all").slideDown("slow");
+		if(jQuery(this).height() < 50) jQuery(this).animate({height:"50px"},1000);
+		jQuery("#to_all").unbind("hover");
+		jQuery("#to_all").hover(main.toAllHover,main.toAllHover);
+		activeMovbar = 0;
+
+	},
+	hideSalt:function() {
+		jQuery("#slider").remove();
+		if(jQuery("#movbar").css("display") != "none") {
+			jQuery("#movbar").hide("slow");
+			jQuery("#to_all").hide("slow");
+			jQuery("#movbar").css("background-color","#ccc");
+			activeMovbar = 0;
+		}
+		if(jQuery("#topbr > textarea").height() > 45) jQuery("#topbr > textarea").animate({height:"22px"},1000);
+	}
+}
+
+
+
+
+/* var timex;
 var updaters = new Array("t","p","g","l");
 var upchose = 0;
 var updateStart = 1;
@@ -429,7 +793,7 @@ main = {
 							scrollTop: $("#"+id).offset().top
 							}, 2000);
 					} else {
-						alert("Beklenmedik Bir Hata Oluştu");
+						alert("Beklenmedik Bir Hata OluÅŸtu");
 					}
 				});
 			});
@@ -446,7 +810,7 @@ main = {
                                         //token = all['token'];
                                         main.hadlex();
                                         if (all['response'] == "err") {
-						alert("Daha önce beyenmişsin.");
+						alert("Daha Ã¶nce beyenmiÅŸsin.");
 					} else {
 						parent.find(".like").remove();
 						animate_scroll = 1;
@@ -469,3 +833,4 @@ main = {
 			}
 		}
 }
+*/
