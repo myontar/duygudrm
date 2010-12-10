@@ -6,48 +6,22 @@
 {% endblock %}
 {% endif %}
 {% block body %}
-	<div class="leftContent">
-		<form action="/" method="post" id="postform">
-		<div id="mood_vi">0</div>
-		<div id="slider"></div>
+	<div class="posts">
 		
-		
-		{%if isuser%}
-		<input type="hidden" id="mood" value="5.0" name="mood" />
-			<textarea id="msg" name="msg"></textarea>
-			{% csrf_token %}
-			<button>yolla</button>
-		</form>
-		{% endif %}
-		<div id="allpost">
 			{% autoescape off %}
 			{% for i in html %}
 			<div id="{{i.id}}" class="post">
 			
 			
 			{{i.html}}</div>
-			<br class="clr" />
+			
 			{% endfor %}
 			{% endautoescape %}
-		</div>
+		
 	</div>
 	
-	<div class="rightContent">
-	{%if isuser%}
-		<div class="umenu">
-		<a href="/live">Şu Anda Neler oluyor</a>
-		<a href="/fallowed">Takip Ettiklerim ({{user.fallwoersCount}})</a>
-		<a href="/fallowers">Peşimdekiler ({{user.fallowedCount}})</a>
-		<a href="/messages">Mesajlar</a>
-		<a href="/likes">Beğendiklerim</a>
-		<a href="/comments">Yorumlarım</a>
-		</div>
-		{% endif %}
-	</div>
-	<br class="clr" />
-	<div id="gotToken">
-	{% csrf_token %}
-	</div>
+	
+	
 	<script>
 		timex = {{time}};
 		upchose = 3;

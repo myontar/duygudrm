@@ -64,14 +64,44 @@ def strto(val):
     return str(val)
 register.filter('strto', strto)
 
+
 @register.filter
-def likes(val,user):
+def likech(val,user):
     data = json.loads(val)
     lets_me = 0
-    for i in data:
-        if i.user == user.user:
-            lets_me = 1
-    return {'me':lets_me,'data':data,'count':len(data)}
+    if data != None:
+        for i in data:
+            print i
+            if i['username'] == str(user.user):
+                lets_me = 1
+    if lets_me == 1:
+        return "plike_on"
+    else:
+        return "plike";
+register.filter('likech', likech)
+
+
+@register.filter
+def likes(val,user):
+    
+    data = json.loads(val)
+    lets_me = 0
+    if data != None:
+        for i in data:
+            print i
+            if i['username'] == str(user.user):
+                lets_me = 1
+        text = ""
+        if lets_me == 1 and len(data) == 1:
+            text = text + "<a href='/' class='upro first'>Bunu Begendin</a>"
+        else:
+            if len(data) > 3 and lets_me == 0:
+                text = text +"<a class='upro first' href='/"+data[1]['rewrite']+"' >"+data[1]['username']+"</a>,<a href='/"+data[1]['rewrite']+"' class='upro'>"+data[1]['username']+"</a> ve <a href='#' rel='"+val+"'>" + str(len(data)-2) + " kisi</a> daha begendi."
+            elif len(data) > 3 and lets_me == 1:
+                text = text +"<a href='/"+str(user.rewrite)+"' class='upro first'>Sen</a> , <a href='/"+data[1]['rewrite']+"' class='upro'>"+data[1]['username']+"</a>  ve  <a href='#' rel='"+val+"'>" + str(len(data)-2) + " kisi</a> daha begendi."
+        return text;
+    
+    return len(data)
 register.filter('likes', likes)
 
     

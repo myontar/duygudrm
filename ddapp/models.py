@@ -63,10 +63,56 @@ def findAll(arr,key,val):
     return False
 
 
+def getLastPost(ahuser,user,id):
+    from django.template import Context, loader
+    asx = list()
+    a = Status.objects.filter(id__lt=id).order_by("-last_update")[0:10].all()
+    for z in a:
+
+        try:
+            ##print findAll(asx,"id",z.post.id)
+            st = findAll(asx,"id",z.id)
+            ##print str(st)
+            kr = int(z.last_update)
+            
+            #print str(st)
+            if st == False:
+                ##print z.post.id
+
+                print z.id
+                u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time}
+                #x.append(u2)
+                #print u2
+                t = loader.get_template("single_post.html")
+                c = {'x': u2,"user":user}
+
+                c =Context(c)
+                #print x
+                html = t.render(c)
+                #print html
+                #token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
+
+                #print html
+                u = {"id":z.id,"last_update":z.last_update,"html":html}
+                #print "burda"
+                asx.append(u)
+                #print "burda"
+
+        except Exception as inst:
+            print type(inst)
+            print inst
+
+
+
+    #asx.sort( key="last_update" )
+    asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
+    #print asx
+    return asx
 
 def getLive(timex,ahuser,user):
+    from django.template import Context, loader
     asx = list()
-    a = Status.objects.all().order_by("-last_update")[:20]
+    a = Status.objects.filter(last_update__gt=timex).order_by("-last_update")[0:10].all()
     for z in a:
         
         try:
@@ -79,52 +125,26 @@ def getLive(timex,ahuser,user):
                 #print str(st)
                 if st == False:
                     ##print z.post.id
-                    
-                    html = """<span><b>%s</b>""" % z.from_user
-                    if z.from_user != z.from_user:
-                        html = html + ("""(<b>%s</b> araciligi ile)""" % z.from_user)
-                    html = html + ("""</span> <div class="moodText">%s</div>
-                                    <div>
-                                        %s
-                                    </div>""" % (z.mood_point,z.text))
-                    
-                    x = z.likes()
-                    if z.likes() != None:
-                        if x['count'] > -1:
-                            html = html + str(x['likes'].from_user) 
-                            if x['count'] > 0 :
-                                html = html + " ve  "+str(x['count'])+" kisi daha begendi."
-                            html= html+"<br />"
-                        
-                    html= html +  u"""<a href="javascript:;" class="like">Begen</a> | <a href="javascript:;" class="commentSend">Yorum Yaz</a>"""
-                    if ahuser:
-                        if z.from_user == user.user:
-                           html = html + """ | <a href="javascript:;" class="dispost">Sil</a>           <br class="clr" />"""
-                        
-                    for i in z.getCommentsCount()['first']:
-                        html= html + """<div class="comm" id="""+i.id+"""">"""
-                        html= html + """<span>"""+str(i.from_user)+"""</span><br/>"""
-                        html= html + """<div>"""+i.text+"""</div>"""
-                        if ahuser:
-                            if i.from_user == user.user:
-                                html =  html + """<a href="javascript:;" class="discomment">sil</a>"""
-                        html= html + """</div>"""
-                    if z.getCommentsCount()['count'] >= 3:  
-                        for i in z.getCommentsCount()['last']:
-                            html= html + """<div class="comm" id="""+i.id+"""">"""
-                            html= html + """<span>"""+str(i.from_user)+"""</span><br/>"""
-                            html= html + """<div>"""+i.text+"""</div>"""
-                            if ahuser:
-                                if i.from_user == user.user:
-                                    html =  html + """<a href="javascript:;" class="discomment">sil</a>"""
-                            html= html + """</div>"""
-                   
-                        
-                    
+
+                    print z.id
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time}
+                    #x.append(u2)
+                    #print u2
+                    t = loader.get_template("single_post.html")
+                    c = {'x': u2,"user":user}
+
+                    c =Context(c)
+                    #print x
+                    html = t.render(c)
+                    #print html
+                    #token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
+
+                    #print html
                     u = {"id":z.id,"last_update":z.last_update,"html":html}
-                    #print "burda"                
+                    #print "burda"
                     asx.append(u)
-                    #print asx
+                    #print "burda"                
+                   
         except Exception as inst:
             print type(inst)
             print inst   
@@ -444,11 +464,19 @@ class Status(models.Model):
         k2.post_id = self.id
         k2.save()
         
-    def saveLike(self,user):
+    def saveLike(self,user,time):
         import json
         data = json.loads(self.like_list)
         data.append({'username':str(user.user),"rewrite":user.rewrite})
-    
+        self.like_list = json.dumps(data)
+        self.save()
+        k2 = userActions()
+        k2.from_user = user
+        k2.post = self
+        k2.times = time
+        k2.post_id = self.id
+        k2.save()
+
     def deleteLike(self,user):
         import json
         data = json.loads(self.like_list)

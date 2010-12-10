@@ -5,6 +5,10 @@ var token = 0;
 var seli = 0;
 var activeteToall = 0;
 var activeMovbar=0;
+var lazyLoad = 1;
+var lazyLoadC = 0;
+var lastBefore = 0;
+var action = 0;
 jQuery(document).ready(function() {
 	jQuery("#topbr > textarea").bind("click",main.showSalt);
 	jQuery("#topbr > textarea").bind("focus",main.showSalt);
@@ -26,6 +30,20 @@ jQuery(document).ready(function() {
         jQuery("img").lazyload({
              placeholder : "/statics/images/grey.gif"
          });
+
+         jQuery(window).scroll(function () {
+            var winh = jQuery(window).height();
+            var dscr = jQuery(document).scroll().height();
+            var rlhg = dscr - winh;
+            var crrn = jQuery(window).scrollTop();
+
+            if(rlhg - 200 < crrn && lazyLoadC < 3 && lazyLoad == 1) {
+                lazyLoadC++;
+                lazyLoad = 0;
+                main.lazyLoad();
+            }
+         });
+
 });
 
 var main = {
@@ -38,7 +56,32 @@ var main = {
 		jQuery(".plike_on").unbind("click");
 		jQuery(".plike_on").click(main.sendLikeOff);
 	},
+        lazyLoad:function() {
+          var Last = jQuery(".post:last").attr("id");
+          if(action == 0) {
+            param = "livelast="+Last;
+          } else if(action==1){
+            param = "userlast="+Last+"&puser="+puser;
+          } else if(action==2){
+            param = "userlast="+Last+"&self=1";
+          } else if(action==3){
+            param = "feed="+Last+"&feed="+feed_id;
+          }
+          param = param + "&nmode=live";
+          main.sendPost("/",param,function(data){
+              r = null;
+              eval("r="+data);
+              main.createNew(r);
+          });
+        },
+        createNew:function(data) {
 
+            for(var i=0;i<data.length;i++) {
+                html = jQuery("<div class='post' id='"+data[i]['id']+"'>"+data[i]['html']+"</div>");
+                jQuery(".posts").append(html);
+            }
+            lazyLoad = 1;
+        },
         toListRemove:function(id) {
             var all = jQuery("#to").val().split(",");
             var st = id;
@@ -143,7 +186,7 @@ var main = {
 		jQuery(this).removeClass("plike").addClass("plike_on");
 		jQuery(this).text("Beğeniyi kaldır");
 		main.rebindLike();
-                main.sendPost("/root");
+                main.sendPost("/","like="+jQuery(this).parent().parent().parent().attr("id"));
 	},
 	sendLikeOff:function() {
 

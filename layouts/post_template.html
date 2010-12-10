@@ -24,12 +24,17 @@
 							{{x.text|phtml }}
 
 							<div class="tools">
-								<span><a href="/{{x.from_user}}/{{x.rewrite}}">{{x.time|tdate}}</a> <a href="">birgo</a> hizmetinden</span> <a href="#comment" class="pcmmd">Yorum yaz</a><a href="#comment" class="plike">Begen</a><a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">Paylas</a>
+								<span><a href="/{{x.from_user}}/{{x.rewrite}}">{{x.time|tdate}}</a> <a href="">birgo</a> hizmetinden</span> <a href="#comment" class="pcmmd">Yorum yaz</a>{% if x.likes|likech:user == "plike" %}<a href="#comment" class="plike">Begen</a>{% else %} <a href="#comment" class="plike_on">Begeniyi Kaldir</a> {% endif %}<a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">Paylas</a>
 							</div>
 							<!--
-                                                        <div class="plikes">
+                                                        
 								<a href="" class="first">Mustafa Yontar</a> , <a href="" class="cuser">Begum C</a> ve <a href="#">10 kisi</a> daha begendi.
-							</div>-->
+							-->
+                                                        <div class="plikes">
+                                                        {% autoescape off %}
+                                                        {{ x.likes|likes:user }}
+                                                        {% endautoescape %}
+                                                        </div>
                                                         {% for i in x.comments|comments %}
 							<div class="comments">
 								{{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a> <a href="#comment" class="plike">Begen</a>

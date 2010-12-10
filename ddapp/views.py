@@ -307,10 +307,13 @@ def live(request):
     
     
     html = cache.get("live_html_%d" % u)
+    #html = None
+    #print html
     #return HttpResponse(str(html))
     if html == None:
         
         html = getLive(0,u,u2)
+        #print html
         cache.set("live_html_%d" % u,html,3600)
     
     return MakingRender("live.html",request,{'user':u2,"isuser":u,"html":html})
@@ -331,16 +334,17 @@ def user(request,x):
         return MakingRender("index.html",request)
     else:
         u2 = UserProfiles.objects.filter(user=request.user).get()
-        try:
-            print u2.id
-            file = handle_uploaded_file(request.FILES['file'],u2.user.username)
-            u2.avatar = file
-            u2.save()
-            return HttpResponse("ok")
-        except Exception as inst:
-                print "avatar errr"
-                print type(inst)
-                print inst
+        if 'file' in request.FILES:
+            try:
+                print u2.id
+                file = handle_uploaded_file(request.FILES['file'],u2.user.username)
+                u2.avatar = file
+                u2.save()
+                return HttpResponse("ok")
+            except Exception as inst:
+                    print "avatar errr"
+                    print type(inst)
+                    print inst
         uname = request.path.replace("/","")
         u = UserProfiles.objects.filter(rewrite=x).get()
         
@@ -453,144 +457,150 @@ def index(request):
                     response.set_cookie("token",makeToken(request,0),365)
                     print response
                     return response
-                t = request.POST['t']
-                print md(),t
-                
-                all = []
-                try:
-                    all = getLastest(t,u,request)
-                except:
-                    print "err"
-                    pass
-                #if len(all) == 0:
-                #    all = None
-                #print all
-                k = {'time':md(),"result":all[0],"token":all[1]}
-                print "##############################"
-                print json.dumps(k)
 
-                response =  HttpResponse(json.dumps(k))
-                response.set_cookie("token",makeToken(request,0))
-                return response
+                if 't' in request.POST:
+                    t = request.POST['t']
+                    print md(),t
 
-            except:
-                pass
-            
-            try:
-                rep = request.POST['getU'].lower()
-                
-                s = UserProfiles.objects.filter(rewrite__contains=rep).all()[:20]
-                r = list()
-                r.append({'id':"all",'name':"Herkese"})
-                for i in s:
-                    r.append({'id':i.rewrite,'name':str(i.user)})
-                                
-                return HttpResponse(json.dumps(r))
-                
-            except Exception as inst:
-                print type(inst)
-                #return HttpResponse( str(inst))
-                
-            
-            try:
-                reply = request.POST['reply']
-                s = Status.objects.filter(id=reply).get()
-                s.last_update = md()
-                s.save()
-                s.saveComment(u,request.POST['text'],md())
-                
-                
-                response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
-                response.set_cookie("token",makeToken(request,0))
-                return response
-            except Exception as inst:
-                pass
-                #return HttpResponse( str(inst))
-            try:
-                if controltoken(request) != 1:
-                   
-                    response =  HttpResponse(json.dumps({'response':'err',"page":"post","token":makeToken(request)}))
+                    all = []
+                    try:
+                        all = getLastest(t,u,request)
+                    except:
+                        print "err"
+                        pass
+                    #if len(all) == 0:
+                    #    all = None
+                    #print all
+                    k = {'time':md(),"result":all[0],"token":all[1]}
+                    print "##############################"
+                    print json.dumps(k)
+
+                    response =  HttpResponse(json.dumps(k))
                     response.set_cookie("token",makeToken(request,0))
-                    print response
                     return response
-                
-               
-                html = getLive(0,0,None)
-                cache.delete("live_html_0")
-                cache.set("live_html_0",html,3600)
-                post = request.POST['msg']
-                try:
-                    s = Status()
-                    s.from_user = u
-                    dd = datetime.datetime.now()
-                    s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                    s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                    s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
-                    s.mood_point = float(request.POST['mood'])
-                    s.save()
-                    k = userActions()
-                    k.from_user = u
-                    k.post = s
-                    k.times = md()
-                    k.save()
-                    #print u[0]
-                except Exception as e:
-                    s = Status()
-                    s.from_user = u
-                    dd = datetime.datetime.now()
-                    s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                    s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                    s.text = "buuuu"
-                    s.mood_point = float(request.POST['mood'])
-                    s.save()
-                    k = userActions()
-                    k.from_user = u
-                    k.post = s
-                    k.times = md()
-                    k.save()
-                    pass
-                response = HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
-                response.set_cookie("token",makeToken(request,0))
-                return response
-            except Exception as e:
-                print e
-                pass
-            
-            try:
-                post = request.POST['comment']
-                c= Comments.objects.filter(from_user = u , id=post)
-                if c.count() > 0:
-                    c.delete()
-                    return HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
-                else:
-                    return HttpResponse("err")
+
             except:
                 pass
-            
-            try:
-                post = request.POST['like']
-                s = Status.objects.filter(id=post).get()
+            if 'nmode' in request.POST:
+                if 'livelast' in request.POST:
+
+
+                    u = 0
+                    u2 = None
+                    if request.user.is_authenticated():
+                       u = 1
+                       u2 = UserProfiles.objects.filter(user=request.user).get()
+
+                    html = getLastPost(u,u2,request.POST['livelast'])
+                    return HttpResponse(json.dumps(html))
+            if 'getU' in request.POST:
+                try:
+                    rep = request.POST['getU'].lower()
+
+                    s = UserProfiles.objects.filter(rewrite__contains=rep).all()[:20]
+                    r = list()
+                    r.append({'id':"all",'name':"Herkese"})
+                    for i in s:
+                        r.append({'id':i.rewrite,'name':str(i.user)})
+
+                    return HttpResponse(json.dumps(r))
+
+                except Exception as inst:
+                    print type(inst)
+                #return HttpResponse( str(inst))
                 
-                sc = Likes.objects.filter(from_user = u,from_status=s).count()
-               
-                if sc == 0:
-                    
+            if 'reply' in request.POST:
+                try:
+                    reply = request.POST['reply']
+                    s = Status.objects.filter(id=reply).get()
                     s.last_update = md()
                     s.save()
-                    k = Likes()
-                    k.from_user = u
-                    k.from_status = s
-                    k.save()
-                    k2 = userActions()
-                    k2.from_user = u
-                    k2.post = s
-                    k2.times = md()
-                    k2.save()
+                    s.saveComment(u,request.POST['text'],md())
+
+
+                    response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                    response.set_cookie("token",makeToken(request,0))
+                    return response
+                except Exception as inst:
+                    pass
+                   #return HttpResponse( str(inst))
+
+            if 'msg' in request.POST:
+                try:
+                    if controltoken(request) != 1:
+
+                        response =  HttpResponse(json.dumps({'response':'err',"page":"post","token":makeToken(request)}))
+                        response.set_cookie("token",makeToken(request,0))
+                        print response
+                        return response
+
+
+                    html = getLive(0,0,None)
+                    cache.delete("live_html_0")
+                    cache.set("live_html_0",html,3600)
+                    post = request.POST['msg']
+                    try:
+                        s = Status()
+                        s.from_user = u
+                        dd = datetime.datetime.now()
+                        s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                        s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                        s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
+                        s.mood_point = float(request.POST['mood'])
+                        s.save()
+                        k = userActions()
+                        k.from_user = u
+                        k.post = s
+                        k.times = md()
+                        k.save()
+                        #print u[0]
+                    except Exception as e:
+                        s = Status()
+                        s.from_user = u
+                        dd = datetime.datetime.now()
+                        s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                        s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
+                        s.text = "buuuu"
+                        s.mood_point = float(request.POST['mood'])
+                        s.save()
+                        k = userActions()
+                        k.from_user = u
+                        k.post = s
+                        k.times = md()
+                        k.save()
+                        pass
+                    response = HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                    response.set_cookie("token",makeToken(request,0))
+                    return response
+                except Exception as e:
+                    print e
+                    pass
+            if 'comment' in request.POST:
+                try:
+                    post = request.POST['comment']
+                    c= Comments.objects.filter(from_user = u , id=post)
+                    if c.count() > 0:
+                        c.delete()
+                        return HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                    else:
+                        return HttpResponse("err")
+                except:
+                    pass
+            if 'like' in request.POST:
+                try:
+                    post = request.POST['like']
+                    s = Status.objects.filter(id=post).get()
+
+                    s.last_update = md()
+                    s.save()
+                    s.saveLike(u,md())
+
                     return HttpResponse("ok")
-                else:
+
+                except Exception as e:
+                    print e
                     return HttpResponse("err")
-            except:
-                pass
+
         
         u = UserProfiles.objects.filter(user=request.user).get()
        
