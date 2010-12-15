@@ -32,8 +32,16 @@
 				<div class="atch">{% trans "Ekle" %} : <a href="">{% trans "Fotoğraf" %}</a> | <a href="">{% trans "Diğer" %}</a> </div><div class="rbtn"><button class="btn" id="gomood">{% trans "Send" %}</button></div>
 				<br class="clear" />
 				<div class="posts">
+			{% autoescape off %}
+			{% for i in myStatusList %}
+			<div id="{{i.id}}" class="post">
+
+
+			{{i.html}}</div>
+
+			{% endfor %}
+			{% endautoescape %}
 			
-			{{user.myStatusList|generatepost:user}}
 		</div>
 				
 

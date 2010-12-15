@@ -1,5 +1,7 @@
 {% load i18n %}
-
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="tr" lang="tr">
@@ -73,7 +75,18 @@
 
 		<div id="dialog-message" title=""></div>
                 <div id="tolist"></div>
-                <script>token = '{{ttoken}}';</script>
+                <script>token = '{{ttoken}}';</script><form action="/i18n/setlang/" method="post">
+{% csrf_token %}
+<input name="next" type="hidden" value="/next/page/" />
+<select name="language">
+
+
+<option value="tr">tr</option>
+<option value="en">en</option>
+
+</select>
+<input type="submit" value="Go" />
+</form>
 </body>
 </html>
 

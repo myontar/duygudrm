@@ -15,8 +15,9 @@ def md():
     return time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
 def controltoken(request):
     token = cache.get("token_%s" % str(request.user.id))
-    print "check token"
-    print token
+
+    #print "check token"
+    #print token
     if token == None:
         return 0
     else:
@@ -26,8 +27,8 @@ def controltoken(request):
             else:
                 return 0
         if "token" in request.POST:
-            print "gelen"
-            print request.POST['token']
+            #print "gelen"
+            #print request.POST['token']
             if token == request.POST['token']:
                 return 1
             else:
@@ -41,7 +42,7 @@ def makeToken(request,fake=1):
         token = hashlib.sha224(str(md())+"_sikertirimUlansizi!!!"+str(request.user.id)).hexdigest()
         #request.COOKIE['token'] = token
         if fake == 0:
-            print "set cookie"
+            #print "set cookie"
             cache.set("token_%s" % str(request.user.id),token,180)
         #print cache.get("token_%s" % str(request.user.id))
         return token

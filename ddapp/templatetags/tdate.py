@@ -2,6 +2,7 @@
 
 from django.template import Library
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 import time
 
@@ -30,29 +31,35 @@ def tdate(tim):
     text = ""
     month = ["Ocak","Subat","Mart","Nisan","Mayis","Haziran","Temmuz","Agustos","Eylul","Ekim","Kasim","Aralik"]
     days = ['Pazartesi',"Sali","Carsamba","Persembe","Cuma"]
+    rtmhour = real.tm_hour
+    if len(str(real.tm_hour)) == 1:
+        rtmhour = "0"+str(real.tm_hour)
+    rtmnim = real.tm_min
+    if len(str(real.tm_min)) == 1:
+        rtmnim = "0"+str(real.tm_min)
     if now.tm_mon == real.tm_mon:
         if now.tm_mday == real.tm_mday:
-            if tm_hour == real.tm_hour:
-                if now.tm_min == real.tm_min:
-                    text = "Bir kac saniye once"
+            if tm_hour == rtmhour:
+                if now.tm_min == rtmnim:
+                    text = _("Bir kac saniye once")
                 else:
-                    text = "%d dakika once" % (now.tm_min - real.tm_min)
+                    text = _("%(dakika) dakika once") % {"dakika":now.tm_min - rtmnim}
             else:
-                text = "%d saat once" % (tm_hour - real.tm_hour)
+                text = _("%(saat) saat once") % {"saat":tm_hour - rtmhour}
         else:
            if now.tm_mday - real.tm_mday < 2:
-               text = "Dun %s" % (str(real.tm_hour)+":"+str(real.tm_min))
+               text = _("Dun %(saat)") % {"saat":str(rtmhour)+":"+str(rtmnim)}
            elif now.tm_mday - real.tm_mday < 7 and real.tm_wday < now.tm_wday:
-               text = "%Gecen Hafta %s %s" % (now.tm_mday - real.tm_mday,days[real.tm_wday],str(real.tm_hour)+":"+str(real.tm_min))
+               text = _("Gecen Hafta %(gun)s %(saat)s") % {"gun":days[real.tm_wday],"saat":str(rtmhour)+":"+str(rtmnim)}
            elif now.tm_mday - real.tm_mday < 7:
                
-               text = "%d Gun once %s" % (now.tm_mday - real.tm_mday,str(real.tm_hour)+":"+str(real.tm_min))
-               
+               text = _("%(gun)d Gun once %(saat)s") % {"gun": now.tm_mday - real.tm_mday,"saat" : str(rtmhour)+":"+str(rtmnim)}
+               #text = ""
            elif now.tm_mday - real.tm_mday > 13:
-               text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon],str(real.tm_hour)+":"+str(real.tm_min))
+               text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon],str(rtmhour)+":"+str(rtmnim))
         
     else:
-        text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon],str(real.tm_hour)+":"+str(real.tm_min))
+        text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon],str(rtmhour)+":"+str(rtmnim))
     
     return text
     

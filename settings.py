@@ -43,7 +43,7 @@ LANGUAGES = (
     ('tr', 'Turkish'),
     ('en', 'English'),
 )
-
+LOCALE_PATHS ="locale/"
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -76,6 +76,13 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
+)
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+    'django.core.context_processors.i18n'
+
 )
 
 MIDDLEWARE_CLASSES = (

@@ -9,6 +9,9 @@ var lazyLoad = 1;
 var lazyLoadC = 0;
 var lastBefore = 0;
 var action = 0;
+var internval = 0;
+var updaters = new Array("t","p","g","l");
+var upchose = 0;
 jQuery(document).ready(function() {
 	jQuery("#topbr > textarea").bind("click",main.showSalt);
 	jQuery("#topbr > textarea").bind("focus",main.showSalt);
@@ -21,10 +24,22 @@ jQuery(document).ready(function() {
 	jQuery("#to_all").click(main.toActive);
 	jQuery("#tolid").click(main.toActive);
 	jQuery("body").click(main.bodyHide);
+	jQuery(".pname").hover(main.mini,main.minihide);
 	jQuery(".pcmmd").click(main.addComment);
 	jQuery(".plike").click(main.sendLike);
+        jQuery(".plike_on").click(main.sendLikeOff);
 	jQuery(".pshare").click(main.share);
 	jQuery("#gomood").click(main.sendMood);
+	jQuery(".moreComment").click(main.moreComment);
+	jQuery(".fallow").click(main.fallow);
+	jQuery(".unfallow").click(main.unfallow);
+	jQuery("#pit").click(main.postit);
+	jQuery(".postit > div > a").click(main.postiter);
+	jQuery(".cpic").click(main.cpic);
+	jQuery(".deletepostit").click(main.postitex);
+        $(".postit").draggable();
+        //$(".postits").draggable({stop:mini.dragpostit});
+
         jQuery("#getu").bind("keyup",main.getuser);
         main.tox();
         jQuery("img").lazyload({
@@ -37,18 +52,34 @@ jQuery(document).ready(function() {
             var rlhg = dscr - winh;
             var crrn = jQuery(window).scrollTop();
 
-            if(rlhg - 200 < crrn && lazyLoadC < 3 && lazyLoad == 1) {
+            if(rlhg - 50 < crrn && lazyLoadC < 3 && lazyLoad == 1) {
                 lazyLoadC++;
                 lazyLoad = 0;
                 main.lazyLoad();
             }
          });
 
+         interval = setInterval(main.update,10000);
 });
 
 var main = {
+
+
+
+        moreComment:function() {
+          jQuery(this).parent().find(".comments").css("display","block");
+          jQuery(this).remove();
+        },
+        rebindPosts:function() {
+            jQuery(".pcmmd").unbind("click");
+            jQuery(".pshare").unbind("click");
+            jQuery(".pcmmd").click(main.addComment);
+            jQuery(".pshare").click(main.share);
+            jQuery(".moreComment").click(main.moreComment);
+            main.rebindLike();
+        },
         sendMood:function() {
-          main.sendPost("/",jQuery("#topbr").serialize(true));
+          main.sendPost("/",jQuery("#topbr").serialize(true),function() {main.update();});
         },
 	rebindLike:function() {
 		jQuery(".plike").unbind("click");
@@ -58,29 +89,63 @@ var main = {
 	},
         lazyLoad:function() {
           var Last = jQuery(".post:last").attr("id");
-          if(action == 0) {
+          if(action == 4) {
             param = "livelast="+Last;
           } else if(action==1){
             param = "userlast="+Last+"&puser="+puser;
-          } else if(action==2){
+          } else if(action==0){
             param = "userlast="+Last+"&self=1";
-          } else if(action==3){
+          } else if(action==2){
             param = "feed="+Last+"&feed="+feed_id;
           }
           param = param + "&nmode=live";
           main.sendPost("/",param,function(data){
               r = null;
               eval("r="+data);
-              main.createNew(r);
+              main.createNew(r,0);
           });
         },
-        createNew:function(data) {
-
+        update:function() {
+            e = new Date();
+            t = e.getTime() / 1000;
+            csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
+            upelement = updaters[upchose];
+            var elm;
+            elm = upelement+"="+timex+"&t_time="+t+"&csrfmiddlewaretoken="+csrfmiddlewaretoken;
+            //e = jQuery(elm).serialize(true);
+            main.sendPost("/",elm,function(data){
+              r = null;
+              eval("r="+data);
+              main.createNew(r['result'],1);
+              
+              timex = r['time'];
+            });
+        //	alert(elm);
+        },
+        createNew:function(data,p) {
+            if (p == null) p = 1;
             for(var i=0;i<data.length;i++) {
-                html = jQuery("<div class='post' id='"+data[i]['id']+"'>"+data[i]['html']+"</div>");
-                jQuery(".posts").append(html);
+               //alert(jQuery("#p_"+data[i]['id']).length);
+                if(jQuery("#p_"+data[i]['id']).length) {
+                    elm = jQuery("#p_"+data[i]['id']);
+                    jQuery("#p_"+data[i]['id']).css("display","none");
+                    jQuery("#p_"+data[i]['id']).remove();
+                    
+                } 
+
+                    html = jQuery("<div class='post' style='display:none;' id='p_"+data[i]['id']+"'>"+data[i]['html']+"</div>");
+                    
+                    if(p==1) {
+                        
+                        jQuery(".posts").prepend(html);
+                       
+                    }
+                    if(p==0)jQuery(".posts").append(html);
+                    jQuery("#p_"+data[i]['id']).slideDown("slow");
+                
             }
             lazyLoad = 1;
+            main.rebindPosts();
         },
         toListRemove:function(id) {
             var all = jQuery("#to").val().split(",");
@@ -163,6 +228,57 @@ var main = {
              });
             
         },
+        fallow:function() {
+            var t = jQuery(this);
+             main.sendPost("/","fallow="+jQuery(this).attr("rel"),function(){
+                t.removeClass("fallow").addClass("unfallow");
+                t.find("span").html("Unfallow");
+                t.unbind("click");
+                t.bind("click",main.unfallow);
+             });
+        },
+        postit:function() {
+            jQuery(".postit").show("slow");
+        },
+        minihide:function() {
+            var t = jQuery(this);
+            jQuery("#minii").remove();
+        },
+        mini:function() {
+          /*
+          user = jQuery(this).attr("href").split("/");
+          user = user[user.length-1];
+          var t = jQuery(this);
+          
+          main.sendPost("/mn/"+user,"",function(data){
+              
+              t.append(jQuery("<div id='minii'  style='width:250px;background:#fff;border:1px solid #ccc;position:absolute;margin-top:-5px;margin-left:20px;'>"+data+"</div>"));
+          });*/
+        },
+        postiter:function() {
+          text = jQuery(this).parent().find("textarea").val();
+          jQuery(this).css({background:'url(/statics/images/load-anim-16.gif) no-repeat',"text-indent":'22px',display:'block'});
+          jQuery(this).attr("disabled","disabled");
+          pos = jQuery(".postit").position();
+          main.sendPost("/","postit="+text+"&coord="+pos.left+","+pos.top,function(){});
+            jQuery(".postit").hide("slow");
+        },
+        postitex:function() {
+          text = jQuery(this).attr("href").replace("#","");
+          par = jQuery(this).parent().parent();
+         
+          main.sendPost("/","postitdel="+text,function(){});
+            par.hide("slow");
+            par.remove();
+        },
+        unfallow:function() {
+            var t = jQuery(this);
+             main.sendPost("/","fallow="+jQuery(this).attr("rel"),function(){
+                t.removeClass("unfallow").addClass("fallow").find("span").html("Fallow");
+                t.unbind("click");
+                t.bind("click",main.fallow);
+             });
+        },
 	movText:function() {
 		jQuery(this).css("overflow","hidden");
 		t= jQuery(this).scrollTop();
@@ -176,23 +292,42 @@ var main = {
 			jQuery(this).css({height:h});
 		}
 	},
+        cpic:function() {
+            csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
+            main.modal('Change Picture','<form method="post" action="" id="gopost" enctype="multipart/form-data"><input type="hidden" name="csrfmiddlewaretoken" value="'+csrfmiddlewaretoken+'" /><input type="file" name="file" id="file" /></form>',1,function() {jQuery("#gopost").submit()});
 
+        },
 	share:function() {
 		val = jQuery(this).attr("rel").split(";")
-		main.modal("Paylaş",'<p style="text-align:left;"><label>Kısa URL:<br /><input type="text" value="'+val[0]+'" /><br /></label><label>URL:<br /><input type="text" value="'+val[1]+'" /></label></p>');
+		main.modal("PaylaÅŸ",'<p style="text-align:left;"><label>KÄ±sa URL:<br /><input type="text" value="http://frmm.me'+val[0]+'" /><br /></label><label>URL:<br /><input type="text" value="http://www.frimemind.com'+val[1]+'" /></label></p>');
 	},
 
 	sendLike:function() {
-		jQuery(this).removeClass("plike").addClass("plike_on");
-		jQuery(this).text("Beğeniyi kaldır");
-		main.rebindLike();
-                main.sendPost("/","like="+jQuery(this).parent().parent().parent().attr("id"));
+
+                jQuery(this).css("background","url(/statics/images/load-anim-16.gif) no-repeat")
+
+		
+                main.sendPost("/","like="+jQuery(this).parent().parent().parent().attr("id"),function(){
+                    main.update();
+                    jQuery(this).removeClass("plike").addClass("plike_on");
+                    //jQuery(this).text("BeÄŸeniyi kaldÄ±r");
+                    
+                });
 	},
 	sendLikeOff:function() {
 
-		jQuery(this).removeClass("plike_on").addClass("plike");
-		jQuery(this).text("Beğen");
-		main.rebindLike();
+
+                jQuery(this).css("background","url(/statics/images/load-anim-16.gif) no-repeat");
+                t = jQuery(this);
+		//alert("ona1");
+                main.sendPost("/","unlike="+jQuery(this).parent().parent().parent().attr("id"),function(){
+                    //main.update();
+                    t.css("background","");
+                    t.removeClass("plike_on").addClass("plike");
+                    t.text("BeÄŸen");
+                    main.rebindLike();
+                });
+		
 
 	},
 
@@ -281,7 +416,7 @@ var main = {
             });
 	},
 	ajaxError:function() {
-		main.modal("Hata!","Sunucu beklenmeyen bir hata olu�turdu. L�tfen tekrar deneyiniz.")
+		main.modal("Hata!","Sunucu beklenmeyen bir hata oluşturdu. Lütfen tekrar deneyiniz.")
 	},
 	toActive:function() {
 		jQuery("#tos").css("border","1px inset #ccc");
@@ -302,20 +437,27 @@ var main = {
 		}
 	},
 
-	modal:function(title,message) {
+	modal:function(title,message,i,f) {
 	$( "#dialog-message" ).attr("title",title);
 	$( "#dialog-message" ).html(message);
+        if (i ==null) {
+            $( "#dialog-message" ).dialog({
+                            modal: true,
+                            buttons: {
+                                    Ok: function() {
+                                            $( this ).dialog( "close" );
+                                    }
+                            }
+                    });
 
-	$( "#dialog-message" ).dialog({
-			modal: true,
-			buttons: {
-				Ok: function() {
-					$( this ).dialog( "close" );
-				}
-			}
-		});
-
-
+        } else{
+            $( "#dialog-message" ).dialog({
+                            modal: true,
+                            buttons: {
+                                    Ok:f
+                            }
+                    });
+        }
 	},
 
 	
@@ -333,7 +475,11 @@ var main = {
                         jQuery("#"+parent).find(".cigo").find("button").click(function() {
                             text = jQuery(this).parent().find("textarea").val();
                             id = jQuery(this).parent().parent().parent().attr("id");
-                            main.sendPost("/","reply="+id+"&text="+text);
+                            jQuery(this).attr("disabled","disabled");
+                            jQuery(this).parent().find("textarea").attr("disabled","disabled");
+                            main.sendPost("/","reply="+id+"&text="+text,function() {
+                                main.update();
+                            });
                         });
 		}
 	},
@@ -782,7 +928,7 @@ main = {
 				datax.css("visiblity","hidden");
 				datax.append('<br class="clr" />');
 				jQuery("#allpost").prepend(datax);
-				jQuery("#"+data['id']).show("slow");
+				
 				main.bind();
 				if (animate_scroll) {
 					$('html, body').animate({
@@ -836,7 +982,7 @@ main = {
 							scrollTop: $("#"+id).offset().top
 							}, 2000);
 					} else {
-						alert("Beklenmedik Bir Hata OluÅŸtu");
+						alert("Beklenmedik Bir Hata OluÃ…Å¸tu");
 					}
 				});
 			});
@@ -853,7 +999,7 @@ main = {
                                         //token = all['token'];
                                         main.hadlex();
                                         if (all['response'] == "err") {
-						alert("Daha Ã¶nce beyenmiÅŸsin.");
+						alert("Daha ÃƒÂ¶nce beyenmiÃ…Å¸sin.");
 					} else {
 						parent.find(".like").remove();
 						animate_scroll = 1;

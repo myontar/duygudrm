@@ -14,6 +14,145 @@
 root { 
     display: block;
 }
+.propic {
+    width: 80px;
+    height: 80px;
+    padding:4px;
+    border:1px solid #ccc;
+    float:left;
+    margin:5px;
+}
+#info {
+    float:left;
+}
+#info h2 {
+    margin:0;
+    padding:0;
+    font-size:33px;
+    color:#003366;
+
+}
+#info .buts a span{
+    font-size: 14px;
+    margin:0;
+}
+#info .buts img {
+    margin-top:5px;
+    margin-left:-2px;
+    cursor: pointer;
+}
+#info .buts {
+    float:right;
+    background: none;
+    display: block;
+    margin:0;
+    
+    margin-bottom:35px;
+    font-size: 16px;
+    width:100px;
+
+}
+#info div a {
+    color:#fff;
+    text-decoration: none;
+    font-size:22px;
+}
+.fallow {
+    display:block;
+    line-height: 22px;
+    background: url(/statics/images/bt1.png) no-repeat;
+    width: 95px;
+    padding:4px;
+    text-align: left;
+    text-decoration: none;
+}
+.fallow span {
+    background: url(/statics/images/fallow-ico.png) no-repeat;
+    font-size: 14px;
+    font-family:arial;
+    color:#9EC133;
+    text-indent: 25px;
+    display: block;
+    font-weight: bold;
+}
+.postit {
+    width: 222px;
+    height:91px;
+    position: absolute;
+    top:300px;
+    background: none;
+    height:191px;
+    background: url(/statics/images/postit.png);
+    display: none;
+}
+.postits {
+    width: 222px;
+    height:91px;
+    position: absolute;
+    background: none;
+    height:191px;
+    background: url(/statics/images/postit.png);
+    
+}
+
+.postit textarea {
+   height:123px;
+   width: 160px;
+   background: transparent;
+   border: none;
+   outline: none;
+}
+.postit a,.postits a {
+    color:#666;
+}
+.postit div ,.postits div  {
+    margin-left:46px;
+    margin-top:29px;
+}
+.unfallow {
+    display:block;
+    line-height: 22px;
+    background: url(/statics/images/bt2.png) no-repeat;
+    width: 95px;
+    padding:4px;
+    text-align: left;
+    text-decoration: none;
+}
+.unfallow span {
+    background: url(/statics/images/unfallow-ico.png) no-repeat;
+    font-size: 14px;
+    font-family:arial;
+    color:#9EC133;
+    text-indent: 25px;
+    display: block;
+    font-weight: bold;
+}
+#info div {
+    float:left;
+    height: 44px;
+    color:#fff;
+    text-decoration: none;
+    font-family: arial;
+    font-size:8px;
+    font-weight: bold;
+    width: 44px;
+    text-align: center;
+    background:url(/statics/images/bga.png);
+    margin:4px;
+    padding:0;
+}
+#info div span {
+    font-size:8px;
+    position: relative;
+}
+.pic {
+    width: 80px;
+    height: 80px;
+    overflow:hidden;
+    text-align: center;
+    vertical-align: middle;
+}
+
 
 body {
 	font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
@@ -27,7 +166,7 @@ body {
 
 
 #header {
-	background:url(../images/bg.png);
+	background:url(/statics/images/bg.png);
 	height:54px;
 	text-align:left;
 }
@@ -47,7 +186,7 @@ body {
 
  }
  #search_but a{
-	background:url(../images/search_but.png) left;
+	background:url(/statics/images/search_but.png) left;
 	height:22px;
 	color:#fff;
 	line-height:22px;
@@ -65,7 +204,7 @@ body {
 	text-indent:6px;
 }
 #body {
-	background:#ffffff url(../images/body_top.png) no-repeat;
+	background:#ffffff url(/statics/images/body_top.png) no-repeat;
 	padding:8px;
 	padding-right:8px;
 	width:584px;
@@ -138,10 +277,17 @@ text-align: left;
 .plikes {
 	margin-top:5px;
 }
+.moreComment {
+    font-size:11px;
+    margin:10px;
+    color:#4978C7;
+    text-decoration:underline;
+    cursor:pointer;
+}
 .comments a{
 font-size:11px;
 margin-left:10px;
-color:#aaa;
+color:#4978C7;
 text-decoration:none;
 }
 .comments a:hover{
@@ -153,7 +299,7 @@ text-decoration:none;
 	margin-top:10px;
 	font-size:12px;
 	color:#aaa;
-	background:url(../images/comment.png) no-repeat;
+	background:url(/statics/images/comment.png) no-repeat;
 }
 .plikes , .plikes  a{
 	font-size:10px;
@@ -163,33 +309,33 @@ text-decoration:none;
 }
 a.first {
 	padding-left:16px;
-	background:url(../images/likes.png) no-repeat;
+	background:url(/statics/images/likes.png) no-repeat;
 }
 a.pshare {
 	margin-left:10px;
 	padding-left:16px;
-	background:url(../images/share_but.png) no-repeat;
+	background:url(/statics/images/share_but.png) no-repeat;
 	display:inline;
 }
 
 a.plike {
 	margin-left:10px;
 	padding-left:16px;
-	background:url(../images/like_but.png) no-repeat;
+	background:url(/statics/images/like_but.png) no-repeat;
 	display:inline;
 	color:#aaa;
 }
 a.plike_on{
 	margin-left:10px;
 	padding-left:16px;
-	background:url(../images/like_but_on.png) no-repeat;
+	background:url(/statics/images/like_but_on.png) no-repeat;
 	display:inline;
 	color:#4978C7;
 }
 a.pcmmd {
 	margin-left:20px;
 	padding-left:16px;
-	background:url(../images/comment_but.png) no-repeat;
+	background:url(/statics/images/comment_but.png) no-repeat;
 	display:inline;
 }
 
@@ -312,7 +458,7 @@ a.pcmmd {
 
 }
 #slider a {
-	background:url(../images/sprite.png);
+	background:url(/statics/images/sprite.png);
 	background-position:-16px -75px;
 	height:24px;
 	width:32px;
@@ -330,7 +476,7 @@ a.pcmmd {
 
 
 #movbar .ui-slider-handle , #movbar .ui-state-default  {
-	background:url(../images/slider.png);
+	background:url(/statics/images/slider.png);
 	height:24px;
 	width:32px;
 	border:none;
@@ -342,13 +488,13 @@ border:none;
 .right_box_fin {
 	width:150px;
 	height:20px;
-	background:#ffffff url(../images/right_bg_bot.png) no-repeat;
+	background:#ffffff url(/statics/images/right_bg_bot.png) no-repeat;
 	margin-bottom:15px;
 }
 .right_box {
 	width:146px;
 	padding:2px;
-	background:#ffffff url(../images/right_bg.png) no-repeat;
+	background:#ffffff url(/statics/images/right_bg.png) no-repeat;
 }
 #cmd {
 	width:400px;
@@ -357,7 +503,7 @@ border:none;
 #movbar {
 	width:582px;
 	height:34px;
-	background:#ccc url(../images/movbar.png) no-repeat;
+	background:#ccc url(/statics/images/movbar.png) no-repeat;
 	margin-bottom:4px;
 	display:none;
 }
@@ -380,7 +526,7 @@ float:right;
 	outline:none;
 }
 #search_but span{
-	background:url(../images/search_but.png) 0 right;
+	background:url(/statics/images/search_but.png) top right;
 	height:22px;
 	line-height:22px;
 	text-indent:-100;
@@ -394,7 +540,7 @@ float:right;
 
 	float:right;
 	margin-top:15px;
-	background:url(../images/search_bg.png) 0 left;
+	background:url(/statics/images/search_bg.png) top left;
 	padding:2px;
 	padding-top:4px;
 	padding-right:0;
@@ -402,7 +548,7 @@ float:right;
 }
 
 #sline {
-background:url(../images/search_bg.png) 0 right;
+background:url(/statics/images/search_bg.png) top right;
 float:right;
 width:5px;
 height:30px;
@@ -425,13 +571,13 @@ color:#ededed;
 	margin-top:-26px;
 	width:24px;
 	height:26px;
-	background:url(../images/user_pic.png);
+	background:url(/statics/images/user_pic.png);
 }
 #user {
 	float:right;
 	padding:2px;
 	margin-right:40px;
-	background:url(../images/user_bg.png);
+	background:url(/statics/images/user_bg.png);
 	width:188px;
 	height:26px;
 	margin-top:15px;

@@ -23,8 +23,8 @@ register = Library()
 
 
 
-REGEX_YouTube       = "(http:\/\/?(www\.|)+youtube\.com\/[a-zA-Z0-9\.\?\=\&]+)"
-REGEX_YouTube_id    = "(v=\w+)"
+REGEX_YouTube       = "((http:\/\/?(www\.|)+youtube\.com[^\s]*))"
+REGEX_YouTube_id    = "(v=[^\s]*)"
 
 REGEX_Google        = "(http:\/\/video\.+google\.com\/[a-zA-Z0-9\.\?\=\&\-\#]+)"
 REGEX_GoogleMaps    = "((http:\/\/maps\.google\.com[^\s]*))"
@@ -39,6 +39,7 @@ REGEX_Break         = "(http:\/\/(www.|)break.com\/)+((.?)+[a-zA-Z0-9\.\?\=\&\-\
 REGEX_PNG_JPG_GIF   = "(http:\/\/([^\s]+\.(jpg|gif|png)))"
 REGEX_AUDIO         = "(http:\/\/|www\.)(.*)\/(.*)(\.mp3|\.m4a)"
 REGEX_Izlesene      = "(http:\/\/?(www\.|)+izlesene\.com\/video\/[a-zA-Z0-9\.\-\?\=\&]+)\/([0-9]+)"
+REGEX_Tags          = "((#[^\s]*))"
 
 
 std_headers = {
@@ -105,13 +106,23 @@ class AutoEmbed():
 
         #Youtube
         youtube = data['youtube']
+        print youtube
         youtube_temp = []
+
+
+        tags = data['tags']
+        ttemp = []
+        for i in tags:
+            print i
+            import urllib
+            ttemp.append( {"url":i[0],"embed":'<a href="/search?'+urllib.urlencode({"q":i[0]})+'">'+i[0]+'</a>'})
+        tags = ttemp
         for i in youtube:
             regex = re.compile(REGEX_YouTube_id)
             id = regex.search(i)
             id = id.group(0).replace("v=","")
-            video_info_url = ('http://192.168.1.3/proxy?'+urllib.urlencode({"p":"http://www.youtube.com/get_video_info?&video_id=%s"                      % (id)}))
-            #print video_info_url
+            video_info_url = ('http://192.168.1.4/proxy?'+urllib.urlencode({"p":"http://www.youtube.com/get_video_info?&video_id=%s"                      % (id)}))
+            print video_info_url
             request = urllib2.Request(video_info_url, None, std_headers)
             video_info_webpage = urllib2.urlopen(request).read()
             video_info = parse_qs(urllib.unquote_plus(video_info_webpage))
@@ -123,7 +134,7 @@ class AutoEmbed():
                 info['title'] = video_info['title'][0].replace("ç","c")
                 print info['title']
                 r = random.randint(1,1123123123123);
-                info['thumbnail_url'] = 'http://192.168.1.3/imgproxy?'+urllib.urlencode({"p":video_info['thumbnail_url'][0]})
+                info['thumbnail_url'] = 'http://192.168.1.4/imgproxy?'+urllib.urlencode({"p":video_info['thumbnail_url'][0]})
                 print info['thumbnail_url']
                 info['length_seconds'] = video_info['length_seconds'][0]
                 print info['length_seconds']
@@ -223,7 +234,7 @@ class AutoEmbed():
                 image_tmp.append({'embed':'<div class="embed"><img src="'+i+'" /><br class="clr" /></div> ',"url":i})
         image = image_tmp
         
-        all = {"images":image,"gmap":google,'dailymotion':dailymotion,'vimeo':vimeo,"youtube":youtube}
+        all = {"images":image,"gmap":google,'dailymotion':dailymotion,'vimeo':vimeo,"youtube":youtube,"tags":tags}
         return all
 
     def clear(self,arr):
@@ -261,6 +272,9 @@ class AutoEmbed():
         regex = re.compile(REGEX_Izlesene)
         izlesene = regex.findall(self.parse_Text)
 
+        regex = re.compile(REGEX_Tags)
+        tags = regex.findall(self.parse_Text)
+
         images = self.clear(images)
         izlesene = self.clear(izlesene)
         youtube = self.clear(youtube)
@@ -271,7 +285,7 @@ class AutoEmbed():
         dailymotion = self.clear(dailymotion)
         
         
-        return {"dailymotion":dailymotion,"google":google,"youtube":youtube,"break":break_,"google_map":googlemap,"vimeo":vimeo,"images":images,"audio":audio,"izlesene":izlesene}
+        return {"tags":tags,"dailymotion":dailymotion,"google":google,"youtube":youtube,"break":break_,"google_map":googlemap,"vimeo":vimeo,"images":images,"audio":audio,"izlesene":izlesene}
     
 
         

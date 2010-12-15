@@ -23,13 +23,16 @@ from duygudrm.ddapp.models import *
 import datetime
 from django.contrib.auth.decorators import login_required
 import json , os ,sys
-import time , StringIO , Image
+import time , StringIO
+from PIL import Image
 import memcache
 from django.contrib.auth.models import User
 from duygudrm.ddapp.models import UserProfiles
 from oauthtwitter import OAuthApi
 from duygudrm.ddapp.extras.friendfeed import *
 import oauth.oauth as oauth
+from django.template import RequestContext
+
 cache = memcache.Client(['192.168.1.4:11211'])
 
 
@@ -44,7 +47,7 @@ def MakingRender(template,request=None,params={}):
     if request.META['HTTP_USER_AGENT'].lower().find("apple") > -1:
         if request.META['HTTP_USER_AGENT'].lower().find("qt/") > -1:
             template = "qt_"+template
-    return render_to_response(template, c)
+    return render_to_response(template, c, context_instance=RequestContext(request))
 
 
 def loginfacebook(request):
@@ -65,7 +68,7 @@ def loginfacebook(request):
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-us,en;q=0.5',
         }
-    #print request.GET['p']
+    ##printrequest.GET['p']
     urequest = urllib2.Request("https://graph.facebook.com/me?access_token="+access_token, None, std_headers)
     video_info_webpage = urllib2.urlopen(urequest).read()
 
@@ -108,15 +111,15 @@ def loginfacebook(request):
         
     else:
         u = pu.get()
-        print u.user.user_id
+        #printu.user.user_id
 
         userx = User.objects.filter(id=u.user.user_id).get()
-        print userx
+        #printuserx
         userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
         
         #account = get_account_from_hash(ux.hash)
         user = authenticate(username=userx.username,external=1)
-        print user
+        #printuser
         #user = ux
     #request.session
     login(request,user)
@@ -146,7 +149,8 @@ def twitterreturn(request):
             twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
             access_token = twitter.getAccessToken()
         except Exception as e:
-            print e
+            #printe
+            pass
 
 	#request.session['access_token'] = access_token.to_string()
 	#auth_user = authenticate(access_token=access_token)
@@ -164,10 +168,11 @@ def twitterreturn(request):
         try:
             twitter = oauthtwitter.OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA", access_token)
             userinfo = twitter.GetUserInfo()
-            print userinfo
+            #printuserinfo
         except:
+            pass
             # If we cannot get the user information, user cannot be authenticated
-            print "asdasd asd asd "
+            #print"asdasd asd asd "
 	# authentication was successful, use is now logged in
 	return HttpResponse("You are logged in")
 
@@ -177,10 +182,10 @@ def friendfeed(request):
                                 secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
                             )
         facelogin = fetch_oauth_request_token(FRIENDFEED_API_TOKEN)
-        #print facelogin
-        #print facelogin["key"]
+        ##printfacelogin
+        ##printfacelogin["key"]
         data = "|".join([facelogin["key"], facelogin["secret"]])
-        #print data
+        ##printdata
         #cookieutil = LilCookies(self.parent
         #                                        , "kaiytbluewyth8ceywpbtdrskcutcoatlceutlbueatbice")
         #cookieutil.set_cookie(name = 'FF_API_REQ_A', value = data, expires_days= 365*100)
@@ -222,7 +227,7 @@ def ffauth(request):
     #except:
 
     #    return "err2"
-    # @TODO : Burasý yapýlmasý lazým
+    # @TODO : BurasÄ± yapÄ±lmasÄ± lazÄ±m
     return HttpResponseRedirect("/registerask")
 
 def signin(request):
@@ -234,11 +239,12 @@ def signin(request):
 
 
 def md():
-    print datetime
+    #printdatetime
     try:
         dd = datetime.datetime.now()
     except:
-        print "eeeeee"
+        pass
+        #print"eeeeee"
     return time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
 def scale_dimensions(width, height, longest_side):
     if width > height:
@@ -253,16 +259,42 @@ def thumbnail(filename, size=(120, 120), output_filename=None):
     image = Image.open(filename)
     if image.mode not in ('L', 'RGB'):
         image = image.convert('RGB')
-    image = image.resize(size, Image.ANTIALIAS)
+    x,y = image.size
 
+    perc = 0
+    print x
+    print y
+    print filename
+    if x != y:
+        if x > y:
+            perc = 120 / (y / 100)
+            y = 120
+            x = (x/100) * perc
+        else:
+            perc = 120 / (x / 100)
+            x = 120
+            y = (y/100) * perc
+        size = (x,y)
+    x,y = size
+    image = image.resize(size, Image.ANTIALIAS)
+    if x != y:
+        if x > y:
+            print x
+            x = (x - 120) / 2
+            image = image.crop((x,0,120+x,120))
+        else:
+            y = (y - 120) / 2
+            image = image.crop((0,y,120,120+y))
+    print image.size
+    print x , y
     # get the thumbnail data in memory.
     if not output_filename:
         output_filename = filename
-    image.save(output_filename, image.JPEG)
+    image.save(output_filename, "JPEG")
     return output_filename
 
 def handle_uploaded_file2(f):
-    print f.name
+    #printf.name
     destination = open('statics/users/'+f.name, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
@@ -275,23 +307,26 @@ def handle_uploaded_file2(f):
 
 
 def handle_uploaded_file(f,username):
-    print f.name
-    print 'statics/users/avatar/'+username
-    e = str(f.name).split(".")[len(str(f.name).split("."))-1]
-    print 'statics/users/avatar/'+username+"."+e
+    #printf.name
+    #print'statics/users/avatar/'+username
+    e = ""
+    if os.path.exists('statics/users/avatar/main_'+username+"."+e):
+        os.remove('statics/users/avatar/main_'+username+"."+e)
+        os.remove('statics/users/avatar/'+username+".jpg")
     
-    try:
-        destination = open('statics/users/avatar/'+username+"."+e, 'ab+')
-        for chunk in f.chunks():
-            destination.write(chunk)
-        destination.close()
-        #i = open('statics/images/users/'+id+"_"+f.name, 'r')
-        #imagefile  = StringIO.StringIO(i.read())
-    except:
-        print "edeee"
-    print "geldik"
-    thumbnail('statics/users/avatar/'+username+"."+e,(120,120),'statics/users/avatar/'+username+".jpg")
-
+    e = str(f.name).split(".")[len(str(f.name).split("."))-1]
+#print'statics/users/avatar/'+username+"."+e
+    e = e.lower()
+    destination = open('statics/users/avatar/main_'+username+"."+e, 'ab+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
+    #i = open('statics/images/users/'+id+"_"+f.name, 'r')
+    #imagefile  = StringIO.StringIO(i.read())
+   
+    #print"geldik"
+    thumbnail('statics/users/avatar/main_'+username+"."+e,(120,120),'statics/users/avatar/'+username+".jpg")
+    os.remove('statics/users/avatar/main_'+username+"."+e)
     
     return '/home/django/duygudrm/statics/users/avatar/'+username
 def short(request,s):
@@ -307,13 +342,13 @@ def live(request):
     
     
     html = cache.get("live_html_%d" % u)
-    #html = None
-    #print html
+    html = None
+    ##printhtml
     #return HttpResponse(str(html))
     if html == None:
         
         html = getLive(0,u,u2)
-        #print html
+        ##printhtml
         cache.set("live_html_%d" % u,html,3600)
     
     return MakingRender("live.html",request,{'user':u2,"isuser":u,"html":html})
@@ -321,35 +356,52 @@ def live(request):
 def getsinglepost(request,x,y):
     z = Status.objects.filter(from_user__user__username=x,rewrite=y).get()
     asx = []
+    u2 = None
+    if request.user.is_authenticated():
+       u = 1
+       u2 = UserProfiles.objects.filter(user=request.user).get()
     u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
-            ##print z.post
+            ###printz.post
             #u.update('user',z.from_user})
             # u.user = z.from_user
 
     asx.append(u)
-    print asx
-    return MakingRender("profile_1.html",request,{'user':user,'post':asx})
+    #printasx
+    return MakingRender("profile_1.html",request,{'user':u2,'post':asx})
+
+def search(request):
+
+    if "q" in request.GET:
+        u2 = None
+        try:
+            u2 = UserProfiles.objects.filter(user=request.user).get()
+        except:
+            pass
+        
+        myStatusList = msearch(request.GET['q'],u2,request)
+        return MakingRender("search.html",request,{'user':u2,'myStatusList':myStatusList[0]})
 def user(request,x):
-    if not request.user.is_authenticated():
-        return MakingRender("index.html",request)
-    else:
-        u2 = UserProfiles.objects.filter(user=request.user).get()
+        u2 = None
+        try:
+            u2 = UserProfiles.objects.filter(user=request.user).get()
+        except:
+            pass
         if 'file' in request.FILES:
-            try:
-                print u2.id
-                file = handle_uploaded_file(request.FILES['file'],u2.user.username)
-                u2.avatar = file
-                u2.save()
-                return HttpResponse("ok")
-            except Exception as inst:
-                    print "avatar errr"
-                    print type(inst)
-                    print inst
+            handle_uploaded_file(request.FILES['file'],str(request.user))
+            return HttpResponseRedirect("/"+str(u2.rewrite))
+            
+
         uname = request.path.replace("/","")
         u = UserProfiles.objects.filter(rewrite=x).get()
+        postits = postit.objects.filter(user=u).all()
+        return MakingRender("profile.html",request,{'user':u,"me":u2,"postit":postits})
+        #return MakingRender("profile.html",request)
+
+def usermini(request,x):
+       
+        u = UserProfiles.objects.filter(rewrite=x).get()
         
-        takip = fallowers.objects.filter(from_user=u2,to_user=u).count()
-        return MakingRender("profile.html",request,{'user':u,"takip":int(takip),"me":u2})
+        return MakingRender("profile_2.html",request,{'user':u})
         #return MakingRender("profile.html",request)
 
 
@@ -376,10 +428,11 @@ def upload(request):
         cache.delete( h)
         #data = json.dump(data)
         cache.set(h,data,600)
-        print "############################ upload ok"
+        #print"############################ upload ok"
     except Exception as inst:
-            print type(inst)
-            print  str(inst)
+            pass
+            #printtype(inst)
+            #print str(inst)
             
     return HttpResponse("dememe")
 
@@ -391,8 +444,8 @@ def proxy(request):
     h = z.hexdigest()
     
     if os.path.exists("/home/django/duygudrm/statics/proxy/"+h):
-        return HttpResponse(open("/home/django/duygudrm/statics/proxy/"+h,"rb").read())
-    else:
+    #    return HttpResponse(open("/home/django/duygudrm/statics/proxy/"+h,"rb").read())
+    #else:
         import urllib2 , urllib
         std_headers = {
                 'User-Agent': 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.11) Gecko/20101019 Firefox/3.6.11',
@@ -400,7 +453,8 @@ def proxy(request):
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-us,en;q=0.5',
             }
-        print request.GET['p']
+        #printrequest.GET['p']
+        print urllib.unquote_plus(request.GET['p'])
         request = urllib2.Request(urllib.unquote_plus(request.GET['p']), None, std_headers)
         video_info_webpage = urllib2.urlopen(request).read()
         f = open("/home/django/duygudrm/statics/proxy/"+h,"a+")
@@ -424,7 +478,7 @@ def imgproxy(request):
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-us,en;q=0.5',
             }
-        print request.GET['p']
+        #printrequest.GET['p']
         request = urllib2.Request(request.GET['p'], None, std_headers)
         video_info_webpage = urllib2.urlopen(request).read()
         f = open("/home/django/duygudrm/statics/imgproxy/"+h,"a+")
@@ -438,9 +492,9 @@ def imgproxy(request):
 
 def avatarControl(request,avat):
     if os.path.exists("statics/users/avatar/"+avat):
-        return redirect("statics/users/avatar/"+avat+".jpg")
+        return HttpResponseRedirect("/statics/users/avatar/"+avat)
     else:
-        return redirect("statics/users/avatar/default.jpg")
+        return HttpResponseRedirect("/statics/users/avatar/default.jpg")
 @csrf_protect 
 def index(request):
     request.encoding = 'utf-8'
@@ -453,27 +507,29 @@ def index(request):
             try:
                 if controltoken(request) != 1:
                     
-                    response =  HttpResponse(json.dumps({'response':'err','oi':'poi',"token":""}))
-                    response.set_cookie("token",makeToken(request,0),365)
-                    print response
-                    return response
+                    #response =  HttpResponse(json.dumps({'response':'err','oi':'poi',"token":""}))
+                    #response.set_cookie("token",makeToken(request,0),365)
+                    #printresponse
+                    #return response
+                    pass
 
                 if 't' in request.POST:
                     t = request.POST['t']
-                    print md(),t
+                    #printmd(),t
 
                     all = []
                     try:
                         all = getLastest(t,u,request)
                     except:
-                        print "err"
+                        #print"err"
                         pass
+                    
                     #if len(all) == 0:
                     #    all = None
-                    #print all
+                    ##printall
                     k = {'time':md(),"result":all[0],"token":all[1]}
-                    print "##############################"
-                    print json.dumps(k)
+                    #print"##############################"
+                    #printjson.dumps(k)
 
                     response =  HttpResponse(json.dumps(k))
                     response.set_cookie("token",makeToken(request,0))
@@ -481,17 +537,49 @@ def index(request):
 
             except:
                 pass
+            if 'postitdel' in request.POST:
+                if request.user.is_authenticated():
+                       referer = request.META.get('HTTP_REFERER', '')
+                       if referer != '':
+                           ux = referer.split("/")[-1]
+                           uto = UserProfiles.objects.filter(user__username=ux).get()
+                           p = postit(user=uto,to_user=u,id=request.POST['postitdel']).delete()
+
+
+            if 'postit' in request.POST:
+                if request.user.is_authenticated():
+                       referer = request.META.get('HTTP_REFERER', '')
+                       if referer != '':
+                           ux = referer.split("/")[-1]
+                           uto = UserProfiles.objects.filter(user__username=ux).get()
+                           p = postit()
+                           p.user = uto
+                           p.to_user = u
+                           p.text = request.POST['postit']
+                           p.coord = request.POST['coord']
+                           if uto == u:
+                               p.onay = 1
+                           else:
+                               p.onay = 0
+                           p.save()
+                           k = {'token':makeToken(request,1),"ok":1}
+                           response =  HttpResponse(json.dumps(k))
+                           response.set_cookie("token",makeToken(request,0))
+                           return response
+                        
+
+
             if 'nmode' in request.POST:
                 if 'livelast' in request.POST:
 
 
-                    u = 0
-                    u2 = None
+                    us = 0
+                    u2s = None
                     if request.user.is_authenticated():
-                       u = 1
-                       u2 = UserProfiles.objects.filter(user=request.user).get()
+                       us = 1
+                       
 
-                    html = getLastPost(u,u2,request.POST['livelast'])
+                    html = getLastPost(us,u,request.POST['livelast'].replace("p_",""))
                     return HttpResponse(json.dumps(html))
             if 'getU' in request.POST:
                 try:
@@ -506,22 +594,26 @@ def index(request):
                     return HttpResponse(json.dumps(r))
 
                 except Exception as inst:
-                    print type(inst)
+                    pass
+                    #printtype(inst)
                 #return HttpResponse( str(inst))
                 
             if 'reply' in request.POST:
                 try:
-                    reply = request.POST['reply']
+                    reply = request.POST['reply'].replace("p_","")
                     s = Status.objects.filter(id=reply).get()
                     s.last_update = md()
                     s.save()
+                    u.user_comments = u.user_comments + 1
+                    u.save()
                     s.saveComment(u,request.POST['text'],md())
-
+                    
 
                     response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                     response.set_cookie("token",makeToken(request,0))
                     return response
                 except Exception as inst:
+                    print inst
                     pass
                    #return HttpResponse( str(inst))
 
@@ -531,13 +623,13 @@ def index(request):
 
                         response =  HttpResponse(json.dumps({'response':'err',"page":"post","token":makeToken(request)}))
                         response.set_cookie("token",makeToken(request,0))
-                        print response
+                        #printresponse
                         return response
 
 
-                    html = getLive(0,0,None)
-                    cache.delete("live_html_0")
-                    cache.set("live_html_0",html,3600)
+                    #html = getLive(0,0,None)
+                    #cache.delete("live_html_0")
+                    #cache.set("live_html_0",html,3600)
                     post = request.POST['msg']
                     try:
                         s = Status()
@@ -553,27 +645,15 @@ def index(request):
                         k.post = s
                         k.times = md()
                         k.save()
-                        #print u[0]
+                        ##printu[0]
                     except Exception as e:
-                        s = Status()
-                        s.from_user = u
-                        dd = datetime.datetime.now()
-                        s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                        s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
-                        s.text = "buuuu"
-                        s.mood_point = float(request.POST['mood'])
-                        s.save()
-                        k = userActions()
-                        k.from_user = u
-                        k.post = s
-                        k.times = md()
-                        k.save()
+                        print e
                         pass
                     response = HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                     response.set_cookie("token",makeToken(request,0))
                     return response
                 except Exception as e:
-                    print e
+                    #printe
                     pass
             if 'comment' in request.POST:
                 try:
@@ -588,13 +668,26 @@ def index(request):
                     pass
             if 'like' in request.POST:
                 try:
-                    post = request.POST['like']
+                    post = request.POST['like'].replace("p_","")
                     s = Status.objects.filter(id=post).get()
 
                     s.last_update = md()
                     s.save()
                     s.saveLike(u,md())
+                    u.user_likes = u.user_likes + 1
+                    u.save()
+                    return HttpResponse("ok")
 
+                except Exception as e:
+                    #printe
+                    return HttpResponse("err")
+            if 'unlike' in request.POST:
+                try:
+                    post = request.POST['unlike'].replace("p_","")
+                    s = Status.objects.filter(id=post).get()
+                    s.deleteLike(u)
+                    u.user_likes = u.user_likes - 1
+                    u.save()
                     return HttpResponse("ok")
 
                 except Exception as e:

@@ -84,7 +84,7 @@ def getLastPost(ahuser,user,id):
                 #x.append(u2)
                 #print u2
                 t = loader.get_template("single_post.html")
-                c = {'x': u2,"user":user}
+                c = {'x': u2,"user":user,"userlogin":ahuser}
 
                 c =Context(c)
                 #print x
@@ -113,6 +113,8 @@ def getLive(timex,ahuser,user):
     from django.template import Context, loader
     asx = list()
     a = Status.objects.filter(last_update__gt=timex).order_by("-last_update")[0:10].all()
+    
+
     for z in a:
         
         try:
@@ -125,10 +127,11 @@ def getLive(timex,ahuser,user):
                 #print str(st)
                 if st == False:
                     ##print z.post.id
-
-                    print z.id
-                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time}
+                    print "###############################################"
+                    print ahuser
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ahuser}
                     #x.append(u2)
+                    #print u2
                     #print u2
                     t = loader.get_template("single_post.html")
                     c = {'x': u2,"user":user}
@@ -159,88 +162,126 @@ def getLive(timex,ahuser,user):
 def getLastest(timex,user,request):
     from django.template import Context, loader
 
-    s = []
-    s.append(user)
-    #print user.user
-    for k in user.fallowers():
-        s.append(k.to_user)
-    ##print s
-    a = userActions.objects.filter(from_user__in=s).all()
+   
+    a = Status.objects.raw("""SELECT
+u.* , u2.* , s.*
+FROM
+ddapp_status as s INNER JOIN
+ddapp_userprofiles as u2 on u2.id = s.from_user_id
+LEFT JOIN auth_user as u on u.id = u2.user_id ,
+ddapp_useractions as a
+WHERE
+((s.id = a.post_id and a.from_user_id = %s) or (a.post_id = s.id and s.from_user_id = %s)) and s.last_update > %s   group by s.id ORDER BY s.last_update desc
+
+""", [user.id,user.id,timex])
+
+    ulogin = 1
     #,post=hidePost.objects.filter(from_user=self.user).all()
     asx = list()
     for z in a:
         
         try:
-            ##print findAll(asx,"id",z.post.id)
-            st = findAll(asx,"id",z.post.id)
+            #try:
+                ##print findAll(asx,"id",z.post.id)
+            
             ##print str(st)
-            kr = int(z.post.last_update)
-            sss = int(timex)
-            token = None
-            if kr > sss:
+            
                 #print str(st)
-                if st == False:
+               
                     ##print z.post.id
-                    
-                    u2 = {"id":z.post.id,"rewrite":z.post.rewrite,"text":  z.post.text,"last_update":z.post.last_update,"from_user":z.post.from_user,"user":z.post.from_user,"attachments":z.post.attachments,"mood":z.post.mood_point,"comments":z.post.comment_list,"time":z.post.send_time}
-
+                    #x = []
+                    #print z.username
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.username,"user":z.username,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ulogin}
+                    #x.append(u2)
                     t = loader.get_template("single_post.html")
+                    c = {'x': u2,"user":user,"userlogin":ulogin}
 
-                    c = {'x': u2,"user":user}
                     c =Context(c)
+                    #print x
                     html = t.render(c)
                     #token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
-                    #print html
-                    u = {"id":z.post.id,"last_update":z.post.last_update,"html":html}
-                    #print "burda"                
-                    asx.append(u)
-                    #print asx
-        except Exception as inst:
-            print "errrrrrrrrr"
-            print type(inst)
-            print inst   
-            #print "err"
-            
-    a = Status.objects.filter(from_user=user.user).all()
-    for z in a:
-        
-        #try:
-            ##print findAll(asx,"id",z.post.id)
-        st = findAll(asx,"id",z.id)
-        ##print str(st)
-        kr = int(z.last_update)
-        sss = int(timex)
-        if kr > sss:
-            #print str(st)
-            if st == False:
-                ##print z.post.id
-                #x = []
-                u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point}
-                #x.append(u2)
-                t = loader.get_template("single_post.html")
-                c = {'x': u2,"user":user}
-               
-                c =Context(c)
-                #print x
-                html = t.render(c)
-                token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
 
-                #print html
-                u = {"id":z.id,"last_update":z.last_update,"html":html}
-                #print "burda"
-                asx.append(u)
-                    #print asx
-        #except Exception as inst:
-        #    print type(inst)
-        #    print inst
-        
-        
+                    #print html
+                    u = {"id":z.id,"last_update":z.last_update,"html":html}
+                    #print "burda"
+                    asx.append(u)
+                        #print asx
+            #except Exception as inst:
+            #    print type(inst)
+            #    print inst
+    
+        except Exception as e:
+            print e
+            #print "err"
+    
     r = csrf(request)
     token = makeToken(request)
     #asx.sort( key="last_update" )
     asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
     #print asx
     return [asx,token]
+import re
+def htc(m):
+    return chr(int(m.group(1),16))
+def urldecode(url):
+    rex=re.compile('%([0-9a-hA-H][0-9a-hA-H])',re.M)
+    return rex.sub(htc,url) 
+def msearch(query,user,request):
+    from django.template import Context, loader
+
+    print urldecode(query)
+    a = Status.objects.filter(text__contains=urldecode(query)).all()
+
+    ulogin = 1
+    #,post=hidePost.objects.filter(from_user=self.user).all()
+    asx = list()
+    for z in a:
+        print z
+        try:
+            #try:
+                ##print findAll(asx,"id",z.post.id)
+
+            ##print str(st)
+
+                #print str(st)
+
+                    ##print z.post.id
+                    #x = []
+                    #print z.username
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    #x.append(u2)
+                    print u2
+                    t = loader.get_template("single_post.html")
+                    c = {'x': u2,"user":user,"userlogin":ulogin}
+
+                    c =Context(c)
+                    #print x
+                    html = t.render(c)
+                    #token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
+
+                    #print html
+                    u = {"id":z.id,"last_update":z.last_update,"html":html}
+                    print u
+                    #print "burda"
+                    asx.append(u)
+                        #print asx
+            #except Exception as inst:
+            #    print type(inst)
+            #    print inst
+
+        except Exception as e:
+            print e
+            #print "err"
+
+    r = csrf(request)
+    token = makeToken(request)
+    #asx.sort( key="last_update" )
+    asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
+    #print asx
+    return [asx,token]
+
+
+
 
 
 class UserProfiles(models.Model):
@@ -257,6 +298,8 @@ class UserProfiles(models.Model):
     bio             = models.CharField(max_length=255,default='',null=True)
     user_fallow     = models.IntegerField(default=0,null=True)
     user_fallower   = models.IntegerField(default=0,null=True)
+    user_comments   = models.IntegerField(default=0,null=True)
+    user_likes      = models.IntegerField(default=0,null=True)
     user_msg_alert  = models.SmallIntegerField(null=True,default=0)
     user_add_alert  = models.SmallIntegerField(null=True,default=0)
     user_not_alert  = models.SmallIntegerField(null=True,default=0)
@@ -268,6 +311,20 @@ class UserProfiles(models.Model):
     def fallwoersCount(self):
         a = fallowers.objects.filter(from_user = self).count()
         return int(a)
+
+    def allcount(self):
+        z = Status.objects.filter(from_user = self).count()
+
+        print z
+        return z
+
+    def moodcount(self):
+        print "##################################################"
+        z = Status.objects.filter(mood_point__gt = 5 , from_user = self).count()
+        
+        print z
+        return z
+
     def fallowed(self):
         a = fallowers.objects.filter(to_user = self).all()
         return a
@@ -298,7 +355,7 @@ class UserProfiles(models.Model):
         
     def getSelf(self):
         asx = []
-        a = Status.objects.filter(from_user=self).all()
+        a = Status.objects.filter(from_user=self).order_by("-last_update")[0:50].all()
         for z in a:
             
             try:
@@ -358,6 +415,11 @@ class UserProfiles(models.Model):
          
         return asx
 
+class tags(models.Model):
+    tag     = models.CharField(max_length=40,default='',null=True)
+
+
+
 
 class userLoginService(models.Model):
     user            = models.ForeignKey(UserProfiles)
@@ -398,6 +460,25 @@ class fallowers(models.Model):
         a = Status.objects.filter(from_user =self.to_user).order_by("last_update").all()
         return a
 
+class perms(models.Model):
+    user            = models.ForeignKey(UserProfiles)
+    feed            = models.SmallIntegerField(default=1)
+    postit          = models.SmallIntegerField(default=1)
+    freq            = models.SmallIntegerField(default=1)
+    freq            = models.SmallIntegerField(default=1)
+    dm              = models.SmallIntegerField(default=1)
+    flw             = models.SmallIntegerField(default=1)
+    
+
+class postit(models.Model):
+    user            = models.ForeignKey(UserProfiles)
+    to_user         = models.ForeignKey(UserProfiles,related_name="tototo")
+    text            = models.CharField(max_length=100)
+    coord           = models.CharField(max_length=100)
+    onay            = models.SmallIntegerField(default=0)
+
+
+
 class shorturi(models.Model):
     short           = models.CharField(max_length=100)
     user            = models.CharField(max_length=200)
@@ -427,7 +508,7 @@ class Status(models.Model):
 
             #text =  text.decode("utf-8")
 
-            tmp = rewrite.lower() #.replace("ý","i").replace("ç","c").replace("þ","s").replace("ö","o").replace("ü","u").replace("ð","g")
+            tmp = rewrite.lower() #.replace("Ä±","i").replace("Ã§","c").replace("ÅŸ","s").replace("Ã¶","o").replace("Ã¼","u").replace("ÄŸ","g")
             #tmp = text.lower()
 
             re_dashify = re.compile(r'[-\s]+')
@@ -483,7 +564,7 @@ class Status(models.Model):
         tmp_data = []
         save = 0
         for i in data:
-            if i.username != str(user.user):
+            if i['username'] != str(user.user):
                 tmp_data.append(i)
             else:
                 save = 1

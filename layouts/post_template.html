@@ -2,18 +2,18 @@
 {% load tdate %}
 {% load generateTool%}
 {% load html %}
-
+{% load i18n %}
 {%for x in posts %}
 
 
 
-                        <div class="post" id="{{x.id}}">
+                        <div class="post" id="p_{{x.id}}">
 						<div class="post_image">
 							<div class="pimage">
 							{% if x.user != x.from_user %}
-                                                            <img src="/statics/users/avatar/{{x.from_user}}.jpg" width="48" />
+                                                            <img src="/avatar/{{x.from_user}}.jpg" width="48" />
                                                          {% else %}
-                                                             <img src="/statics/users/avatar/{{x.user}}.jpg" width="48" />
+                                                             <img src="/avatar/{{x.user}}.jpg" width="48" />
                                                          {% endif %}
 							</div>
 						</div>
@@ -24,7 +24,15 @@
 							{{x.text|phtml }}
 
 							<div class="tools">
-								<span><a href="/{{x.from_user}}/{{x.rewrite}}">{{x.time|tdate}}</a> <a href="">birgo</a> hizmetinden</span> <a href="#comment" class="pcmmd">Yorum yaz</a>{% if x.likes|likech:user == "plike" %}<a href="#comment" class="plike">Begen</a>{% else %} <a href="#comment" class="plike_on">Begeniyi Kaldir</a> {% endif %}<a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">Paylas</a>
+								<span><a href="/{{x.from_user}}/{{x.rewrite}}">{{x.time|tdate}}</a> <a href="">birgo</a> hizmetinden</span>
+                                                                {% if userlogin %}
+                                                                <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% if x.likes|likech:user == "plike" %}
+                                                                <a href="#comment" class="plike">{% trans "Begen" %}</a>
+                                                                {% else %}
+                                                                <a href="#comment" class="plike_on">{% trans "Begeniyi Kaldir" %}</a>
+                                                                {% endif %}
+                                                                {% endif %}<a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Paylas" %}</a>
 							</div>
 							<!--
                                                         
@@ -32,15 +40,38 @@
 							-->
                                                         <div class="plikes">
                                                         {% autoescape off %}
+                                                        
                                                         {{ x.likes|likes:user }}
                                                         {% endautoescape %}
                                                         </div>
+                                                        {%  if x.comments|commentsc < 5 %}
                                                         {% for i in x.comments|comments %}
 							<div class="comments">
-								{{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a> <a href="#comment" class="plike">Begen</a>
+								{{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a> 
 							</div>
+
                                                         {% endfor %}
-						
+                                                        {% else %}
+
+                                                            {% for i in x.comments|commentst %}
+
+                                                                {% if i.t == 3 %}
+
+                                                                {% for z in x.comments|commentsx %}
+                                                                <div class="comments" style="display:none;">
+								{{z.text}} <a href="/{{z.rewrite}}">{{z.username}}</a>
+                                                                </div>
+
+                                                                {% endfor %}
+
+                                                                <div class="moreComment">{{i.count}} {% blocktrans  %} daha yorum var {% endblocktrans %}</div>
+                                                                {% endif %}
+                                                                <div class="comments">
+                                                                        {{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a>
+                                                                </div>
+
+                                                            {% endfor %}
+                                                        {% endif %}
 						<div class="cigo"></div>
 						</div>
 						<br class="clear" />

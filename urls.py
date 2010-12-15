@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     (r'^twitter_return$', "duygudrm.ddapp.views.twitterreturn"),
 
     (r'^proxy$', 'duygudrm.ddapp.views.proxy'),
+    (r'^search$', 'duygudrm.ddapp.views.search'),
     (r'^imgproxy$', 'duygudrm.ddapp.views.imgproxy'),
 
     #(r'^logout$',"duygudrm.ddapp.views.logout"),
@@ -33,11 +34,14 @@ urlpatterns = patterns('',
     (r'^statics/(?P<path>.*)$', 'django.views.static.serve',{'document_root': 'statics/'}),
     # Uncomment the next line to enable the admin:
     (r'^i18n/', include('django.conf.urls.i18n')),
+    
     # Uncomment the next line to enable the admin:
     #(r'^admin/', include(admin.site.urls)),
+    (r'^mn/(.*)$',"duygudrm.ddapp.views.usermini"),
     (r'^admin_001/', include(admin.site.urls)),
     (r'^s/(.*)$',"duygudrm.ddapp.views.short"),
     (r'^(.*)/(.*)$',"duygudrm.ddapp.views.getsinglepost"),
     (r'^(.*)$',"duygudrm.ddapp.views.user"),
+    
     
 )
