@@ -357,6 +357,7 @@ def getsinglepost(request,x,y):
     z = Status.objects.filter(from_user__user__username=x,rewrite=y).get()
     asx = []
     u2 = None
+    x2 = z.from_user
     if request.user.is_authenticated():
        u = 1
        u2 = UserProfiles.objects.filter(user=request.user).get()
@@ -367,7 +368,48 @@ def getsinglepost(request,x,y):
 
     asx.append(u)
     #printasx
-    return MakingRender("profile_1.html",request,{'user':u2,'post':asx})
+    return MakingRender("profile_1.html",request,{'me':u2,"user":x2,'post':asx})
+
+def getcomment(request,x):
+    z = UserProfiles.objects.filter(user__username=x).get()
+    asx = []
+    u2 = None
+    x2 = z
+    if request.user.is_authenticated():
+       u = 1
+       u2 = UserProfiles.objects.filter(user=request.user).get()
+    u = list_comments(x,request)
+            ###printz.post
+            #u.update('user',z.from_user})
+            # u.user = z.from_user
+
+    asx = u
+    print asx
+    #printasx
+    return MakingRender("profile_1.html",request,{'me':u2,"user":x2,'post':asx})
+
+
+
+def getlike(request,x):
+    z = UserProfiles.objects.filter(user__username=x).get()
+    asx = []
+    u2 = None
+    x2 = z
+    if request.user.is_authenticated():
+       u = 1
+       u2 = UserProfiles.objects.filter(user=request.user).get()
+    u = list_likes(x,request)
+            ###printz.post
+            #u.update('user',z.from_user})
+            # u.user = z.from_user
+
+    asx = u
+    print asx
+    #printasx
+    return MakingRender("profile_1.html",request,{'me':u2,"user":x2,'post':asx})
+
+
+
 
 def search(request):
 

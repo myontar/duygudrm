@@ -24,14 +24,14 @@
 <body>
 	<div id="header">
 		<div class="wrapper">
-			<div id="logo"> <img src="statics/images/logo.png"  alt="moodlee" /></div>
+			<div id="logo"> <img src="/statics/images/logo.png"  alt="moodlee" /></div>
 			<div id="sline"></div>
 			<div id="search">
 				<input type="text" id="search_txt" />
 				<div id="search_but"><a href="#">{% trans "Ara" %}</a><span>.</span></div>
 			</div>
 			<div id="user">
-				<div id="user_image"><img src="statics/images/u.jpg" /></div>
+				<div id="user_image"><img src="/statics/images/u.jpg" /></div>
 				<div id="user_mask"></div>
 				<div id="user_name">Mustafa Yontar</div>
 			</div>
@@ -77,7 +77,7 @@
                 <div id="tolist"></div>
                 <script>token = '{{ttoken}}';</script><form action="/i18n/setlang/" method="post">
 {% csrf_token %}
-<input name="next" type="hidden" value="/next/page/" />
+<input name="next" type="hidden" value="/" />
 <select name="language">
 
 

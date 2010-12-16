@@ -43,12 +43,12 @@ def tdate(tim):
                 if now.tm_min == rtmnim:
                     text = _("Bir kac saniye once")
                 else:
-                    text = _("%(dakika) dakika once") % {"dakika":now.tm_min - rtmnim}
+                    text = _("%(dakika)s dakika once") % {"dakika":now.tm_min - rtmnim}
             else:
-                text = _("%(saat) saat once") % {"saat":tm_hour - rtmhour}
+                text = _("%(saat)s saat once") % {"saat":str(tm_hour - int(rtmhour))}
         else:
            if now.tm_mday - real.tm_mday < 2:
-               text = _("Dun %(saat)") % {"saat":str(rtmhour)+":"+str(rtmnim)}
+               text = _("Dun %(saat)s") % {"saat":str(rtmhour)+":"+str(rtmnim)}
            elif now.tm_mday - real.tm_mday < 7 and real.tm_wday < now.tm_wday:
                text = _("Gecen Hafta %(gun)s %(saat)s") % {"gun":days[real.tm_wday],"saat":str(rtmhour)+":"+str(rtmnim)}
            elif now.tm_mday - real.tm_mday < 7:

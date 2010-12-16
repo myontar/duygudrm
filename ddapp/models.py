@@ -272,6 +272,48 @@ def msearch(query,user,request):
         except Exception as e:
             print e
             #print "err"
+    a = Status.objects.filter(comment_list__contains=urldecode(query)).all()
+
+    ulogin = 1
+    #,post=hidePost.objects.filter(from_user=self.user).all()
+    
+    for z in a:
+        print z
+        try:
+            #try:
+                ##print findAll(asx,"id",z.post.id)
+
+            ##print str(st)
+
+                #print str(st)
+
+                    ##print z.post.id
+                    #x = []
+                    #print z.username
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    #x.append(u2)
+                    print u2
+                    t = loader.get_template("single_post.html")
+                    c = {'x': u2,"user":user,"userlogin":ulogin}
+
+                    c =Context(c)
+                    #print x
+                    html = t.render(c)
+                    #token = html.split('csrfmiddlewaretoken')[1].split("value")[1].split("'")[1]
+
+                    #print html
+                    u = {"id":z.id,"last_update":z.last_update,"html":html}
+                    print u
+                    #print "burda"
+                    asx.append(u)
+                        #print asx
+            #except Exception as inst:
+            #    print type(inst)
+            #    print inst
+
+        except Exception as e:
+            print e
+            #print "err"
 
     r = csrf(request)
     token = makeToken(request)
@@ -281,6 +323,100 @@ def msearch(query,user,request):
     return [asx,token]
 
 
+
+def list_comments(query,request):
+    from django.template import Context, loader
+
+
+    asx = list()
+
+    a = Status.objects.filter(comment_list__contains='"'+query+'"').order_by("-last_update")
+   
+    print a.query
+    a = a.all()
+    ulogin = 1
+    #,post=hidePost.objects.filter(from_user=self.user).all()
+
+    for z in a:
+        print z
+        try:
+            #try:
+                ##print findAll(asx,"id",z.post.id)
+
+            ##print str(st)
+
+                #print str(st)
+
+                    ##print z.post.id
+                    #x = []
+                    #print z.username
+                    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    #x.append(u2)
+                   
+                    #print "burda"
+                    asx.append(u)
+                        #print asx
+            #except Exception as inst:
+            #    print type(inst)
+            #    print inst
+
+        except Exception as e:
+            print e
+            #print "err"
+
+    r = csrf(request)
+    token = makeToken(request)
+    #asx.sort( key="last_update" )
+    asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
+    #print asx
+    return asx
+
+def list_likes(query,request):
+    from django.template import Context, loader
+
+
+    asx = list()
+
+    a = Status.objects.filter(like_list__contains='"'+query+'"').order_by("-last_update")
+
+    print a.query
+    a = a.all()
+    ulogin = 1
+    #,post=hidePost.objects.filter(from_user=self.user).all()
+
+    for z in a:
+        print z
+        try:
+            #try:
+                ##print findAll(asx,"id",z.post.id)
+
+            ##print str(st)
+
+                #print str(st)
+
+                    ##print z.post.id
+                    #x = []
+                    #print z.username
+                    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    #x.append(u2)
+
+                    #print "burda"
+                    asx.append(u)
+                        #print asx
+            #except Exception as inst:
+            #    print type(inst)
+            #    print inst
+
+        except Exception as e:
+            print e
+            #print "err"
+
+    r = csrf(request)
+    token = makeToken(request)
+    #asx.sort( key="last_update" )
+    asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
+    #print asx
+    return asx
 
 
 

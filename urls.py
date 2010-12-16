@@ -40,6 +40,8 @@ urlpatterns = patterns('',
     (r'^mn/(.*)$',"duygudrm.ddapp.views.usermini"),
     (r'^admin_001/', include(admin.site.urls)),
     (r'^s/(.*)$',"duygudrm.ddapp.views.short"),
+    (r'^(.*)/comments$',"duygudrm.ddapp.views.getcomment"),
+    (r'^(.*)/likes$',"duygudrm.ddapp.views.getlike"),
     (r'^(.*)/(.*)$',"duygudrm.ddapp.views.getsinglepost"),
     (r'^(.*)$',"duygudrm.ddapp.views.user"),
     

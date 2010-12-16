@@ -6,102 +6,79 @@
 {% endblock %}
 
 {% block body %}
-	<div class="leftContent">
-		<div id="sliderico"></div>
-		<form action="/" method="post" id="postform">
 
-		<div id="slider_top"><div id="slider"></div></div>
-		<input type="hidden" id="mood" value="5.0" name="mood" />
 
-			<div class="msgsend">
-			<div class="toarea" style="display:none;">
-				<div class="sender">
-					<a href="javascript:;">Herkese <span rel="all">x</span></a><a href="javascript:;">Herkese <span rel="all">x</span></a>
-				</div>
-				<input type="hidden" id="tousers" name="tousers" value="['all']" />
-				<input type="hidden" id="hash" name="hash" value="{{user.id}}" />
-				<input type="text" id="totext" name="totext" />
 
-				<br class="clr" />
-			</div>
+{% for post in postit %}
+ <div class="postits" style="{{post.coord|coord}}">
+            <div>
+                {{post.text}} <br />
+                <a href="/{{post.to_user.rewrite}}" class="writepostit">{{post.to_user}}</a> {% if post.to_user == me %} | <a href="#{{post.id}}" class="deletepostit">sil</a> {% endif %}
 
-			<textarea id="msg" name="msg" onclick="jQuery('.toarea').fadeIn('slow');"></textarea>
-			{% csrf_token %}
-                        <script>token = '{{ttoken}}';</script>
-			<button>yolla</button>
-			<br class="clr" /><br />
-				<div class="up"><input id="file_upload" name="file_upload" type="file" style="display:none;" /> </div>
-				<div class="up">|</div>
-				<div class="up"><input id="file_upload2" name="file_upload2" type="file" style="display:none;" /> </div>
-			<br class="clr" />
+            </div>
+        </div>
 
-			</div>
-			<br />
-			<br />
-			<div id="uploadprogress" style="display:none;"><span id="file_t">filename.mp3</span><div id="progbar"><div class="perc"></div></div><span id="file_s">uploading...</span><img src="/statics/images/share-loading-w.gif" /><br class="clr" /></div>
+{% endfor %}
 
-			<div id="files"></div>
-			<br />
-			<br />
-		</form>
-		<h2>{{user.user}}</h2>
-		<div class="userpro">
-			{% if user.avatar == '' %}
-			<img src="/statics/images/defuser.png" />
-			{% else %}
-			<img src="{{user.avatar}}" />
-			{% endif %}
-			
-			<div class="sta"><span>Girdi</span> <br />{{user.getStat.total}}</div>
-			<div class="sta"><span>En Yüksek</span> <br />{{user.getStat.big}}</div>
-			<div class="sta"><span>En düşük</span> <br />{{user.getStat.min}}</div>
-			<div class="sta"><span>Ortalama</span> <br />{{user.getStat.ort}}</div>
-			<br class="clr" />
-			{% if takip == 0 %}
-			<a href="javascript:;">Takip Et</a>
-			{% else %}
-			<a href="javascript:;">Peşini Bırak</a>
-			{% endif %}
-			{% if me.user.username == user.user.username %} 
-			<a href="javascript:;" rel="#photoup">Resim Yükle</a>
-			{% endif %}
-			
-			
-			
-		</div>
-		<div id="allpost">
-			
-			
-			{{post|generatepost:user}}
-			
-			
-			
-			
-		</div>
-	</div>
-	
-	<div class="rightContent">
-		<div class="umenu">
-		<a href="/fallowers">Takip Ettiklerim ({{user.fallwoersCount}})</a>
-		<a href="/fallowers">Takipçiler ({{user.fallowedCount}})</a>
-		</div>
-	</div>
-	<br class="clr" />
+
+
+
+<div id="userpro">
+
+    <div class="propic">
+        <div id="pic">
+            <img src="/avatar/{{user}}.jpg" width="80" />
+
+        </div>
+        <br />
+
+    </div>
+
+    <div id="info">
+
+        <div class="buts"> {% fallow user %} <img src="/statics/images/postitbut.png" id="pit" /></div>
+        <h2>{{user}}</h2>
+        {{user.bio}}<br />
+        <br  class="clear"/>
+        <div><a href="/{{user}}/fallowers">{{user.fallowedCount}}</a><br />fallows</div>
+        <div><a href="/{{user}}/fallowers">{{user.fallwoersCount}}</a><br />fallowers</div>
+        <div><a href="/{{user}}/fallowers">{{user.moodcount}}</a><br />mood</div>
+        <div><a href="/{{user}}/fallowers">{{user.allcount}}</a><br />post</div>
+        <div><a href="/{{user}}/fallowers">{{user.user_likes}}</a><br />likes</div>
+        <div><a href="/{{user}}/fallowers">{{user.user_comments}}</a><br />comment</div>
+        <div><a href="/{{user}}/fallowers">{{user.getStat.min}}</a><br />min</div>
+        <div><a href="/{{user}}/fallowers">{{user.getStat.big}}</a><br />max</div>
+        <div><a href="/{{user}}/fallowers">{{user.getStat.ort}}</a><br />avg</div>
+        <br  class="clear"/>
+
+
+    </div><br  class="clear"/>{% if me == user %} <a href="#ch" class="cpic">Change Picture</a> {% endif %}
+
+
+</div>
+<br />
+<br />
+<br class="clear" />
+				<div class="posts">
+
+                            {{post|generatepost:user}}
+                                </div>
+
+
+
 	<div id="gotToken">
 	{% csrf_token %}
 	</div>
 	<script>
 		timex = {{time}}
-		jQuery(document).ready(function(){
-			$("a[rel]").overlay();
-			
-		});
-		
-	</script> 
-	<div id="photoup" class="simple_overlay">
-		<form action="" method="post" enctype="multipart/form-data">
-		{% csrf_token %}
-			<input type="file" name="file" id="file"/><button>Gonder</button>
-		</form>
-	</div>
+	</script>
+
+
+			 <div class="postit">
+            <div>
+                <textarea></textarea>
+                <a href="#" class="writepostit">send postit</a>
+            </div>
+        </div>
+
 {% endblock %}
