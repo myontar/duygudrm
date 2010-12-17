@@ -80,7 +80,7 @@ def getLastPost(ahuser,user,id):
                 ##print z.post.id
 
                 print z.id
-                u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time}
+                u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time}
                 #x.append(u2)
                 #print u2
                 t = loader.get_template("single_post.html")
@@ -129,7 +129,7 @@ def getLive(timex,ahuser,user):
                     ##print z.post.id
                     print "###############################################"
                     print ahuser
-                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ahuser}
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ahuser}
                     #x.append(u2)
                     #print u2
                     #print u2
@@ -191,7 +191,7 @@ WHERE
                     ##print z.post.id
                     #x = []
                     #print z.username
-                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"last_update": int(z.last_update),"from_user":z.username,"user":z.username,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ulogin}
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"last_update": int(z.last_update),"from_user":z.username,"user":z.username,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ulogin}
                     #x.append(u2)
                     t = loader.get_template("single_post.html")
                     c = {'x': u2,"user":user,"userlogin":ulogin}
@@ -248,7 +248,7 @@ def msearch(query,user,request):
                     ##print z.post.id
                     #x = []
                     #print z.username
-                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
                     #x.append(u2)
                     print u2
                     t = loader.get_template("single_post.html")
@@ -290,7 +290,7 @@ def msearch(query,user,request):
                     ##print z.post.id
                     #x = []
                     #print z.username
-                    u2 = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
                     #x.append(u2)
                     print u2
                     t = loader.get_template("single_post.html")
@@ -350,7 +350,7 @@ def list_comments(query,request):
                     ##print z.post.id
                     #x = []
                     #print z.username
-                    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    u = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
                     #x.append(u2)
                    
                     #print "burda"
@@ -397,7 +397,7 @@ def list_likes(query,request):
                     ##print z.post.id
                     #x = []
                     #print z.username
-                    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    u = {"id":z.id,"mood_use":z.mood_use,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
                     #x.append(u2)
 
                     #print "burda"
@@ -456,7 +456,7 @@ class UserProfiles(models.Model):
 
     def moodcount(self):
         print "##################################################"
-        z = Status.objects.filter(mood_point__gt = 5 , from_user = self).count()
+        z = Status.objects.filter(mood_use = 1 , from_user = self).count()
         
         print z
         return z
@@ -503,7 +503,7 @@ class UserProfiles(models.Model):
                 
                 #print str(st)
                 if st == False:
-                    u = {"id":z.id,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
+                    u = {"id":z.id,"mood_use":z.mood_use,"rewrite":z.rewrite,"text":  z.text,"time":z.send_time,"last_update":z.last_update,"from_user":z.from_user,"user":z.from_user,"attachments":z.attachments,"send_time":z.send_time,"mood":z.mood_point,"likes":z.like_list,"comments":z.comment_list}
             ##print z.post
             #u.update('user',z.from_user})
             # u.user = z.from_user
@@ -535,7 +535,7 @@ class UserProfiles(models.Model):
                 st = findAll(asx,"id",z.post.id)
                 #print str(st)
                 if st == False:
-                    u = {"id":z.post.id,"rewrite":z.post.rewrite,"text":  z.post.text,"time":z.post.send_time,"last_update":z.post.last_update,"from_user":z.post.from_user,"user":z.from_user,"attachments":z.post.attachments,"send_time":z.post.send_time,"mood":z.post.mood_point,"likes":z.post.like_list,"comments":z.post.comment_list}
+                    u = {"id":z.post.id,"mood_use":z.post.mood_use,"rewrite":z.post.rewrite,"text":  z.post.text,"time":z.post.send_time,"last_update":z.post.last_update,"from_user":z.post.from_user,"user":z.from_user,"attachments":z.post.attachments,"send_time":z.post.send_time,"mood":z.post.mood_point,"likes":z.post.like_list,"comments":z.post.comment_list}
                 ##print z.post
                 #u.update('user',z.from_user})
                 # u.user = z.from_user
@@ -625,6 +625,7 @@ class Status(models.Model):
     text            = models.TextField()
     attachments     = models.CharField(max_length=1000)
     mood_point      = models.FloatField()
+    mood_use	    = models.SmallIntegerField(null=True,default=0)
     last_update     = models.IntegerField()
     like_list       = models.TextField(null=True,default="[]")
     rewrite         = models.CharField(null=True,default="piii",max_length=1000)

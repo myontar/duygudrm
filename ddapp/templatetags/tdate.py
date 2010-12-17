@@ -56,8 +56,8 @@ def tdate(tim):
                text = _("%(gun)d Gun once %(saat)s") % {"gun": now.tm_mday - real.tm_mday,"saat" : str(rtmhour)+":"+str(rtmnim)}
                #text = ""
            elif now.tm_mday - real.tm_mday > 13:
-               text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon],str(rtmhour)+":"+str(rtmnim))
-        
+               text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon-1],str(rtmhour)+":"+str(rtmnim))
+         
     else:
         text = "%d %s %s" % (now.tm_mday - real.tm_mday,month[real.tm_mon],str(rtmhour)+":"+str(rtmnim))
     

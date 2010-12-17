@@ -680,7 +680,11 @@ def index(request):
                         s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                         s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                         s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
-                        s.mood_point = float(request.POST['mood'])
+                        if request.POST['usemood'] > 0:
+				s.mood_use = 1
+			else:
+				s.mood_use = 0
+			s.mood_point = float(request.POST['mood'])
                         s.save()
                         k = userActions()
                         k.from_user = u
@@ -689,7 +693,7 @@ def index(request):
                         k.save()
                         ##printu[0]
                     except Exception as e:
-                        print e
+                        return HttpResponse(str( e))
                         pass
                     response = HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                     response.set_cookie("token",makeToken(request,0))

@@ -18,6 +18,9 @@
 							</div>
 						</div>
 						<div class="mainpost">
+						{% if x.mood_use == 1 %}
+							<div class="moodd">{{x.mood}}</div>
+						{% endif %}
 							{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}" class="pname">{{x.from_user}}</a>{% else %}
 			<a href="/{{x.user.rewrite}}"  class="pname">{{x.user}}</a>{% endif %}
 			{% if x.user != x.from_user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile){% endif %}{% endif %}

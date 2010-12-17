@@ -134,7 +134,7 @@ class AutoEmbed():
                 info['title'] = video_info['title'][0].replace("ç","c")
                 print info['title']
                 r = random.randint(1,1123123123123);
-                info['thumbnail_url'] = 'http://192.168.1.4/imgproxy?'+urllib.urlencode({"p":video_info['thumbnail_url'][0]})
+                info['thumbnail_url'] = 'imgproxy?'+urllib.urlencode({"p":video_info['thumbnail_url'][0]})
                 print info['thumbnail_url']
                 info['length_seconds'] = video_info['length_seconds'][0]
                 print info['length_seconds']
@@ -167,7 +167,7 @@ class AutoEmbed():
             video_info = video_info[0]
             info['url'] = i
             info['title'] = video_info['title']
-            info['thumbnail_url'] = 'http://192.168.1.3/imgproxy?'+urllib.urlencode({"p":video_info['thumbnail_large'].replace("\\","")})
+            info['thumbnail_url'] = '/imgproxy?'+urllib.urlencode({"p":video_info['thumbnail_large'].replace("\\","")})
             info['length_seconds'] = video_info['duration']
             info['length'] = GetInHMS(int(video_info['duration']))
             info['description'] = video_info['description']

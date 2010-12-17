@@ -484,7 +484,9 @@ var main = {
 		}
 	},
 	activeMovbar:function() {
+		
 		if(activeMovbar == 0) {
+			jQuery("#usemood").val("1");
 			jQuery(this).css("background-color","#ffff00");
 			activeMovbar = 1;
 			jQuery(this).append(jQuery("<div id='slider'></div>"));
@@ -534,6 +536,7 @@ var main = {
 		jQuery("#to_all").unbind("hover");
 		jQuery("#to_all").hover(main.toAllHover,main.toAllHover);
 		activeMovbar = 0;
+		
 
 	},
 	hideSalt:function() {
@@ -543,6 +546,7 @@ var main = {
 			jQuery("#to_all").hide("slow");
 			jQuery("#movbar").css("background-color","#ccc");
 			activeMovbar = 0;
+			jQuery("#usemood").val("0");
 		}
 		if(jQuery("#topbr > textarea").height() > 45) jQuery("#topbr > textarea").animate({height:"22px"},1000);
 	}
