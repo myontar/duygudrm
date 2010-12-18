@@ -746,20 +746,20 @@ def index(request):
         return MakingRender("main.html",request,{'user':u})
 
 
-@login_required(login_url='/login')
+#@login_required(login_url='/login')
 def messages(request):
     return MakingRender("messages.html",request)
 
-@login_required(login_url='/login')
+#@login_required(login_url='/login')
 def myprofile(request):
     return MakingRender("messages.html",request)
 
-@login_required(login_url='/login')
+#@login_required(login_url='/login')
 def changepass(request):
     return MakingRender("messages.html",request)
 
 
-@login_required(login_url='/login')
+#@login_required(login_url='/login')
 def updatepic(request):
     return MakingRender("messages.html",request)
 
