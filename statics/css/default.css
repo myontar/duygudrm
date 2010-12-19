@@ -14,6 +14,43 @@
 root { 
     display: block;
 }
+#index_b {
+    font-size:10px;
+    color:#666;
+    padding:10px;
+}
+#index_b h1 {
+    color:#4C85CC;
+    font-size: 14px;
+}
+
+#inleft {
+    float:left;
+    width: 265px;
+}
+#loginpsr {
+    margin-top: 20px;
+    width: 245px;
+    height: 162px;
+    margin-left:20px;
+    padding:10px;
+    background: url(/statics/images/login_bg.png);
+    color: #fff;
+}
+
+#loginpsr h2 {
+    font-size:14px;
+}
+
+.frm input {width:150px;}
+.frm label {
+    float:left;
+    width:100px;
+}
+#inleft2 {
+    float:left;
+    width: 265px;
+}
 .propic {
     width: 80px;
     height: 80px;

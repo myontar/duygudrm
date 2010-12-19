@@ -40,6 +40,7 @@ REGEX_PNG_JPG_GIF   = "(http:\/\/([^\s]+\.(jpg|gif|png)))"
 REGEX_AUDIO         = "(http:\/\/|www\.)(.*)\/(.*)(\.mp3|\.m4a)"
 REGEX_Izlesene      = "(http:\/\/?(www\.|)+izlesene\.com\/video\/[a-zA-Z0-9\.\-\?\=\&]+)\/([0-9]+)"
 REGEX_Tags          = "((#[^\s]*))"
+REGEX_Ment          = "((@[^\s]*))"
 
 
 std_headers = {
@@ -107,6 +108,7 @@ class AutoEmbed():
         #Youtube
         youtube = data['youtube']
         print youtube
+        youtube = []
         youtube_temp = []
 
 
@@ -117,11 +119,19 @@ class AutoEmbed():
             import urllib
             ttemp.append( {"url":i[0],"embed":'<a href="/search?'+urllib.urlencode({"q":i[0]})+'">'+i[0]+'</a>'})
         tags = ttemp
+
+        ment = data['ment']
+        ttemp = []
+        for i in ment:
+            print i
+            import urllib
+            ttemp.append( {"url":i[0],"embed":'@<a href="/'+i[0].replace("@","")+'">'+i[0].replace("@","")+'</a>'})
+        ment = ttemp
         for i in youtube:
             regex = re.compile(REGEX_YouTube_id)
             id = regex.search(i)
             id = id.group(0).replace("v=","")
-            video_info_url = ('http://192.168.1.4/proxy?'+urllib.urlencode({"p":"http://www.youtube.com/get_video_info?&video_id=%s"                      % (id)}))
+            video_info_url = ('http://192.168.1.3:88/proxy?'+urllib.urlencode({"p":"http://www.youtube.com/get_video_info?&video_id=%s"                      % (id)}))
             print video_info_url
             request = urllib2.Request(video_info_url, None, std_headers)
             video_info_webpage = urllib2.urlopen(request).read()
@@ -234,7 +244,7 @@ class AutoEmbed():
                 image_tmp.append({'embed':'<div class="embed"><img src="'+i+'" /><br class="clr" /></div> ',"url":i})
         image = image_tmp
         
-        all = {"images":image,"gmap":google,'dailymotion':dailymotion,'vimeo':vimeo,"youtube":youtube,"tags":tags}
+        all = {"ment":ment,"images":image,"gmap":google,'dailymotion':dailymotion,'vimeo':vimeo,"youtube":youtube,"tags":tags}
         return all
 
     def clear(self,arr):
@@ -275,6 +285,9 @@ class AutoEmbed():
         regex = re.compile(REGEX_Tags)
         tags = regex.findall(self.parse_Text)
 
+        regex = re.compile(REGEX_Ment)
+        ment = regex.findall(self.parse_Text)
+
         images = self.clear(images)
         izlesene = self.clear(izlesene)
         youtube = self.clear(youtube)
@@ -285,7 +298,7 @@ class AutoEmbed():
         dailymotion = self.clear(dailymotion)
         
         
-        return {"tags":tags,"dailymotion":dailymotion,"google":google,"youtube":youtube,"break":break_,"google_map":googlemap,"vimeo":vimeo,"images":images,"audio":audio,"izlesene":izlesene}
+        return {"ment":ment,"tags":tags,"dailymotion":dailymotion,"google":google,"youtube":youtube,"break":break_,"google_map":googlemap,"vimeo":vimeo,"images":images,"audio":audio,"izlesene":izlesene}
     
 
         

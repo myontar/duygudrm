@@ -15,9 +15,9 @@ var upchose = 0;
 jQuery(document).ready(function() {
 	jQuery("#topbr > textarea").bind("click",main.showSalt);
 	jQuery("#topbr > textarea").bind("focus",main.showSalt);
-	jQuery("#topbr > textarea").bind("keyup",main.movText);
-	jQuery("#topbr > textarea").bind("keypress",main.movText);
 	jQuery("#topbr > textarea").bind("keydown",main.movText);
+	//jQuery("#topbr > textarea").bind("keypress",main.movText);
+	//jQuery("#topbr > textarea").bind("keydown",main.movText);
 	jQuery(".posts").click(main.hideSalt);
 	jQuery("#movbar").click(main.activeMovbar);
 	jQuery("#to_all").hover(main.toAllHover,main.toAllHover);
@@ -40,7 +40,7 @@ jQuery(document).ready(function() {
         $(".postit").draggable();
         //$(".postits").draggable({stop:mini.dragpostit});
 
-        jQuery("#getu").bind("keyup",main.getuser);
+        //jQuery("#getu").bind("keyup",main.getuser);
         main.tox();
         jQuery("img").lazyload({
              placeholder : "/statics/images/grey.gif"
@@ -196,34 +196,39 @@ var main = {
         }
         ,
         toList:function(data) {
-            var d;
-            jQuery("#tolist > a").unbind("click");
-            jQuery("#tolist").html("");
-            eval("d="+data);
+            var d =data;
+            eval(" d=" + data+";");
+            //alert(data);
             count = 0;
+            jQuery("#tolist").html("");
             for(var i=0;i<d.length;i++) {
                 if(!main.toListCheck(d[i]['id'])) {
                     sel = "";
-                     if(count==0)sel=" class='selected' "
-                     jQuery("#tolist").append('<a'+sel+' href="#" rel="'+d[i]['id']+'">'+d[i]['name']+'</a>');
-                     count++;
+                    count++;
+                     if(count==1) sel=" class='selected' "
+                     if(jQuery("#tolist").html().indexOf('rel="'+d[i]['id']+'"') == -1)  jQuery("#tolist").append('<a'+sel+' href="#" rel="'+d[i]['id']+'">'+d[i]['name']+'</a>');
+                     
                 }
             }
             seli = 0;
-            var pos = jQuery("#getu").position();
+            var pos = jQuery("#topbr > textarea").position();
 
             jQuery("#tolist").css({top:pos.top+25,left:pos.left});
              if(jQuery("#tolist").css("display") == "none" && count > 0) jQuery("#tolist").slideDown();
              jQuery("#tolist > a").click(function(){
                  to = jQuery(this).attr("rel");
                  name = jQuery(this).text();
-                 if(!main.toListCheck(to)) {
-                  main.toListAdd(to);
-                  jQuery("#tox").append('<a rel="'+to+'" style="margin-left:3px;">'+name+'<span>x</span></a>');
+                 if(jQuery("#topbr > textarea").val().indexOf("@"+name+" ") == -1) {
+                  
+                  r = jQuery("#topbr > textarea").val().split("@");
+                  r = r[r.length-1]
+                  val = jQuery("#topbr > textarea").val().replace("@"+r,"@"+name);
+                  jQuery("#topbr > textarea").val(val);
+                  
                   jQuery("#tolist").slideUp();
-                  jQuery("#getu").val("");
-                   jQuery("#getu").focus();
-                  main.tox();
+                  //jQuery("#getu").val("");
+                   jQuery("#topbr > textarea").focus();
+                  //main.tox();
                  }
              });
             
@@ -279,7 +284,72 @@ var main = {
                 t.bind("click",main.fallow);
              });
         },
-	movText:function() {
+	movText:function(e) {
+
+                if(e.keyCode == 81) {
+                    jQuery(this).bind("keyup",main.getuser);
+                }
+
+                var liste = new Array();
+           code = e;
+           var list = new Array();
+           jQuery("#tolist > a").each(function() {
+
+               liste.push(jQuery(this));
+           });
+           if(e.keyCode == 32) {
+               jQuery(this).unbind("keyup");
+           }
+           if(liste.length > 0) {
+               if(code.keyCode == 40) {
+
+                   seli++;
+                   if(liste.length > seli) {
+                       liste[seli-1].removeClass("selected");
+                       liste[seli].addClass("selected");
+                   } else if(liste.length == seli) {
+                       liste[seli-1].removeClass("selected");
+                       liste[0].addClass("selected");
+                       seli = 0;
+                   }
+                   jQuery(this).focus();
+                   return false;
+               }else if(code.keyCode == 13) {
+                   jQuery(this).unbind("keyup");
+                   to = liste[seli].attr("rel");
+                   name=liste[seli].text();
+                   if(!main.toListCheck(to)) {
+                      main.toListAdd(to);
+                      r = jQuery("#topbr > textarea").val().split("@");
+                      r = r[r.length-1]
+                      val = jQuery("#topbr > textarea").val().replace("@"+r,"@"+name);
+                      jQuery("#topbr > textarea").val(val+ " ");
+                      jQuery("#tolist").slideUp();
+                      //jQuery("#getu").val("");
+                       jQuery("#topbr > textarea").focus();
+                      main.tox();
+                     }
+                     jQuery(this).focus();
+                  return false;
+               }else if(code.keyCode == 38) {
+
+                   if(seli - 1 >= 0) {
+                       liste[seli].removeClass("selected");
+                       liste[seli - 1].addClass("selected");
+                       seli--;
+                   } else {
+                       liste[0].removeClass("selected");
+                       liste[liste.length - 1].addClass("selected");
+                       seli=liste.length - 1;
+                   }
+                   jQuery(this).focus();
+                  return false;
+               }
+           }
+
+
+
+
 		jQuery(this).css("overflow","hidden");
 		t= jQuery(this).scrollTop();
 		if(jQuery(this).scrollTop() > 0) {
@@ -334,47 +404,7 @@ var main = {
         sendKeyList:function(code) {
 
 
-           var liste = new Array();
            
-           jQuery("#tolist > a").each(function() {
-
-               liste.push(jQuery(this));
-           });
-           if(liste.length > 0) {
-               if(code == 40) {
-                   seli++;
-                   if(liste.length > seli) {
-                       liste[seli-1].removeClass("selected");
-                       liste[seli].addClass("selected");
-                   } else if(liste.length == seli) {
-                       liste[seli-1].removeClass("selected");
-                       liste[0].addClass("selected");
-                       seli = 0;
-                   }
-               }else if(code == 13) {
-                   to = liste[seli].attr("rel");
-                   name=liste[seli].text();
-                   if(!main.toListCheck(to)) {
-                      main.toListAdd(to);
-                      jQuery("#tox").append('<a rel="'+to+'" style="margin-left:3px;">'+name+'<span>x</span></a>');
-                      jQuery("#tolist").slideUp();
-                      jQuery("#getu").val("");
-                       jQuery("#getu").focus();
-                      main.tox();
-                     }
-               }else if(code == 38) {
-                   
-                   if(seli - 1 >= 0) {
-                       liste[seli].removeClass("selected");
-                       liste[seli - 1].addClass("selected");
-                       seli--;
-                   } else {
-                       liste[0].removeClass("selected");
-                       liste[liste.length - 1].addClass("selected");
-                       seli=liste.length - 1;
-                   }
-               }
-           }
         },
 
         getuser:function(e) {
@@ -382,8 +412,10 @@ var main = {
                 main.sendKeyList(e.keyCode);
                 return;
             }
-            var val=jQuery("#getu").val();
-            main.sendPost("/","getU="+val,main.toList);
+            var val=jQuery(this).val().split("@")[jQuery(this).val().split("@").length - 1].split(" ")[0];
+            if(val.length > 0 && val != " "){
+                main.sendPost("/","getU="+val,main.toList);
+            }
         }
         ,
 

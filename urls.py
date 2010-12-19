@@ -16,14 +16,18 @@ urlpatterns = patterns('',
     #(r'^m/$',"duygudrm.ddapp.views.messages"),
     #(r'^m/(.*)$',"duygudrm.ddapp.views.messages"),
     (r'^login$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-    (r'^loginfacebook$', "duygudrm.ddapp.views.loginfacebook"),
+    (r'^signin_facebook$', "duygudrm.ddapp.views.loginfacebook"),
+    (r'^reg_facebook$', "duygudrm.ddapp.views.reg_facebook"),
+    (r'^register_to_facebook$', "duygudrm.ddapp.views.register_to_facebook"),
     (r'^signin_twitter$', "duygudrm.ddapp.views.signin"),
+    (r'^msnregister$', "duygudrm.ddapp.views.msnregister"),
     (r'^signin_friendfeed$', "duygudrm.ddapp.views.friendfeed"),
     (r'^ffauth$', "duygudrm.ddapp.views.ffauth"),
-
+    (r'^messenger/', include('duygudrm.wrap.urls')),
     (r'^twitter_return$', "duygudrm.ddapp.views.twitterreturn"),
 
     (r'^proxy$', 'duygudrm.ddapp.views.proxy'),
+    (r'^logout$', 'duygudrm.ddapp.views.logout_view'),
     (r'^search$', 'duygudrm.ddapp.views.search'),
     (r'^imgproxy$', 'duygudrm.ddapp.views.imgproxy'),
 
@@ -32,6 +36,7 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^statics/(?P<path>.*)$', 'django.views.static.serve',{'document_root': 'statics/'}),
+    (r'^(?P<path>.*).htm$', 'django.views.static.serve',{'document_root': '/'}),
     # Uncomment the next line to enable the admin:
     (r'^i18n/', include('django.conf.urls.i18n')),
     

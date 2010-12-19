@@ -1,0 +1,309 @@
+﻿body
+       {
+	        MARGIN: 0px; 
+	        DIRECTION: ltr;
+	        BACKGROUND-POSITION: center top; 
+	        background-image:url("liveBanner.png");
+	        background-repeat:repeat-x;
+	        background-color:#fcfcfc;
+	        FONT-FAMILY: Segoe UI, Tahoma, Verdana, Arial; 
+	          color:#6e6e6e;
+	        
+       }
+       
+       
+      body  a
+       {
+            COLOR: #0066cc; 
+            text-decoration:none;
+       }
+       
+       body  a:hover
+       {
+            COLOR: #0066cc; 
+            text-decoration:underline;
+
+       }
+       
+              
+      .CH_ 
+        {
+        		       
+	    
+	         COLOR: #000000; 
+	         FONT-SIZE: 83%; 
+	         Z-INDEX: 2000000; 
+	         POSITION: relative; 
+	         MIN-WIDTH: 1040px; 
+	         TEXT-ALIGN: left; 
+	         MARGIN: 0px auto; 
+	         MIN-HEIGHT: 47px; 
+	         CURSOR: default;
+	         WIDTH: 1040px; 
+	         PADDING-TOP: 12px;  
+         }
+         
+       .CH_  a
+       {
+            COLOR: #000000; 
+            text-decoration:none;
+       }
+       
+       .CH_  a:hover
+       {
+            COLOR: #000000; 
+            text-decoration:underline;
+
+       }
+       
+                
+        .CH_ image, .CH_ image a
+        {
+            text-decoration:none;
+            padding:0px;
+            margin:0px;
+            border:0px;     
+            vertical-align:bottom;
+            top:0px;
+            left:0px;
+        }
+        
+        .CH_Top
+        {
+        }
+        
+        .CH_Bottom
+        {
+        	vertical-align:bottom;
+        	margin-top:15px;
+        	font-size:161.7%;
+            font-weight:normal;
+        }
+       
+
+        
+        .CH_Login
+        {
+        	 TEXT-ALIGN: right; 
+        	 float:right; 
+        	 margin-top:-25px;
+        }
+        
+
+         .CH_Logo
+        {
+            font-size:120%;
+            TEXT-ALIGN: left; 
+        }
+          
+           .content
+           {
+             POSITION: relative; 
+	         MIN-WIDTH: 1040px; 
+	         TEXT-ALIGN: left; 
+	         MARGIN: 0px auto; 
+	         CURSOR: default;
+	         WIDTH: 1040px; 
+	         MARGIN-TOP: 12px;  
+             height: 100%;
+            FONT-SIZE: 83%; 
+          
+           }
+           
+           .help
+           {
+           	 POSITION: relative; 
+	         MIN-WIDTH: 1020px; 
+	         TEXT-ALIGN: left; 
+	         MARGIN: 0px auto; 
+	         MARGIN-TOP: 8px;  
+	         height:100%;
+	         border: #e7edf4 solid 1px;
+	         background-color:#ffffa6;
+	         padding-left:20px;
+	         FONT-SIZE: 83%; 
+	         WIDTH: 1020px;
+	         padding-top:5px;
+	           color:#000000;
+           }
+           
+           .notification
+           {
+           	 POSITION: relative; 
+	         MIN-WIDTH: 1020px; 
+	         TEXT-ALIGN: left; 
+	         MARGIN: 0px auto; 
+	         MARGIN-TOP: 8px;  
+	         height:25px;
+	         border: #e7edf4 solid 1px;
+	         background-color:#ffffa6;
+	         padding-left:20px;
+	         FONT-SIZE: 83%; 
+	         WIDTH: 1020px;
+	         padding-top:5px;
+	           color:#000000;
+           }
+           
+      .tabs
+        {
+    
+	         DISPLAY: inline;
+	         margin-left:5px;
+	         height:30px;
+	          
+        }
+            
+         .tabs LI
+          {   
+	         LIST-STYLE-TYPE: none; 
+	         DISPLAY: inline; 
+	         Padding-left:10px;
+	         padding-right:10px; 
+	        
+         }
+               
+             
+             
+          .tab
+          {      
+             background-color:#f6f6f6;
+	         border-left: 1px solid #e1e1e1;
+	         border-right: 1px solid #e1e1e1;
+	         border-top: 1px solid #e1e1e1;
+	         height:18px;
+	         padding-bottom:2px;
+	         line-height:22px;
+	      
+          }
+          
+        .tab a
+        {
+           color: #6e6e6e;	
+        }   
+        
+         .tab a:hover
+        {
+           color: #6e6e6e;	
+        }   
+        
+
+               
+         LI.tab_selected
+         {
+	         background-color:#e7f3fb;
+	         border-left: 1px solid #c3c3c3;
+	         border-right: 1px solid #c3c3c3;
+	         border-top: 1px solid #c3c3c3;
+	         height:20px;
+	         padding-bottom:2px;
+	         color: #000000;
+	         
+         }
+            
+        .tab_selected a, .tab_selected a:hover
+        {
+           color: #000000;
+           text-decoration:none;	
+        }    
+          
+              
+                
+        .actions
+        {
+        	 TEXT-ALIGN: right; 
+        	 float:right; 
+        	 margin-top:-20px;
+             height: 20px;
+           }  
+         
+         .actions a
+         {
+         color:#6e6e6e;
+         padding-left:10px;
+         	
+         }
+         
+         .actions a:hover
+         {
+         color:#6e6e6e;
+         	
+         }
+         
+         H2 	
+         {     DISPLAY: inline; 
+         	FONT-WEIGHT: normal;	
+         	MARGIN: 0px 0px 5px;	
+         	LINE-HEIGHT: 130%;
+         	FONT-SIZE: 120%;
+         	COLOR: #f4793a;
+         
+         	
+         	
+         }
+         
+         .button
+         {
+         	width:75px;
+         	margin-right:5px;
+         }
+         
+       .buttons
+        {
+        	 TEXT-ALIGN: right; 
+        	 float:right; 
+        	 margin-top:-35px;
+             height: 25px;
+           }  
+         
+         
+         .textbox
+         {
+         	width:100%;
+         	min-height:150px;
+         	margin-top:10px;
+         	
+         }
+         .treeView
+         {
+         	line-height:20px;
+         	vertical-align:top;
+         	 DISPLAY: inline; 
+         	 width:200px;
+         }
+         
+         .tabControl
+          {      
+            DISPLAY: inline; 
+         		width:100%;
+          } 
+          
+         
+         .group
+         {
+         	border:#cccccc 1px solid;
+         	padding:15px;
+         	height:100%;
+         	background-color:#ffffff;
+    
+
+         }
+       
+       .indent
+       {
+       	padding-left:25px;
+       	padding-bottom:5px;
+       }
+       
+       .footer
+       {
+       	padding-top:20px;
+       	     POSITION: relative; 
+	         MIN-WIDTH: 1040px; 
+	         TEXT-ALIGN: right; 
+	         MARGIN: 0px auto; 
+	         WIDTH: 1040px; 
+	         height:25px;
+	         FONT-SIZE: 83%; 
+
+	
+           }

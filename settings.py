@@ -21,7 +21,8 @@ DATABASES = {
         #'SUPPORTS_TRANSACTIONS': False,
     },
 }
-CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+CACHE_BACKEND = 'memcached://128.0.0.1:11211/'
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -115,6 +116,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'duygudrm.ddapp',
+    'duygudrm.wrap',
     'django.contrib.admin',
     'djangotoolbox'
 )
@@ -124,3 +126,16 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'duygudrm.ddapp.models.MyLoginBackend', # if they fail the normal test
  )
+
+WRAP_URLS = {
+             'consent': 'https://consent.live.com/Connect.aspx',
+             'access':'https://consent.live.com/AccessToken.aspx',
+             'refresh': 'https://consent.live.com/RefreshToken.aspx'
+}
+# Default scope for the applicaiton
+LIVE_DEFAULT_SCOPE = 'WL_Profiles.View,WL_Contacts.View'
+
+# Application Specific Globals that identify your applicaiton
+LIVE_APP_ID = '000000004404100D'
+LIVE_APP_SECRET = 'n5dCsni5eDOHF4QTYzhYhbhAONbvYerB'
+LIVE_DEFAULT_CALLBACK = 'http://mstfyntr.com:88/messenger/OAuthResponseHandler'

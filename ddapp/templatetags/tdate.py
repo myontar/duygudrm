@@ -43,7 +43,7 @@ def tdate(tim):
                 if now.tm_min == rtmnim:
                     text = _("Bir kac saniye once")
                 else:
-                    text = _("%(dakika)s dakika once") % {"dakika":now.tm_min - rtmnim}
+                    text = _("%(dakika)s dakika once") % {"dakika":now.tm_min - int(rtmnim)}
             else:
                 text = _("%(saat)s saat once") % {"saat":str(tm_hour - int(rtmhour))}
         else:

@@ -420,6 +420,9 @@ def list_likes(query,request):
 
 
 
+
+
+
 class UserProfiles(models.Model):
     user            = models.ForeignKey(User)
     rewrite         = models.SlugField(null=True)
@@ -555,6 +558,21 @@ class tags(models.Model):
     tag     = models.CharField(max_length=40,default='',null=True)
 
 
+class UserAlerts(models.Model):
+     user            = models.ForeignKey(User)
+     type            = models.SmallIntegerField()
+     post_id         = models.IntegerField(default=0)
+     read            = models.SmallIntegerField(default=0,)
+
+
+def sendAlert(user,type,post_id):
+    a = UserProfiles.objects.filter(user__username = user).get()
+    s = UserAlerts()
+    s.user = a.user
+    s.type = type
+    s.post_id = post_id
+    s.save()
+    return
 
 
 class userLoginService(models.Model):
@@ -652,7 +670,7 @@ class Status(models.Model):
             cleanup= re_strip.sub('', tmp).strip().lower()
             rewrite =  re_dashify.sub('-', cleanup)
             k = True
-
+           
             while k:
                 s = Status.objects.filter(rewrite=rewrite , from_user=self.from_user).count()
                 if s > 0:
@@ -664,6 +682,15 @@ class Status(models.Model):
             print e
         try:
             super(Status, self).save() # Call the "real" save() method
+            id = self.id
+            import re
+            REGEX_Ment          = "((@[^\s]*))"
+            regex = re.compile(REGEX_Ment)
+            ment = regex.findall(self.text)
+            for i in ment:
+                sendAlert(i[0].replace("@",""),1,id)
+
+
         except Exception as e:
             print e
 

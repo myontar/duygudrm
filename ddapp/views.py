@@ -47,9 +47,18 @@ def MakingRender(template,request=None,params={}):
     if request.META['HTTP_USER_AGENT'].lower().find("apple") > -1:
         if request.META['HTTP_USER_AGENT'].lower().find("qt/") > -1:
             template = "qt_"+template
+    logged = None
+    if request.user.is_authenticated():
+        logged = request.user
+    c['login'] = logged
     return render_to_response(template, c, context_instance=RequestContext(request))
 
-
+def reg_facebook(request):
+    return MakingRender("regface.html",request,{})
+@csrf_exempt
+def register_to_facebook(request):
+    a = request.REQUEST['signed_request']#.get("signed_request")
+    return HttpResponse(a)
 def loginfacebook(request):
     
     cokie = request.COOKIES['fbs_535c96a06491b8e94bd16eafc32cf3b2'].split("&")
@@ -88,8 +97,25 @@ def loginfacebook(request):
 
 
     if pu.count() == 0:
+            u23 = User.objects.filter(email=email)
+            if u23.count() > 0:
+                userx = u23.get()
+                userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
 
-        #try:
+                #account = get_account_from_hash(ux.hash)
+                user = authenticate(username=userx.username,external=1)
+                #printuser
+                #user = ux
+                u2 = UserProfiles.objects.filter(user=userx).get()
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+                uys.service_uid = uid
+                uys.user = u2
+                uys.save()
+                login(request,user)
+
+                return HttpResponseRedirect("/")
+            
             u = User()
             u.username = first_name+"_"+last_name
             u.first_name = first_name
@@ -125,6 +151,77 @@ def loginfacebook(request):
     login(request,user)
     
     return HttpResponseRedirect("/")
+def msnregister(request):
+
+    cokie = request.session['userinfo']
+
+    #brit_date  = data['birthday']
+    name       = cokie['name']+ "-"  + cokie['surname']
+    last_name  = cokie['surname']
+    first_name = cokie['name']
+    email     = cokie['mail']
+    uid     = cokie['uid']
+    access_token = ''
+    pu = userLoginService.objects.filter(service_uid = uid)
+
+
+    if pu.count() == 0:
+            u23 = User.objects.filter(email=email)
+            if u23.count() > 0:
+                userx = u23.get()
+                userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+
+                #account = get_account_from_hash(ux.hash)
+                user = authenticate(username=userx.username,external=1)
+                #printuser
+                #user = ux
+                u2 = UserProfiles.objects.filter(user=userx).get()
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+                uys.service_uid = uid
+                uys.user = u2
+                uys.save()
+
+            #request.session
+                login(request,user)
+
+                return HttpResponse("<script>opener.document.location='/';window.close(); </script>")
+        #try:
+            u = User()
+            u.username = first_name+""+last_name
+            u.first_name = first_name
+            u.last_name = last_name
+            u.email     = email
+            u.is_active    = True
+            u.set_password('admin001')
+            u.save()
+            u2 = UserProfiles.objects.filter(user=u).get()
+            #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+            u2.rewrite = first_name+"_"+last_name
+            u2.save()
+            user = authenticate(username=first_name+""+last_name, password='admin001')
+            uys = userLoginService()
+            uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+            uys.service_uid = uid
+            uys.user = u2
+            uys.save()
+
+    else:
+        u = pu.get()
+        #printu.user.user_id
+
+        userx = User.objects.filter(id=u.user.user_id).get()
+        #printuserx
+        userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+
+        #account = get_account_from_hash(ux.hash)
+        user = authenticate(username=userx.username,external=1)
+        #printuser
+        #user = ux
+    #request.session
+    login(request,user)
+
+    return HttpResponse("<script>opener.document.location='/';window.close(); </script>")
 
 
 def twitterreturn(request):
@@ -138,7 +235,7 @@ def twitterreturn(request):
 		return HttpResponse("We didn't redirect you to twitter...")
 
 	token = oauth.OAuthToken.from_string(request_token)
-
+        access_token = ""
 	# If the token from session and token from twitter does not match
 	#   means something bad happened to tokens
 	if token.key != request.GET.get('oauth_token', 'no-token'):
@@ -146,10 +243,10 @@ def twitterreturn(request):
 		# Redirect the user to the login page
 		return HttpResponse("Something wrong! Tokens do not match...")
         try:
-            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
+            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA",token)
             access_token = twitter.getAccessToken()
         except Exception as e:
-            #printe
+            print e
             pass
 
 	#request.session['access_token'] = access_token.to_string()
@@ -164,17 +261,68 @@ def twitterreturn(request):
 	#	del request.session['access_token']
     	#	del request.session['request_token']
 	#	return HttpResponse("Unable to authenticate you!")
-        
+        print access_token
         try:
-            twitter = oauthtwitter.OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA", access_token)
+            print access_token
+            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA", access_token)
             userinfo = twitter.GetUserInfo()
-            #printuserinfo
-        except:
+            import json
+            data = userinfo
+            data =  json.loads(str(data))
+            uid = str(data['id'])
+            username = str(data['screen_name'])
+            first_name = str(data['screen_name'])
+            last_name = ""
+            email = 'none@none.com'
+
+            print uid
+            print username
+            #access_token = ""
+            pu = userLoginService.objects.filter(service_uid = uid)
+            if pu.count() == 0:
+                
+                u = User()
+                u.username = username
+                u.first_name = first_name
+                u.last_name = last_name
+                u.email     = email
+                u.is_active    = True
+                u.set_password('admin001')
+                u.save()
+                u2 = UserProfiles.objects.filter(user=u).get()
+                #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+                u2.rewrite = first_name
+                u2.save()
+                user = authenticate(username=first_name+""+last_name, password='admin001')
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+uid+',"access_token":"'+str(access_token)+'"}'
+                uys.service_uid = uid
+                uys.user = u2
+                uys.save()
+
+            else:
+                u = pu.get()
+                #printu.user.user_id
+
+                userx = User.objects.filter(id=u.user.user_id).get()
+                #printuserx
+                userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+
+                #account = get_account_from_hash(ux.hash)
+                user = authenticate(username=userx.username,external=1)
+                #printuser
+                #user = ux
+            #request.session
+            login(request,user)
+
+            return HttpResponseRedirect("/")
+        except Exception as e:
+            print e
             pass
             # If we cannot get the user information, user cannot be authenticated
             #print"asdasd asd asd "
 	# authentication was successful, use is now logged in
-	return HttpResponse("You are logged in")
+	return HttpResponseRedirect("/")
 
 def friendfeed(request):
         FRIENDFEED_API_TOKEN = dict(
@@ -194,6 +342,7 @@ def friendfeed(request):
         return  HttpResponseRedirect(fflogin_url)
 
 def ffauth(request):
+    ar = request
     FRIENDFEED_API_TOKEN = dict(
                             key="1f6618554afd47eda4786a0984f25ba7",
                             secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
@@ -220,11 +369,59 @@ def ffauth(request):
     #self.friendfeed_username = username
     data = feed.fetch_feed_info(username)
 
+    uid = data['id']
+    first_name = data['name']
+    username = data['name']
+    last_name = ''
+    email = 'none@none.com'
+    
+    pu = userLoginService.objects.filter(service_uid = uid)
+    if pu.count() == 0:
+
+        u = User()
+        u.username = username
+        u.first_name = first_name
+        u.last_name = last_name
+        u.email     = email
+        u.is_active    = True
+        u.set_password('admin001')
+        u.save()
+        u2 = UserProfiles.objects.filter(user=u).get()
+        #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+        u2.rewrite = first_name
+        u2.save()
+        user = authenticate(username=first_name+""+last_name, password='admin001')
+        uys = userLoginService()
+        uys.service_param = '{"uid":'+uid+',"access_token":"'+str(access_token)+'"}'
+        uys.service_uid = uid
+        uys.user = u2
+        uys.save()
+
+    else:
+        u = pu.get()
+        #printu.user.user_id
+
+        userx = User.objects.filter(id=u.user.user_id).get()
+        #printuserx
+        userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+
+        #account = get_account_from_hash(ux.hash)
+        user = authenticate(username=userx.username,external=1)
+        #printuser
+        #user = ux
+    #request.session
+    login(request,user)
+
+    return HttpResponseRedirect("/")
 
 
-    request.sesion['friendfeed_sessions'] = "{'key':'"+key+"','secret':'"+secret+"','username':'"+username+"'}";
-    request.sesion['friendfeed_data'] = data;
-    #except:
+
+    return HttpResponse(str(data))
+
+
+    #ar.sesion['friendfeed_sessions'] = "{'key':'"+key+"','secret':'"+secret+"','username':'"+username+"'}";
+    #ar.sesion['friendfeed_data'] = data;
+    #a:
 
     #    return "err2"
     # @TODO : Burası yapılması lazım
@@ -763,6 +960,11 @@ def changepass(request):
 def updatepic(request):
     return MakingRender("messages.html",request)
 
+from django.contrib.auth import logout
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect("/")
 
 def register(request):
     
