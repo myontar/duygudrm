@@ -1,0 +1,134 @@
+html, body
+{
+    margin: 0px;
+    width : 100%;
+    height: 100%;
+
+    background: #2E8FCC;
+    text-align: center;
+
+    font-family: Tahoma, sans-serif;
+
+}
+
+div
+{
+    display: inline-block;
+    width: 90%;
+    text-align: left;
+}
+
+/*
+div.error
+{
+    background: #FFFFCC;
+    display: none;
+}
+
+div.error h3
+{
+    color: #FF0000;
+    font-style: italic;
+}
+*/
+div.sample, div.sampleActive
+{
+    background: #C1C1C1;
+    padding: 13px 13px 13px 13px;
+    margin: 50px auto 50px auto;
+}
+
+div.sampleActive
+{
+    background: #D7EDF8;
+}
+
+div.sampleActive div.title
+{
+    color: #2E8FCC;
+}
+
+div.sample>div, div.sampleActive>div
+{
+    height: 100%;
+    overflow: auto;
+    padding:25px;
+}
+
+div.code
+{
+    float: left;
+    width: 58%;
+    /* background: #555555;*/
+}
+
+div.desc
+{
+    float: right;
+    width: 30%;
+    
+    /*
+      white-space: pre-wrap;
+      white-space: -moz-pre-wrap;
+      white-space: -pre-wrap;
+      white-space: -o-pre-wrap;
+      word-wrap: break-word;
+      _white-space: pre;
+    */
+}
+
+div.title
+{
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 2em;
+    color: #8E8E8E;
+    padding-bottom: 0px !important;
+}
+
+div.samplediv.title
+{
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 2em;
+    color: #2E8FCC;
+    padding-bottom: 0px !important;
+}
+
+input[type=submit]
+{
+    margin: 0px 0px 20px 0px;
+    float: right;
+}
+
+p
+{
+    text-align: justify;
+    margin-top: 0px;
+}
+
+div.activeImage
+{
+    width:120px;
+    height:120px;
+    background:url(./image/downArrow.png);
+}
+
+textarea, input[type=text]
+{
+    width: 400px;
+    border: 3px solid #cccccc;
+    padding: 5px;
+    font-family: Tahoma, sans-serif;
+    float: right;
+}
+
+textarea.input, input[type=text]
+{
+    height: 30px;
+}
+
+table
+{
+    width: 100%;
+}
