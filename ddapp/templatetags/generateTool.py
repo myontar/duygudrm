@@ -7,6 +7,7 @@ from django.template import Library
 from django.conf import settings
 from django.template import Context, loader
 from duygudrm.ddapp.models import fallowers
+<<<<<<< HEAD
 from duygudrm.ddapp.extras.ip import controlIPL
 from django import template
 
@@ -16,6 +17,15 @@ import memcache
 register = Library()
 import json
 cache = memcache.Client(['127.0.0.1:11211'])
+=======
+from django import template
+
+import time
+
+
+register = Library()
+import json
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 class getfallow(template.Node):
@@ -52,6 +62,7 @@ def do_fallow(parser,token):
 register.tag('fallow', do_fallow)
 
 
+<<<<<<< HEAD
 
 class getelm(template.Node):
     
@@ -79,6 +90,8 @@ register.tag('country', do_country)
 
 
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 @register.filter
 def generatepost(post,user):
     try:
@@ -88,6 +101,7 @@ def generatepost(post,user):
             ulogin = 0
     except:
         ulogin = 0
+<<<<<<< HEAD
 
     import hashlib
     m = hashlib.md5()
@@ -107,6 +121,12 @@ def generatepost(post,user):
     render = t.render(c)
     cache.set("%s_%s" % (zr,ulogin),render,360000)
     return render
+=======
+    t = loader.get_template("post_template.html")
+    c =Context({'posts': post,"user":user,"userlogin":ulogin})
+
+    return t.render(c)
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 @register.filter
 def coord(post):
@@ -119,6 +139,7 @@ def coord(post):
 @register.filter
 def generateurl(u,rewrite):
 
+<<<<<<< HEAD
     try:
         import hashlib
         m = hashlib.md5()
@@ -149,6 +170,27 @@ def generateurl(u,rewrite):
             return z.short
     except:
         pass
+=======
+    from duygudrm.ddapp.models import shorturi
+    k = shorturi.objects.filter(user=str(u),post=rewrite)
+    if k.count() == 0:
+        s = shorturi()
+        s.user = str(u)
+        s.post = rewrite
+        s.save()
+        from duygudrm.ddapp.extras import shorter
+        surl = shorter.encode_url(s.id)
+       
+        s.short = surl
+        s.save()
+       
+       
+        return surl
+    else:
+        z = k.get()
+       
+        return z.short
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 
@@ -255,4 +297,8 @@ def likes(val,user):
 register.filter('likes', likes)
 
     
+<<<<<<< HEAD
     
+=======
+    
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599

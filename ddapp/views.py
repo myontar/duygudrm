@@ -27,13 +27,22 @@ import time , StringIO
 from PIL import Image
 import memcache
 from django.contrib.auth.models import User
+<<<<<<< HEAD
 from duygudrm.ddapp.models import UserProfiles , UserAlerts
+=======
+from duygudrm.ddapp.models import UserProfiles
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 from oauthtwitter import OAuthApi
 from duygudrm.ddapp.extras.friendfeed import *
 import oauth.oauth as oauth
 from django.template import RequestContext
+<<<<<<< HEAD
 from duygudrm.ddapp.extras.ip import controlIPL
 cache = memcache.Client(['127.0.0.1:11211'])
+=======
+
+cache = memcache.Client(['192.168.1.4:11211'])
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 def MakingRender(template,request=None,params={}):
@@ -51,6 +60,7 @@ def MakingRender(template,request=None,params={}):
     if request.user.is_authenticated():
         logged = request.user
     c['login'] = logged
+<<<<<<< HEAD
     ucontrol = controlIPL(request.META['REMOTE_ADDR'])
     c['ucontrol'] = ucontrol
 
@@ -133,6 +143,10 @@ def gopass(request):
         response.set_cookie("pass_country","yes",365*60*60)
     return response
 
+=======
+    return render_to_response(template, c, context_instance=RequestContext(request))
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 def reg_facebook(request):
     return MakingRender("regface.html",request,{})
 @csrf_exempt
@@ -141,11 +155,22 @@ def register_to_facebook(request):
     return HttpResponse(a)
 def loginfacebook(request):
     
+<<<<<<< HEAD
     cokie = request.GET['token']
     cookies = {}
 
     access_token = cokie
     uid = request.GET['uid']
+=======
+    cokie = request.COOKIES['fbs_535c96a06491b8e94bd16eafc32cf3b2'].split("&")
+    cookies = {}
+
+    for c in cokie:
+        cookies[c.split("=")[0]] = c.split("=")[1]
+
+    access_token = cookies['access_token']
+    uid = cookies['uid']
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
     import urllib2
     std_headers = {
@@ -320,7 +345,11 @@ def twitterreturn(request):
 		# Redirect the user to the login page
 		return HttpResponse("Something wrong! Tokens do not match...")
         try:
+<<<<<<< HEAD
             twitter = OAuthApi("AJHPnBap3l0WzRtYAtDT8g", "Bs9t4xrIjz10in0NiYUCqPbnjPwYNcsXwYjKjSN9iQw",token)
+=======
+            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA",token)
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             access_token = twitter.getAccessToken()
         except Exception as e:
             print e
@@ -341,7 +370,11 @@ def twitterreturn(request):
         print access_token
         try:
             print access_token
+<<<<<<< HEAD
             twitter = OAuthApi("AJHPnBap3l0WzRtYAtDT8g", "Bs9t4xrIjz10in0NiYUCqPbnjPwYNcsXwYjKjSN9iQw", access_token)
+=======
+            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA", access_token)
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             userinfo = twitter.GetUserInfo()
             import json
             data = userinfo
@@ -400,6 +433,7 @@ def twitterreturn(request):
             #print"asdasd asd asd "
 	# authentication was successful, use is now logged in
 	return HttpResponseRedirect("/")
+<<<<<<< HEAD
 def msntxt(request):
 	return HttpResponse("Mu925J6SBdmClSEpaWjPEGFFaK/KeZPxQrFI+XBbRr4=")
 
@@ -460,12 +494,23 @@ def friendfeed(request):
         FRIENDFEED_API_TOKEN = dict(
                                 key="ebeb6de3c71042b89da4ba2eda9c929e",
                                 secret="615f26dd9d534dc88bd3913f3d704a47412d9640c1954f17bc1ca1b4944fb75b"
+=======
+
+def friendfeed(request):
+        FRIENDFEED_API_TOKEN = dict(
+                                key="1f6618554afd47eda4786a0984f25ba7",
+                                secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                             )
         facelogin = fetch_oauth_request_token(FRIENDFEED_API_TOKEN)
         ##printfacelogin
         ##printfacelogin["key"]
         data = "|".join([facelogin["key"], facelogin["secret"]])
+<<<<<<< HEAD
 
+=======
+        ##printdata
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         #cookieutil = LilCookies(self.parent
         #                                        , "kaiytbluewyth8ceywpbtdrskcutcoatlceutlbueatbice")
         #cookieutil.set_cookie(name = 'FF_API_REQ_A', value = data, expires_days= 365*100)
@@ -476,8 +521,13 @@ def friendfeed(request):
 def ffauth(request):
     ar = request
     FRIENDFEED_API_TOKEN = dict(
+<<<<<<< HEAD
                             key="ebeb6de3c71042b89da4ba2eda9c929e",
                             secret="615f26dd9d534dc88bd3913f3d704a47412d9640c1954f17bc1ca1b4944fb75b",
+=======
+                            key="1f6618554afd47eda4786a0984f25ba7",
+                            secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                         )
     #if self.parent.get("oauth_token"):
     #cookieutil = LilCookies(self.parent
@@ -560,7 +610,11 @@ def ffauth(request):
     return HttpResponseRedirect("/registerask")
 
 def signin(request):
+<<<<<<< HEAD
 	twitter = OAuthApi("AJHPnBap3l0WzRtYAtDT8g", "Bs9t4xrIjz10in0NiYUCqPbnjPwYNcsXwYjKjSN9iQw")
+=======
+	twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 	request_token = twitter.getRequestToken()
 	request.session['request_token'] = request_token.to_string()
 	signin_url = twitter.getSigninURL(request_token)
@@ -639,14 +693,24 @@ def handle_uploaded_file(f,username):
     #printf.name
     #print'statics/users/avatar/'+username
     e = ""
+<<<<<<< HEAD
     if os.path.exists('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e):
         os.remove('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e)
         os.remove('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/'+username+".jpg")
+=======
+    if os.path.exists('statics/users/avatar/main_'+username+"."+e):
+        os.remove('statics/users/avatar/main_'+username+"."+e)
+        os.remove('statics/users/avatar/'+username+".jpg")
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     
     e = str(f.name).split(".")[len(str(f.name).split("."))-1]
 #print'statics/users/avatar/'+username+"."+e
     e = e.lower()
+<<<<<<< HEAD
     destination = open('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e, 'ab+')
+=======
+    destination = open('statics/users/avatar/main_'+username+"."+e, 'ab+')
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
@@ -654,8 +718,13 @@ def handle_uploaded_file(f,username):
     #imagefile  = StringIO.StringIO(i.read())
    
     #print"geldik"
+<<<<<<< HEAD
     thumbnail('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e,(120,120),'/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/'+username+".jpg")
     os.remove('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e)
+=======
+    thumbnail('statics/users/avatar/main_'+username+"."+e,(120,120),'statics/users/avatar/'+username+".jpg")
+    os.remove('statics/users/avatar/main_'+username+"."+e)
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     
     return '/home/django/duygudrm/statics/users/avatar/'+username
 def short(request,s):
@@ -717,6 +786,7 @@ def getcomment(request,x):
     #printasx
     return MakingRender("profile_1.html",request,{'me':u2,"user":x2,'post':asx})
 
+<<<<<<< HEAD
 def getcommentt(request):
     
     if request.user.is_authenticated():
@@ -733,6 +803,8 @@ def getcommentt(request):
         return MakingRender("profile_1.html",request,{'me':u2,"user":u2,'post':asx})
     return HttpResponseRedirect("/")
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 def getlike(request,x):
@@ -781,6 +853,7 @@ def user(request,x):
         uname = request.path.replace("/","")
         u = UserProfiles.objects.filter(rewrite=x).get()
         postits = postit.objects.filter(user=u).all()
+<<<<<<< HEAD
         return MakingRender("profile.html",request,{'user':u,"stat":u.getStat(),"me":u2,"postit":postits})
         #return MakingRender("profile.html",request)
 
@@ -799,6 +872,9 @@ def moodlist(request,x):
         u = UserProfiles.objects.filter(rewrite=x).get()
         #postits = postit.objects.filter(user=u).all()
         return MakingRender("mood.html",request,{'user':u,"me":u2})
+=======
+        return MakingRender("profile.html",request,{'user':u,"me":u2,"postit":postits})
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         #return MakingRender("profile.html",request)
 
 def usermini(request,x):
@@ -840,9 +916,12 @@ def upload(request):
             
     return HttpResponse("dememe")
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 def proxy(request):
     import hashlib 
     h = request.GET['p']
@@ -898,16 +977,23 @@ def imgproxy(request):
 
 
 def avatarControl(request,avat):
+<<<<<<< HEAD
     if os.path.exists("/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/"+avat):
+=======
+    if os.path.exists("statics/users/avatar/"+avat):
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         return HttpResponseRedirect("/statics/users/avatar/"+avat)
     else:
         return HttpResponseRedirect("/statics/users/avatar/default.jpg")
 @csrf_protect 
 def index(request):
+<<<<<<< HEAD
 
     #if request.META['HTTP_HOST'] != "framemind.com":
     #    return HttpResponseRedirect("http://framemind.com")
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     request.encoding = 'utf-8'
     if not request.user.is_authenticated():
         return MakingRender("index.html",request)
@@ -938,6 +1024,7 @@ def index(request):
                     #if len(all) == 0:
                     #    all = None
                     ##printall
+<<<<<<< HEAD
 
                     try:
                         ix = UserAlerts.objects.raw(""" SELECT COUNT(*) as count , ddapp_useralerts.id , ddapp_useralerts.id as pk from ddapp_useralerts  where ddapp_useralerts.user_id = %s and ddapp_useralerts.read = 0 """ % str(u.user.id))
@@ -951,6 +1038,9 @@ def index(request):
                     except Exception as e:
                         return HttpResponse(e)
                     
+=======
+                    k = {'time':md(),"result":all[0],"token":all[1]}
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     #print"##############################"
                     #printjson.dumps(k)
 
@@ -967,6 +1057,7 @@ def index(request):
                            ux = referer.split("/")[-1]
                            uto = UserProfiles.objects.filter(user__username=ux).get()
                            p = postit(user=uto,to_user=u,id=request.POST['postitdel']).delete()
+<<<<<<< HEAD
             if 'fallow' in request.POST:
 
                 ux = UserProfiles.objects.filter(user__username=request.POST['fallow']).get()
@@ -985,6 +1076,8 @@ def index(request):
                 
                 return HttpResponse("ok")
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
             if 'postit' in request.POST:
@@ -1038,6 +1131,7 @@ def index(request):
                     pass
                     #printtype(inst)
                 #return HttpResponse( str(inst))
+<<<<<<< HEAD
             if 'rc' in request.POST:
                 s = Status.objects.filter(id=request.POST['id']).get()
                 
@@ -1053,6 +1147,8 @@ def index(request):
                 response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                 response.set_cookie("token",makeToken(request,0))
                 return response
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                 
             if 'reply' in request.POST:
                 try:
@@ -1069,9 +1165,15 @@ def index(request):
                     response.set_cookie("token",makeToken(request,0))
                     return response
                 except Exception as inst:
+<<<<<<< HEAD
                     #print inst
                     #pass
                     return HttpResponse( str(inst))
+=======
+                    print inst
+                    pass
+                   #return HttpResponse( str(inst))
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
             if 'msg' in request.POST:
                 try:
@@ -1094,8 +1196,12 @@ def index(request):
                         s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                         s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                         s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
+<<<<<<< HEAD
                         #return HttpResponse(int(request.POST['usemood']))
                         if int(request.POST['usemood']) > 0:
+=======
+                        if request.POST['usemood'] > 0:
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 				s.mood_use = 1
 			else:
 				s.mood_use = 0

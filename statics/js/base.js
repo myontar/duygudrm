@@ -12,8 +12,11 @@ var action = 0;
 var internval = 0;
 var updaters = new Array("t","p","g","l");
 var upchose = 0;
+<<<<<<< HEAD
 var alert_count = 0;
 var ajax_pos = 1;
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 jQuery(document).ready(function() {
 	jQuery("#topbr > textarea").bind("click",main.showSalt);
 	jQuery("#topbr > textarea").bind("focus",main.showSalt);
@@ -39,6 +42,7 @@ jQuery(document).ready(function() {
 	jQuery(".postit > div > a").click(main.postiter);
 	jQuery(".cpic").click(main.cpic);
 	jQuery(".deletepostit").click(main.postitex);
+<<<<<<< HEAD
 	
 	jQuery(window).bind("focus",function() {
 		if(ajax_pos == 0) ajax_pos = 1;
@@ -52,6 +56,8 @@ jQuery(document).ready(function() {
 	jQuery(".remcom").click(main.removeComment);
 	jQuery(".edicom").click(main.editComment);
 	
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         $(".postit").draggable();
         //$(".postits").draggable({stop:mini.dragpostit});
 
@@ -78,6 +84,7 @@ jQuery(document).ready(function() {
 });
 
 var main = {
+<<<<<<< HEAD
 		
 		
 		repost_post:function() {
@@ -115,6 +122,11 @@ var main = {
 			main.sendPost("/","rc="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {jQuery(k).parent().remove()})});
 		
 		},
+=======
+
+
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         moreComment:function() {
           jQuery(this).parent().find(".comments").css("display","block");
           jQuery(this).remove();
@@ -162,6 +174,7 @@ var main = {
             var elm;
             elm = upelement+"="+timex+"&t_time="+t+"&csrfmiddlewaretoken="+csrfmiddlewaretoken;
             //e = jQuery(elm).serialize(true);
+<<<<<<< HEAD
 			
 			if (ajax_pos == 1) {
 				main.sendPost("/",elm,function(data){
@@ -184,6 +197,15 @@ var main = {
 				  timex = r['time'];
 				});
 			}
+=======
+            main.sendPost("/",elm,function(data){
+              r = null;
+              eval("r="+data);
+              main.createNew(r['result'],1);
+              
+              timex = r['time'];
+            });
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         //	alert(elm);
         },
         createNew:function(data,p) {
@@ -441,7 +463,11 @@ var main = {
                 jQuery(this).css("background","url(/statics/images/load-anim-16.gif) no-repeat")
 
 		
+<<<<<<< HEAD
                 main.sendPost("/","like="+jQuery(this).parent().parent().parent().parent().attr("id"),function(){
+=======
+                main.sendPost("/","like="+jQuery(this).parent().parent().parent().attr("id"),function(){
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     main.update();
                     jQuery(this).removeClass("plike").addClass("plike_on");
                     //jQuery(this).text("BeÄŸeniyi kaldÄ±r");
@@ -558,7 +584,11 @@ var main = {
 
 	
 	addComment:function() {
+<<<<<<< HEAD
 		var parent = jQuery(this).parent().parent().parent().parent().attr("id");
+=======
+		var parent = jQuery(this).parent().parent().parent().attr("id");
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 		jQuery(".cigo").find("textarea").slideUp(500,function() {
 			jQuery(this).parent().find("button").hide("slow",function() {jQuery(this).remove()});
 			jQuery(this).remove();
@@ -594,7 +624,11 @@ var main = {
 				slide: function( event, ui ) {
 				$( "#mood" ).val( parseFloat(ui.value) );
 				$( "#inslider" ).text( parseFloat(ui.value) );
+<<<<<<< HEAD
                                 jQuery("#usemood").val("1");
+=======
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 				if(ui.value < 5) {
 					var u = 5/100;
 					var p = ui.value / u;
@@ -632,7 +666,10 @@ var main = {
 		jQuery("#to_all").unbind("hover");
 		jQuery("#to_all").hover(main.toAllHover,main.toAllHover);
 		activeMovbar = 0;
+<<<<<<< HEAD
                 jQuery("#usemood").val("0");
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 		
 
 	},

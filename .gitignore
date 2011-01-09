@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 /statics/users
 /statics/proxy
 /statics/imgproxy
 /nbproject
+=======
+*.pyc
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599

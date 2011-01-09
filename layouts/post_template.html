@@ -8,6 +8,7 @@
 
 
                         <div class="post" id="p_{{x.id}}">
+<<<<<<< HEAD
 						
 						<div class="plefts">
 						<div class="post_image">
@@ -33,6 +34,26 @@
 							</div>
 							<div class="pbtm"></div>
 							<br class="clear" />
+=======
+						<div class="post_image">
+							<div class="pimage">
+							{% if x.user != x.from_user %}
+                                                            <img src="/avatar/{{x.from_user}}.jpg" width="48" />
+                                                         {% else %}
+                                                             <img src="/avatar/{{x.user}}.jpg" width="48" />
+                                                         {% endif %}
+							</div>
+						</div>
+						<div class="mainpost">
+						{% if x.mood_use == 1 %}
+							<div class="moodd">{{x.mood}}</div>
+						{% endif %}
+							{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}" class="pname">{{x.from_user}}</a>{% else %}
+			<a href="/{{x.user.rewrite}}"  class="pname">{{x.user}}</a>{% endif %}
+			{% if x.user != x.from_user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile){% endif %}{% endif %}
+							{{x.text|phtml }}
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 							<div class="tools">
 								<span><a href="/{{x.from_user}}/{{x.rewrite}}">{{x.time|tdate}}</a> <a href="">birgo</a> hizmetinden</span>
                                                                 {% if userlogin %}

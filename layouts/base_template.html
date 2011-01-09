@@ -19,6 +19,7 @@
 	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" media="screen" />
 	<script src="http://cdn.jquerytools.org/1.2.5/tiny/jquery.tools.min.js"></script>
 	<link href="/statics/css/default.css" rel="stylesheet" type="text/css" media="screen" />
+<<<<<<< HEAD
      <script type="text/javascript">
       // initialize the library with the API key
       
@@ -53,6 +54,15 @@
 
     <wl:app
     client-id="000000004C03A91E"
+=======
+        <script type="text/javascript" src="https://js.live.net/4.0/loader.js"></script>
+
+        
+</head>
+<body>
+    <wl:app
+    client-id="000000004404100D"
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     channel-url="/statics/channel.htm"
     callback-url="/messenger/OAuthResponseHandler"
     scope="WL_Profiles.View,WL_Contacts.View"
@@ -71,8 +81,12 @@
                         <div id="user">
                             <div id="user_image"><img src="/avatar/{{login.username}}.jpg" width="25" /></div>
 				<div id="user_mask"></div>
+<<<<<<< HEAD
                                 <div id="user_name">{{login.username}}   <a href="/logout">{% trans "Çıkış" %} </a> | <a href="/logout">{% trans "Ayarlar" %} </a></div>
 								<div class="walerts"></div>
+=======
+                                <div id="user_name">{{login.username}} | <a href="/logout">{% trans "Çıkış" %} </a> | <a href="/logout">{% trans "Ayarlar" %} </a></div>
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 			</div>
                         {% endif %}
 			<br class="clear" />
@@ -84,6 +98,7 @@
 		<br />
 		<div class="wrapper">
 			<div id="body">
+<<<<<<< HEAD
 			{% if ucontrol %}
 				{% block body %}
 
@@ -98,6 +113,11 @@
 				<br /><br />
 			
 			{% endif %}
+=======
+				{% block body %}
+
+		{% endblock %}
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 			</div>
 			<div id="right">
@@ -123,6 +143,7 @@
 				<div class="right_box_fin"></div>
 
                                 {% else %}
+<<<<<<< HEAD
 								
 								
 								{% if ucontrol %}
@@ -146,6 +167,22 @@
 					
 							
 								{% endif %}
+=======
+                                <h2>{% trans "Giriş Yapmanın Diğer Yolları" %}</h2>
+                                   
+					
+					<a href="http://192.168.1.3:88/signin_twitter" style="padding:0;margin:0;text-indent: 0px;" ><img src="/statics/images/Sign-in-with-Twitter-lighter.png" /></a>
+					<a href="/profile" style="padding:0;margin:0;text-indent: 0px;" ><img width="151" src="/statics/images/sign-in-with-friendfeed.png" /></a>
+                                        <a href="javascript:;" onclick="window.open('/messenger/', 'msnlogin', 'width=465px,height=300px');" style="padding:0;margin:0;text-indent: 0px;" ><img width="151" src="/statics/images/con-with-msn.png" /></a>
+					
+
+					<a href="/reg_facebook" style="padding:0;margin:0;text-indent: 0px;" ><img width="151" src="/statics/images/con-with-facein.png" /></a>
+					<a href="/reg_face" style="padding:0;margin:0;text-indent: 0px;" ><img width="151" src="/statics/images/con-with-face.png" /></a>
+					<a href="/signin_google" style="padding:0;margin:0;text-indent: 0px;" ><img width="151" src="/statics/images/google-login-button.png" /></a>
+					
+
+				
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                                 {% endif %}
 			</div>
 			<br class="clear" />
@@ -165,6 +202,7 @@
 </select>
 <input type="submit" value="Go" />
 </form>
+<<<<<<< HEAD
 
 <script type="text/javascript">
 
@@ -179,6 +217,8 @@
   })();
 
 </script>
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 </body>
 </html>
 

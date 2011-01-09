@@ -106,7 +106,11 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+<<<<<<< HEAD
     "/var/ftp/virtual_users/framemind/http/duygudrm/layouts/"
+=======
+    "/home/django/duygudrm/layouts/"
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 )
 
 INSTALLED_APPS = (
@@ -136,6 +140,12 @@ WRAP_URLS = {
 LIVE_DEFAULT_SCOPE = 'WL_Profiles.View,WL_Contacts.View'
 
 # Application Specific Globals that identify your applicaiton
+<<<<<<< HEAD
 LIVE_APP_ID = '000000004C03A91E'
 LIVE_APP_SECRET = 'dkiGnkkZSFmCA7Itk6vKJLi1bw3qygC6'
 LIVE_DEFAULT_CALLBACK = 'http://framemind.com/messenger/OAuthResponseHandler'
+=======
+LIVE_APP_ID = '000000004404100D'
+LIVE_APP_SECRET = 'n5dCsni5eDOHF4QTYzhYhbhAONbvYerB'
+LIVE_DEFAULT_CALLBACK = 'http://mstfyntr.com:88/messenger/OAuthResponseHandler'
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599

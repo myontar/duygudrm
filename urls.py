@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     # (r'^duygudrm/', include('duygudrm.foo.urls')),
     (r'^$',"duygudrm.ddapp.views.index"),
     (r'^live$',"duygudrm.ddapp.views.live"),
+<<<<<<< HEAD
     (r'^login_yahoo$',"duygudrm.ddapp.views.loginyahoo"),
     (r'^signin_yahoo$',"duygudrm.ddapp.views.sigyaho"),
     (r'^Oiuw1vgYCq6S2ODnX236Dz82.txt$',"duygudrm.ddapp.views.msntxt"),
@@ -21,6 +22,8 @@ urlpatterns = patterns('',
     (r'^fallows$',"duygudrm.ddapp.views.ufallows"),
     (r'^fallowers$',"duygudrm.ddapp.views.ufallowers"),
                        
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     (r'^upload$',"duygudrm.ddapp.views.upload"),
     #(r'^p/(.*)$',"duygudrm.ddapp.views.post"),
     #(r'^m/$',"duygudrm.ddapp.views.messages"),
@@ -35,7 +38,11 @@ urlpatterns = patterns('',
     (r'^ffauth$', "duygudrm.ddapp.views.ffauth"),
     (r'^messenger/', include('duygudrm.wrap.urls')),
     (r'^twitter_return$', "duygudrm.ddapp.views.twitterreturn"),
+<<<<<<< HEAD
     (r'^comments$',"duygudrm.ddapp.views.getcommentt"),
+=======
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     (r'^proxy$', 'duygudrm.ddapp.views.proxy'),
     (r'^logout$', 'duygudrm.ddapp.views.logout_view'),
     (r'^search$', 'duygudrm.ddapp.views.search'),
@@ -57,9 +64,12 @@ urlpatterns = patterns('',
     (r'^s/(.*)$',"duygudrm.ddapp.views.short"),
     (r'^(.*)/comments$',"duygudrm.ddapp.views.getcomment"),
     (r'^(.*)/likes$',"duygudrm.ddapp.views.getlike"),
+<<<<<<< HEAD
     (r'^(.*)/fallows$',"duygudrm.ddapp.views.fallows"),
     (r'^(.*)/mood$',"duygudrm.ddapp.views.moodlist"),
     (r'^(.*)/fallowers$',"duygudrm.ddapp.views.fallowers"),
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     (r'^(.*)/(.*)$',"duygudrm.ddapp.views.getsinglepost"),
     (r'^(.*)$',"duygudrm.ddapp.views.user"),
     

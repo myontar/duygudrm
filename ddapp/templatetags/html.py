@@ -41,7 +41,10 @@ REGEX_AUDIO         = "(http:\/\/|www\.)(.*)\/(.*)(\.mp3|\.m4a)"
 REGEX_Izlesene      = "(http:\/\/?(www\.|)+izlesene\.com\/video\/[a-zA-Z0-9\.\-\?\=\&]+)\/([0-9]+)"
 REGEX_Tags          = "((#[^\s]*))"
 REGEX_Ment          = "((@[^\s]*))"
+<<<<<<< HEAD
 REGEX_mood          = "((![^\s]*))"
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 std_headers = {
@@ -118,6 +121,7 @@ class AutoEmbed():
         for i in tags:
             print i
             import urllib
+<<<<<<< HEAD
             ttemp.append( {"url":i[0],"embed":'<a class="stag" href="/search?'+urllib.urlencode({"q":i[0]})+'">'+i[0]+'</a>'})
         tags = ttemp
 
@@ -131,12 +135,21 @@ class AutoEmbed():
                 ttemp.append( {"url":i[0],"embed":'<a class="stag2" href="/search?'+urllib.urlencode({"q":i[0]})+'">'+i[0].replace("_"," ")+'</a>'})
         mood = ttemp
 
+=======
+            ttemp.append( {"url":i[0],"embed":'<a href="/search?'+urllib.urlencode({"q":i[0]})+'">'+i[0]+'</a>'})
+        tags = ttemp
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         ment = data['ment']
         ttemp = []
         for i in ment:
             print i
             import urllib
+<<<<<<< HEAD
             ttemp.append( {"url":i[0],"embed":'@<a class="mntee" href="/'+i[0].replace("@","")+'">'+i[0].replace("@","")+'</a>'})
+=======
+            ttemp.append( {"url":i[0],"embed":'@<a href="/'+i[0].replace("@","")+'">'+i[0].replace("@","")+'</a>'})
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         ment = ttemp
         for i in youtube:
             regex = re.compile(REGEX_YouTube_id)
@@ -255,7 +268,11 @@ class AutoEmbed():
                 image_tmp.append({'embed':'<div class="embed"><img src="'+i+'" /><br class="clr" /></div> ',"url":i})
         image = image_tmp
         
+<<<<<<< HEAD
         all = {"ment":ment,"mood":mood,"images":image,"gmap":google,'dailymotion':dailymotion,'vimeo':vimeo,"youtube":youtube,"tags":tags}
+=======
+        all = {"ment":ment,"images":image,"gmap":google,'dailymotion':dailymotion,'vimeo':vimeo,"youtube":youtube,"tags":tags}
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         return all
 
     def clear(self,arr):
@@ -299,9 +316,12 @@ class AutoEmbed():
         regex = re.compile(REGEX_Ment)
         ment = regex.findall(self.parse_Text)
 
+<<<<<<< HEAD
         regex = re.compile(REGEX_mood)
         mood = regex.findall(self.parse_Text)
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         images = self.clear(images)
         izlesene = self.clear(izlesene)
         youtube = self.clear(youtube)
@@ -312,7 +332,11 @@ class AutoEmbed():
         dailymotion = self.clear(dailymotion)
         
         
+<<<<<<< HEAD
         return {"mood":mood,"ment":ment,"tags":tags,"dailymotion":dailymotion,"google":google,"youtube":youtube,"break":break_,"google_map":googlemap,"vimeo":vimeo,"images":images,"audio":audio,"izlesene":izlesene}
+=======
+        return {"ment":ment,"tags":tags,"dailymotion":dailymotion,"google":google,"youtube":youtube,"break":break_,"google_map":googlemap,"vimeo":vimeo,"images":images,"audio":audio,"izlesene":izlesene}
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     
 
         

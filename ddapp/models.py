@@ -14,8 +14,13 @@ from django.core.context_processors import csrf
 from datetime import datetime
 from duygudrm.ddapp.extras.mtoken import makeToken
 from django.contrib.auth.backends import ModelBackend
+<<<<<<< HEAD
 import memcache
 cache = memcache.Client(['127.0.0.1:11211'])
+=======
+
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 import time
 
 
@@ -65,10 +70,13 @@ def findAll(arr,key,val):
 
 def getLastPost(ahuser,user,id):
     from django.template import Context, loader
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     asx = list()
     a = Status.objects.filter(id__lt=id).order_by("-last_update")[0:10].all()
     for z in a:
@@ -166,8 +174,12 @@ def getLive(timex,ahuser,user):
 def getLastest(timex,user,request):
     from django.template import Context, loader
 
+<<<<<<< HEAD
     
 
+=======
+   
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     a = Status.objects.raw("""SELECT
 u.* , u2.* , s.*
 FROM
@@ -224,7 +236,10 @@ WHERE
     #asx.sort( key="last_update" )
     asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
     #print asx
+<<<<<<< HEAD
     
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     return [asx,token]
 import re
 def htc(m):
@@ -426,9 +441,13 @@ def list_likes(query,request):
 
 
 
+<<<<<<< HEAD
 class tags(models.Model):
     tag     = models.CharField(max_length=40,default='',null=True)
     user            = models.ForeignKey(User)
+=======
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 class UserProfiles(models.Model):
@@ -456,6 +475,7 @@ class UserProfiles(models.Model):
         a = fallowers.objects.filter(from_user = self).all()
         return a
     def fallwoersCount(self):
+<<<<<<< HEAD
 
 
         from django.db.models import Avg , Max , Min ,Count
@@ -479,10 +499,30 @@ class UserProfiles(models.Model):
 
     def fallowed(self):
         from django.db.models import Avg , Max , Min ,Count
+=======
+        a = fallowers.objects.filter(from_user = self).count()
+        return int(a)
+
+    def allcount(self):
+        z = Status.objects.filter(from_user = self).count()
+
+        print z
+        return z
+
+    def moodcount(self):
+        print "##################################################"
+        z = Status.objects.filter(mood_use = 1 , from_user = self).count()
+        
+        print z
+        return z
+
+    def fallowed(self):
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         a = fallowers.objects.filter(to_user = self).all()
         return a
     
     def fallowedCount(self):
+<<<<<<< HEAD
         from django.db.models import Avg , Max , Min ,Count
         a = fallowers.objects.filter(to_user = self).annotate(countall=Count('id'))
         return int(a['countall'])
@@ -504,6 +544,30 @@ class UserProfiles(models.Model):
             return {"ort":0,"big":0,"min":0,"total":0}
            
         return r[0]
+=======
+        a = fallowers.objects.filter(to_user = self).count()
+        return int(a)
+    def getStat(self):
+
+        dd = Status.objects.filter(from_user=self)
+        cc = dd.count()
+        total = 0.0
+        
+        big = 0.0
+        wi = 100.0
+        for c in dd.all():
+            total = total + c.mood_point
+            if big < c.mood_point:
+                big = c.mood_point
+            if wi > c.mood_point:
+                wi =c.mood_point
+        try:
+            ort = total / cc;
+        except:
+            ort = 0
+        return {"ort":str(ort)[0:3],"big":big,"min":wi,"total":cc}
+        
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         
     def getSelf(self):
         asx = []
@@ -533,6 +597,7 @@ class UserProfiles(models.Model):
          
         return asx
 
+<<<<<<< HEAD
     def gen_tags(self):
         
         from django.db.models import Count
@@ -584,6 +649,8 @@ class UserProfiles(models.Model):
 
         return asx
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     def myStatusList(self):
         s = []
         s.append(self)
@@ -593,10 +660,14 @@ class UserProfiles(models.Model):
         
         a = userActions.objects.filter(from_user__in=s).order_by("-times")[0:50].all()
         #,post=hidePost.objects.filter(from_user=self.user).all()
+<<<<<<< HEAD
         asx =  cache.get("getLastest_%s" % str(self.user.id))
         #return asx
         if asx != None:
             return asx
+=======
+          
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         asx = list()
         for z in a:
             
@@ -618,9 +689,17 @@ class UserProfiles(models.Model):
                 #print userActions.objects.filter(from_user__in=s).group_by("post_id").order_by("-times").query
         #asx.sort( key="last_update" )
         #asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
+<<<<<<< HEAD
         cache.set("getLastest_%s" % str(self.user.id),asx,365000)
         return asx
 
+=======
+         
+        return asx
+
+class tags(models.Model):
+    tag     = models.CharField(max_length=40,default='',null=True)
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 class UserAlerts(models.Model):
@@ -631,9 +710,15 @@ class UserAlerts(models.Model):
 
 
 def sendAlert(user,type,post_id):
+<<<<<<< HEAD
     a = User.objects.filter(username = user).get()
     s = UserAlerts()
     s.user = a
+=======
+    a = UserProfiles.objects.filter(user__username = user).get()
+    s = UserAlerts()
+    s.user = a.user
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     s.type = type
     s.post_id = post_id
     s.save()
@@ -715,8 +800,11 @@ class Status(models.Model):
     comment_list    = models.TextField(null=True,default="[]")
 
     def save(self):
+<<<<<<< HEAD
         cache.delete("getLastest_%s" % self.from_user.user.id)
 
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         try:
             if len(self.text) > 100:
                 rewrite = self.text[:100]
@@ -730,7 +818,11 @@ class Status(models.Model):
 
             #text =  text.decode("utf-8")
 
+<<<<<<< HEAD
             tmp = rewrite.lower().replace("ı","i").replace("ç","c").replace("ş","s").replace("ö","o").replace("ü","u").replace("ğ","g")
+=======
+            tmp = rewrite.lower() #.replace("ı","i").replace("ç","c").replace("ş","s").replace("ö","o").replace("ü","u").replace("ğ","g")
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             #tmp = text.lower()
 
             re_dashify = re.compile(r'[-\s]+')
@@ -751,6 +843,7 @@ class Status(models.Model):
             super(Status, self).save() # Call the "real" save() method
             id = self.id
             import re
+<<<<<<< HEAD
             try:
                 REGEX_Ment          = "((![^\s]*))"
                 regex = re.compile(REGEX_Ment)
@@ -770,6 +863,8 @@ class Status(models.Model):
 
 
             
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             REGEX_Ment          = "((@[^\s]*))"
             regex = re.compile(REGEX_Ment)
             ment = regex.findall(self.text)
@@ -785,6 +880,7 @@ class Status(models.Model):
         import json
         data = json.loads(self.comment_list)
         id = len(data)+13
+<<<<<<< HEAD
         
 
         
@@ -807,6 +903,9 @@ class Status(models.Model):
         data.append({"id":id,"username":str(user.user),"rewrite":user.rewrite,"text":text,"date":time})
         
 
+=======
+        data.append({"id":id,"username":str(user.user),"rewrite":user.rewrite,"text":text,"date":time})
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         self.comment_list = json.dumps(data)
         self.save()
         k2 = userActions()
@@ -845,11 +944,15 @@ class Status(models.Model):
     
     def editComment(self,id,user,text):
         import json
+<<<<<<< HEAD
         cache.delete("getLastest_%s" % self.from_user.user.id)
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         data = json.loads(self.comment_list)
         tmp_data = []
         save = 0
         for i in data:
+<<<<<<< HEAD
             if int(id) != int(i['id']):
                 tmp_data.append(i)
             else:
@@ -857,6 +960,15 @@ class Status(models.Model):
                     tmp_data.append(i)
                 else:
                     i['text'] = text
+=======
+            if id != i.id:
+                tmp_data.append(i)
+            else:
+                if i.username != str(user.user):
+                    tmp_data.append(i)
+                else:
+                    i.text = text
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     tmp_data.append(i)
                     save = 1
         if save == 1:
@@ -865,15 +977,25 @@ class Status(models.Model):
       
     def deleteComment(self,id,user):
         import json
+<<<<<<< HEAD
         cache.delete("getLastest_%s" % self.from_user.user.id)
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         data = json.loads(self.comment_list)
         tmp_data = []
         save = 0
         for i in data:
+<<<<<<< HEAD
             if int(id) != int(i['id']):
                 tmp_data.append(i)
             else:
                 if i['username'] != str(user.user):
+=======
+            if id != i.id:
+                tmp_data.append(i)
+            else:
+                if i.username != str(user.user):
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     tmp_data.append(i)
                 else:
                     save = 1

@@ -2,6 +2,7 @@
 {% load tdate %}
 {% load generateTool%}
 {% load html %}
+<<<<<<< HEAD
 {% load i18n %}
 
 
@@ -45,10 +46,37 @@
 							</div>
 							<!--
                                                         
+=======
+
+
+						<div class="post_image">
+							<div class="pimage">
+							{% if x.user != x.from_user %}
+                                                            <img src="/avatar/{{x.from_user}}.jpg" width="48" />
+                                                         {% else %}
+                                                             <img src="/avatar/{{x.user}}.jpg" width="48" />
+                                                         {% endif %}
+							</div>
+						</div>
+						<div class="mainpost">
+                                                        
+							{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}" class="pname">{{x.from_user}}</a>{% else %}
+			<a href="/{{x.user.rewrite}}"  class="pname">{{x.user}}</a>{% endif %}
+			{% if x.user != x.from_user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile){% endif %}{% endif %}
+							{{x.text|phtml }}
+
+							<div class="tools">
+								<span><a href="/{{x.from_user}}/{{x.rewrite}}">{{x.time|tdate}}</a> <a href="">birgo</a> hizmetinden {% if userlogin == 1 %}</span> <a href="#comment" class="pcmmd">Yorum yaz</a>{% if x.likes|likech:user == "plike" %}<a href="#comment" class="plike">Begen</a>{% else %} <a href="#comment" class="plike_on">Begeniyi Kaldir</a> {% endif %}{% endif %}<a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">Paylas</a>
+							</div>
+                                                        
+							<!--
+
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 								<a href="" class="first">Mustafa Yontar</a> , <a href="" class="cuser">Begum C</a> ve <a href="#">10 kisi</a> daha begendi.
 							-->
                                                         <div class="plikes">
                                                         {% autoescape off %}
+<<<<<<< HEAD
                                                         
                                                         {{ x.likes|likes:user }}
                                                         {% endautoescape %}
@@ -57,6 +85,15 @@
                                                         {% for i in x.comments|comments %}
 							<div class="comments">
 								{{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a href="/{{i.rewrite}}">sil</a> {% endif %}
+=======
+                                                        {{ x.likes|likes:user }}
+                                                        {% endautoescape %}
+                                                        </div>
+                                                       {%  if x.comments|commentsc < 5 %}
+                                                        {% for i in x.comments|comments %}
+							<div class="comments">
+								{{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a>
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 							</div>
 
                                                         {% endfor %}
@@ -73,7 +110,11 @@
 
                                                                 {% endfor %}
 
+<<<<<<< HEAD
                                                                 <div class="moreComment">{{i.count}} {% blocktrans  %} daha yorum var {% endblocktrans %}</div>
+=======
+                                                                <div class="moreComment">{{i.count}} daha yorum var</div>
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                                                                 {% endif %}
                                                                 <div class="comments">
                                                                         {{i.text}} <a href="/{{i.rewrite}}">{{i.username}}</a>
@@ -81,7 +122,15 @@
 
                                                             {% endfor %}
                                                         {% endif %}
+<<<<<<< HEAD
 						<div class="cigo"></div>
 						</div>
 						<br class="clear" />
 				
+=======
+
+						<div class="cigo"></div>
+						</div>
+						<br class="clear" />
+					
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599

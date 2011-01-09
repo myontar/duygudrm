@@ -40,15 +40,26 @@
         <h2>{{user}}</h2> 
         {{user.bio}}<br />
         <br  class="clear"/>
+<<<<<<< HEAD
         <div><a href="/{{user}}/fallows">{{user.fallwoersCount}}</a><br />fallows</div>
         <div><a href="/{{user}}/fallowers">{{user.fallowedCount}}</a><br />fallowers</div>
+=======
+        <div><a href="/{{user}}/fallowers">{{user.fallowedCount}}</a><br />fallows</div>
+        <div><a href="/{{user}}/fallowers">{{user.fallwoersCount}}</a><br />fallowers</div>
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         <div><a href="/{{user}}/mood">{{user.moodcount}}</a><br />mood</div>
         <div><a href="/{{user}}">{{user.allcount}}</a><br />post</div>
         <div><a href="/{{user}}/likes">{{user.user_likes}}</a><br />likes</div>
         <div><a href="/{{user}}/comments">{{user.user_comments}}</a><br />comment</div>
+<<<<<<< HEAD
         <div><a href="#">{{stat.min}}</a><br />min</div>
         <div><a href="#">{{stat.big}}</a><br />max</div>
         <div><a href="#">{{stat.ort}}</a><br />avg</div>
+=======
+        <div><a href="/{{user}}/fallowers">{{user.getStat.min}}</a><br />min</div>
+        <div><a href="/{{user}}/fallowers">{{user.getStat.big}}</a><br />max</div>
+        <div><a href="/{{user}}/fallowers">{{user.getStat.ort}}</a><br />avg</div>
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         <br  class="clear"/>
       
 
@@ -57,10 +68,13 @@
 
 </div>
 <br />
+<<<<<<< HEAD
 {% autoescape off %}
 {{user.gen_tags}}
 
 {% endautoescape %}
+=======
+>>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 <br />
 <br class="clear" />
 				<div class="posts">
