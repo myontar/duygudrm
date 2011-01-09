@@ -1,0 +1,63 @@
+{% extends "base_template.html" %}
+{% load i18n %}
+{% load generateTool%}
+{% block body %}
+<div id="index_b">
+    
+	<h2>{% trans "Groups" %}</h2>
+
+
+        {% if fallows %}
+        {{fallows}}
+        <h3>{% trans "Üye olduğum Gruplar" %}</h3>
+
+       {% for i in fallows %}
+		<div class="ulist">
+		<div class="fpic">
+				<div class="fpics">
+					<a href="/{{i.to_user.rewrite}}"> <img src="/avatar/{{i.to_user.user}}.jpg" height="70" border="0" /></a>
+				</div>
+		</div>
+		{{i.to_user.user}}
+		
+		</div>
+
+
+	{% endfor %}
+	<br class="clear" />
+        {% endif %}
+        <br />
+        <br />
+        <br />
+
+        <h3>{% trans "Gruplar" %}</h3>
+        {% for i in groups %}
+		<div class="ulist">
+		<div class="fpic">
+				<div class="fpics">
+					<a href="/{{i.rewrite}}"> <img src="/avatar/{{i.user}}.jpg" height="70" border="0" /></a>
+				</div>
+		</div>
+		{{i.user}}
+		{% fallow i %}
+		</div>
+
+
+	{% endfor %}
+	<br class="clear" />
+        <br />
+        <br />
+        <br />
+
+        <h3>{% trans "Grup Oluştur" %}</h3>
+        <form action="" method="post">
+            <label>{% trans "Group Name" %}</label><input type="text" id="group" name="group" />
+            <input type="submit" value="{% trans "Save"%}" />
+                   {% csrf_token %}
+        </form>
+
+	
+</div>
+
+
+{% endblock %}

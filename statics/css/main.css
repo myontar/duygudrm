@@ -1,0 +1,383 @@
+body {
+	font-family:verdana;
+	font-size:11px;
+	color:#666;
+	margin:0;
+	paddign:0;
+	text-align:center;
+}
+
+
+.header , .body {
+	width:900px;
+	margin:auto;
+	text-align:left;
+}
+.umenu a {
+	display:block;
+	width:100%;
+	line-height: 22px;
+	text-decoration:none;
+	}
+.logo {
+	font-size:25px;
+	float:left;
+	width:200px;
+}
+
+.login {
+	float:right;
+	width:250px;
+}
+.post {
+	margin-bottom:20px;
+	font-size:12px;
+	}
+.timeinfo {
+background:none repeat scroll 0 0 #FFFFFF;
+color:#000000;
+left:-119px;
+line-height:22px;
+padding:4px;
+position:relative;
+top:72px;
+}
+.post_right {
+	float:left;
+	width:485px;
+	}
+.post .img {
+		width:60px;
+		height:60px;
+		float:left;
+		margin:5px;
+		border:1px solid #ccc;
+		margin-right:10px;
+	}
+.morecomment {
+	cursor:pointer;
+	clear:both;
+	dispay:block;
+	padding:3px;
+	background:#efefef;
+	border:1px solid #ccc;
+	margin-bottom:5px;
+	}
+.send textarea{
+	clear:both;
+	width:400px;
+	height:100px;
+	display:block;
+}
+
+.comm img {
+		width:30px;
+		height:30px;
+		float:left;
+		margin:2px;
+		margin-right:10px;
+		border:1px solid #ccc;
+	}
+.comm  {
+	clear:both;
+	dispay:block;
+	padding:3px;
+	
+	margin-bottom:5px;
+	line-height: 22px;
+	}
+.clr {
+	clear:both;
+}
+.sta {
+		width:80px;
+		font-size:22px;
+		text-align:center;
+		float:left;	
+	}
+.sta span {
+		font-size:11px;
+	}
+	
+/* the overlayed element */
+.simple_overlay {
+	
+	/* must be initially hidden */
+	display:none;
+	
+	/* place overlay on top of other elements */
+	z-index:10000;
+	
+	/* styling */
+	background-color:#333;
+	padding:10px;
+	width:400px;	
+	min-height:100px;
+	border:1px solid #666;
+	
+	/* CSS3 styling for latest browsers */
+	-moz-box-shadow:0 0 90px 5px #000;
+	-webkit-box-shadow: 0 0 90px #000;	
+}
+
+/* close button positioned on upper right corner */
+.simple_overlay .close {
+	background-image:url(/statics/images/close.png);
+	position:absolute;
+	right:-15px;
+	top:-15px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}	
+	
+	
+.userpro {
+	background:#efefef;
+	clear:both;
+	}
+.userpro img {
+	float:left;
+		margin:2px;
+		border:1px solid #ccc;
+	}
+.moodText{
+	float:right;
+	width:30px;
+	font-size:22px;
+	color:#660000;
+	 }
+
+.rightContent {
+	width:200px;
+	float:left;
+	margin-left:20px;
+}
+.date , .like , .commentSend , .likelist , .comm a{
+	padding-left:5px;
+	padding-right:5px;
+	font-size:11px;
+	color:#666;
+	text-decoration:none;
+	}
+.likelist {
+	margin-left:73px;
+	}
+#allpost {
+	width:569px;
+	}
+.how {
+	float:left;
+	width:320px;
+	font-size:24px;
+	color:#0085B7;
+	}
+.desc { 
+	float:left;
+	text-align:right;
+	width:250px;
+	padding-right:40px;
+	}
+#sliderico {
+	background: url(/statics/images/sliderBg3.png) 0px 0px;
+width:569px;
+height:32px;
+	}
+
+#slider_top {
+background: url(/statics/images/sliderBg2.png) 0px 0px;
+width:569px;
+	}
+.mood {
+	width:33px;
+	height:33px;
+	line-height: 33px;
+	font-size:14px;
+	text-align:center;
+	color:#fff;
+	font-weight:bold;
+	background:url(/statics/images/mood.png);
+	float:right;
+	}
+.msgsend button {
+	border:1px outset #ededed;
+	background:#ededed;
+	line-height: 50px;
+	height:52px;
+	margin-left:4px;
+	font-size:18px;
+	font-color:#666;
+	}
+
+.toarea input {
+	float:left;
+	width:100px;
+	border:none;
+	margin-top:3px;
+	outline:none;
+	
+	}
+.sender {
+	float:left;
+	
+	}
+.sender a:hover span {
+	
+	
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	background:#0085B7;
+	color:#fff;
+	}
+.sender a span {
+	padding:4px;
+	padding-top:2px;
+	padding-bottom:2px;
+	
+	}
+#uploadprogress span , #uploadprogress img {
+	float:left;
+	}
+
+.file_mp3 {
+	text-indent: 16px;
+	background:url(/statics/images/filetypes/mp3.png) no-repeat;
+	}
+.file_pdf {
+	text-indent: 16px;
+	background:url(/statics/images/filetypes/pdf.png) no-repeat;
+	}
+.file_doc {
+	text-indent: 16px;
+	background:url(/statics/images/filetypes/doc.png) no-repeat;
+	}
+.file_docx {
+	text-indent: 16px;
+	background:url(/statics/images/filetypes/docx.png) no-repeat;
+	}
+.file_xls {
+	text-indent: 16px;
+	background:url(/statics/images/filetypes/xls.png) no-repeat;
+	}
+.file_xlsx {
+	text-indent: 16px;
+	background:url(/statics/images/filetypes/xls.png) no-repeat;
+	}
+.embed img {
+	width:120px;
+	height:95px;
+	}
+#files a {
+	text-indent: 16px;
+	/* background:url(/statics/images/filetypes/default.png) no-repeat; */
+	display:block;
+	padding:4px;
+	
+	}
+#uploadprogress img {
+	margin-top:-2px;
+	}
+#progbar {
+	height:8px;
+	width:120px;
+	border:1px solid #ccc;
+	padding:1px;
+	float:left;
+	background: #fff;
+	margin-left:10px;
+	margin-right:10px;
+	}
+#progbar .perc {
+	height:8px;
+	width:50%;
+	background:#00cc00;
+	}	
+.up {
+	float:left;
+	}
+.sender a {
+	padding:2px;
+	background:#74BDFA;
+	text-indent:5px;
+	display:inline-block;
+	border:1px solid #ccc;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	margin:3px;
+	
+	}
+
+.toarea {
+	width:546px;
+	margin-bottom:10px;
+	border:1px solid #ccc;
+	}
+.msgsend textarea {
+	float:left;
+	width:485px;
+	height:50px;
+	border:1px solid #ccc;
+	}
+.msgsend {
+	padding:10px;
+	margin-top:10px;
+	background: url(/statics/images/fwbg.png) no-repeat bottom;
+	width:549px;
+	
+	}
+#slider {
+	background: url(/statics/images/sliderBg.png) 0px 0px;
+	width:524px;
+	height:32px;
+	border:none;
+	-moz-border-radius:0;
+	margin-left:20px;
+	}
+.like , .commentSend , .likelist a , .comm a {
+	color:#660000;
+	}
+.leftContent {
+	float:left;
+	width:620px;
+}
+
+
+a {
+	color:#0085B7;
+	outline:0;
+	text-decoration:none;
+	}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default  {
+	background:url(/statics/images/sliderPoint.png);
+	border:none;
+	width:39px;
+	height:81px;
+	margin-top:-39px;
+	outline: 0;
+	text-decoration:none;
+	color:#fff;
+	margin-left:-23px;
+	
+	}
+#listto a{ 
+	display:block;
+} 
+#listto {
+		position:absolute;
+		font-size:12px;
+		border:2px inset #ccc;
+		max-height:150px;
+		line-height:25px;
+		width:120px;
+		background:#fff;
+		padding:5px;
+		overflow-y:auto;
+		
+	}
+#inslider {
+	padding-top:4px;
+	text-align:center;
+	font-size:14px;
+	font-weight:bold;
+	}

@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-01-01 02:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: statics/js/base.js:87 statics/js/base.js.py:101
+msgid "Tamamlandı"
+msgstr "Complated"
+
+#: statics/js/base.js:87
+msgid "İsteğiniz üzere bu post şikayet edildi"
+msgstr "Post has been reported."
+
+#: statics/js/base.js:94
+msgid "Bu girdiyi silmek istediğinize emin misiniz ?"
+msgstr "Do you want to delete ?"
+
+#: statics/js/base.js:101
+msgid "İsteğiniz üzere bu post silindi"
+msgstr "Post has been deleted."
+
+#: statics/js/base.js:119
+msgid "Düzenle"
+msgstr "Edit"
+
+#: statics/js/base.js:325
+msgid "Unfallow"
+msgstr "Unfallow"
+
+#: statics/js/base.js:367
+msgid "Fallow"
+msgstr "Fallow"
+
+#: statics/js/base.js:452
+msgid "Change Picture"
+msgstr "Change Picture"
+
+#: statics/js/base.js:482
+msgid "Beğen"
+msgstr "Like"
+
+#: statics/js/base.js:536
+msgid "Hata!"
+msgstr "Error!"
+
+#: statics/js/base.js:536
+msgid "Sunucu beklenmeyen bir hata oluşturdu. Lütfen tekrar deneyiniz."
+msgstr "Server has been response error. Please try again."

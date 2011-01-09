@@ -1,6 +1,6 @@
 # Django settings for testproj2 project.
 # -*- coding: utf-8 -*-
-
+import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -55,15 +55,14 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+PROJECT_DIR = os.path.dirname(__file__) 
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'statics') 
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
-
+MEDIA_URL = 'http://framemind.com/statics/'
+SESSION_COOKIE_DOMAIN = ".framemind.com"
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -106,11 +105,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-<<<<<<< HEAD
     "/var/ftp/virtual_users/framemind/http/duygudrm/layouts/"
-=======
-    "/home/django/duygudrm/layouts/"
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 )
 
 INSTALLED_APPS = (
@@ -135,17 +130,11 @@ WRAP_URLS = {
              'consent': 'https://consent.live.com/Connect.aspx',
              'access':'https://consent.live.com/AccessToken.aspx',
              'refresh': 'https://consent.live.com/RefreshToken.aspx'
-}
+			 }
 # Default scope for the applicaiton
 LIVE_DEFAULT_SCOPE = 'WL_Profiles.View,WL_Contacts.View'
 
 # Application Specific Globals that identify your applicaiton
-<<<<<<< HEAD
 LIVE_APP_ID = '000000004C03A91E'
 LIVE_APP_SECRET = 'dkiGnkkZSFmCA7Itk6vKJLi1bw3qygC6'
 LIVE_DEFAULT_CALLBACK = 'http://framemind.com/messenger/OAuthResponseHandler'
-=======
-LIVE_APP_ID = '000000004404100D'
-LIVE_APP_SECRET = 'n5dCsni5eDOHF4QTYzhYhbhAONbvYerB'
-LIVE_DEFAULT_CALLBACK = 'http://mstfyntr.com:88/messenger/OAuthResponseHandler'
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599

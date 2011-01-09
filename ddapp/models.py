@@ -14,14 +14,55 @@ from django.core.context_processors import csrf
 from datetime import datetime
 from duygudrm.ddapp.extras.mtoken import makeToken
 from django.contrib.auth.backends import ModelBackend
-<<<<<<< HEAD
 import memcache
 cache = memcache.Client(['127.0.0.1:11211'])
-=======
-
-
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 import time
+
+
+
+def getPerms(user,pp = None):
+    perm = cache.get("perms")
+    import json
+    if perm ==None:
+
+        perm = {}
+        perms_data = perms.objects.filter(user=user)
+        if perms_data.count() == 0:
+            p = perms()
+            p.user = user
+            p.save()
+            perms_data = perms.objects.filter(user=user)
+        perms_data = perms_data.get()
+        pp = {'dim':perms_data.dim,'cmd':perms_data.cmd,"feed":perms_data.feed,"postit":perms_data.postit}
+        perm["%s" % user.user.username] = json.dumps(pp)
+
+        cache.set("perms",perm,360000)
+        perm = cache.get("perms")
+    else:
+        if '%s' % user.user.username in perm:
+            all = perm['%s' % user.user.username]
+
+        else:
+            perms_data = perms.objects.filter(user=user)
+            if perms_data.count == 0:
+                p = perms()
+                p.user = user
+                p.save()
+                perms_data = perms.objects.filter(user=user)
+            perms_data = perms_data.get()
+            pp = {'dim':perms_data.dim,'cmd':perms_data.cmd,"feed":perms_data.feed,"postit":perms_data.postit}
+            perm["%s" % user.user.username] = json.dumps(pp)
+
+            cache.set("perms",perm,360000)
+            perm = cache.get("perms")
+            all = perm['%s' % user.user.username]
+
+    all = json.loads(all)
+    if pp == None:
+        return all
+    else:
+        return all['%s' % pp]
+
 
 
 class MyLoginBackend(ModelBackend):
@@ -70,13 +111,10 @@ def findAll(arr,key,val):
 
 def getLastPost(ahuser,user,id):
     from django.template import Context, loader
-<<<<<<< HEAD
 
 
 
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     asx = list()
     a = Status.objects.filter(id__lt=id).order_by("-last_update")[0:10].all()
     for z in a:
@@ -174,14 +212,10 @@ def getLive(timex,ahuser,user):
 def getLastest(timex,user,request):
     from django.template import Context, loader
 
-<<<<<<< HEAD
     
 
-=======
-   
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     a = Status.objects.raw("""SELECT
-u.* , u2.* , s.*
+u.* as user , u2.* as from_user , s.*
 FROM
 ddapp_status as s INNER JOIN
 ddapp_userprofiles as u2 on u2.id = s.from_user_id
@@ -208,7 +242,7 @@ WHERE
                     ##print z.post.id
                     #x = []
                     #print z.username
-                    u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"last_update": int(z.last_update),"from_user":z.username,"user":z.username,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ulogin}
+                    u2 = {"id":z.id,"rewrite":z.rewrite,"mood_use":z.mood_use,"text":  z.text,"last_update": int(z.last_update),"from_user":z.from_user,"user":z.user,"attachments":z.attachments,"mood":z.mood_point,"comments":z.comment_list,"likes":z.like_list,"time":z.send_time,"userlogin":ulogin}
                     #x.append(u2)
                     t = loader.get_template("single_post.html")
                     c = {'x': u2,"user":user,"userlogin":ulogin}
@@ -236,10 +270,7 @@ WHERE
     #asx.sort( key="last_update" )
     asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
     #print asx
-<<<<<<< HEAD
     
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     return [asx,token]
 import re
 def htc(m):
@@ -441,13 +472,9 @@ def list_likes(query,request):
 
 
 
-<<<<<<< HEAD
 class tags(models.Model):
     tag     = models.CharField(max_length=40,default='',null=True)
     user            = models.ForeignKey(User)
-=======
-
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 class UserProfiles(models.Model):
@@ -469,64 +496,52 @@ class UserProfiles(models.Model):
     user_msg_alert  = models.SmallIntegerField(null=True,default=0)
     user_add_alert  = models.SmallIntegerField(null=True,default=0)
     user_not_alert  = models.SmallIntegerField(null=True,default=0)
+    is_grup         = models.SmallIntegerField(null=True,default=0)
     def __unicode__(self):
         return str(self.user)
     def fallowers(self):
         a = fallowers.objects.filter(from_user = self).all()
+        a.query.group_by =['to_user_id']
         return a
-    def fallwoersCount(self):
-<<<<<<< HEAD
+    def fallowedCount(self):
 
 
         from django.db.models import Avg , Max , Min ,Count
-        a = fallowers.objects.filter(from_user = self).annotate(countall=Count('id'))
-        return int(a['countall'])
+        a = fallowers.objects.raw("select DISTINCT id as pk , id  from ddapp_fallowers where to_user_id  = %s group by to_user_id   , from_user_id " % self.id)
+       # a.query.group_by =['from_user_id']
+        a3 = 0
+        for i in a:
+            a3 = a3 + 1
+        return a3
         
        
-
-    def allcount(self):
-        #z = Status.objects.filter(from_user = self).count()
-
-        #print z
-        return 0
-
-    def moodcount(self):
-        print "##################################################"
-        #z = Status.objects.filter(mood_use = 1 , from_user = self).count()
-        
-        #print z
-        return 0
-
-    def fallowed(self):
-        from django.db.models import Avg , Max , Min ,Count
-=======
-        a = fallowers.objects.filter(from_user = self).count()
-        return int(a)
-
+    
     def allcount(self):
         z = Status.objects.filter(from_user = self).count()
 
-        print z
+        #print z
         return z
 
     def moodcount(self):
         print "##################################################"
         z = Status.objects.filter(mood_use = 1 , from_user = self).count()
         
-        print z
+        #print z
         return z
 
     def fallowed(self):
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+        from django.db.models import Avg , Max , Min ,Count
         a = fallowers.objects.filter(to_user = self).all()
         return a
     
-    def fallowedCount(self):
-<<<<<<< HEAD
+    def fallwoersCount(self):
         from django.db.models import Avg , Max , Min ,Count
-        a = fallowers.objects.filter(to_user = self).annotate(countall=Count('id'))
-        return int(a['countall'])
-    
+        a = fallowers.objects.raw("select DISTINCT id as pk , id  from ddapp_fallowers where from_user_id = %s group by to_user_id   , from_user_id " % self.id)
+       # a.query.group_by =['from_user_id']
+        a3 = 0
+        for i in a:
+            a3 = a3 + 1
+        return a3
     def getStat(self):
         from django.db.models import Avg , Max , Min ,Count
         try:
@@ -544,34 +559,13 @@ class UserProfiles(models.Model):
             return {"ort":0,"big":0,"min":0,"total":0}
            
         return r[0]
-=======
-        a = fallowers.objects.filter(to_user = self).count()
-        return int(a)
-    def getStat(self):
-
-        dd = Status.objects.filter(from_user=self)
-        cc = dd.count()
-        total = 0.0
-        
-        big = 0.0
-        wi = 100.0
-        for c in dd.all():
-            total = total + c.mood_point
-            if big < c.mood_point:
-                big = c.mood_point
-            if wi > c.mood_point:
-                wi =c.mood_point
-        try:
-            ort = total / cc;
-        except:
-            ort = 0
-        return {"ort":str(ort)[0:3],"big":big,"min":wi,"total":cc}
-        
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         
     def getSelf(self):
         asx = []
-        a = Status.objects.filter(from_user=self).order_by("-last_update")[0:50].all()
+        if self.is_grup != 1:
+            a = Status.objects.filter(from_user=self).order_by("-last_update")[0:50].all()
+        else:
+            a = Status.objects.filter(text__contains="@"+self.user.username).order_by("-last_update")[0:50].all()
         for z in a:
             
             try:
@@ -597,7 +591,6 @@ class UserProfiles(models.Model):
          
         return asx
 
-<<<<<<< HEAD
     def gen_tags(self):
         
         from django.db.models import Count
@@ -648,9 +641,8 @@ class UserProfiles(models.Model):
         asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
 
         return asx
+    
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     def myStatusList(self):
         s = []
         s.append(self)
@@ -660,14 +652,10 @@ class UserProfiles(models.Model):
         
         a = userActions.objects.filter(from_user__in=s).order_by("-times")[0:50].all()
         #,post=hidePost.objects.filter(from_user=self.user).all()
-<<<<<<< HEAD
-        asx =  cache.get("getLastest_%s" % str(self.user.id))
+        #asx =  cache.get("getLastest_%s" % str(self.user.id))
         #return asx
-        if asx != None:
-            return asx
-=======
-          
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+        #if asx != None:
+        #    return asx
         asx = list()
         for z in a:
             
@@ -689,17 +677,9 @@ class UserProfiles(models.Model):
                 #print userActions.objects.filter(from_user__in=s).group_by("post_id").order_by("-times").query
         #asx.sort( key="last_update" )
         #asx  = sorted(asx, key=lambda k: k['last_update'], reverse=True)
-<<<<<<< HEAD
         cache.set("getLastest_%s" % str(self.user.id),asx,365000)
         return asx
-
-=======
-         
-        return asx
-
-class tags(models.Model):
-    tag     = models.CharField(max_length=40,default='',null=True)
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+    
 
 
 class UserAlerts(models.Model):
@@ -707,19 +687,14 @@ class UserAlerts(models.Model):
      type            = models.SmallIntegerField()
      post_id         = models.IntegerField(default=0)
      read            = models.SmallIntegerField(default=0,)
+     from_user       = models.IntegerField(default=0)
 
-
-def sendAlert(user,type,post_id):
-<<<<<<< HEAD
+def sendAlert(user,type,post_id,from_user):
     a = User.objects.filter(username = user).get()
     s = UserAlerts()
     s.user = a
-=======
-    a = UserProfiles.objects.filter(user__username = user).get()
-    s = UserAlerts()
-    s.user = a.user
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     s.type = type
+    s.from_user = from_user
     s.post_id = post_id
     s.save()
     return
@@ -730,6 +705,11 @@ class userLoginService(models.Model):
     service         = models.CharField(max_length=200)
     service_param   = models.CharField(max_length=2000)
     service_uid     = models.CharField(max_length=200)
+
+
+class groupowners(models.Model):
+    grup            = models.ForeignKey(UserProfiles)
+    owner           = models.ForeignKey(UserProfiles,related_name="owner")
 
 class UserMessages(models.Model):
     from_user   = models.ForeignKey(UserProfiles)
@@ -758,20 +738,18 @@ class UserMessages(models.Model):
 class fallowers(models.Model):
     from_user   = models.ForeignKey(UserProfiles)
     to_user     = models.ForeignKey(UserProfiles,related_name="toa")
+    wait_access = models.SmallIntegerField(default=0)
     def __unicode__(self):
         return str(self.from_user.user) + " -> " + str(self.to_user.user) 
-    def GetStatus(self):
-        a = Status.objects.filter(from_user =self.to_user).order_by("last_update").all()
-        return a
+   
 
 class perms(models.Model):
     user            = models.ForeignKey(UserProfiles)
     feed            = models.SmallIntegerField(default=1)
     postit          = models.SmallIntegerField(default=1)
     freq            = models.SmallIntegerField(default=1)
-    freq            = models.SmallIntegerField(default=1)
-    dm              = models.SmallIntegerField(default=1)
-    flw             = models.SmallIntegerField(default=1)
+    dim             = models.SmallIntegerField(default=1)
+    cmd             = models.SmallIntegerField(default=1)
     
 
 class postit(models.Model):
@@ -787,7 +765,9 @@ class shorturi(models.Model):
     short           = models.CharField(max_length=100)
     user            = models.CharField(max_length=200)
     post            = models.CharField(max_length=200)
-class Status(models.Model):
+
+
+class DeletedStatus(models.Model):
     from_user       = models.ForeignKey(UserProfiles)
     send_time       = models.IntegerField()
     text            = models.TextField()
@@ -799,12 +779,26 @@ class Status(models.Model):
     rewrite         = models.CharField(null=True,default="piii",max_length=1000)
     comment_list    = models.TextField(null=True,default="[]")
 
-    def save(self):
-<<<<<<< HEAD
+
+class Status(models.Model):
+    from_user       = models.ForeignKey(UserProfiles)
+    send_time       = models.IntegerField()
+    text            = models.TextField()
+    attachments     = models.CharField(max_length=1000)
+    mood_point      = models.FloatField()
+    mood_use	    = models.SmallIntegerField(null=True,default=0)
+    last_update     = models.IntegerField()
+    like_list       = models.TextField(null=True,default="[]")
+    rewrite         = models.CharField(null=True,default="piii",max_length=1000)
+    comment_list    = models.TextField(null=True,default="[]")
+    hide_comment    = models.SmallIntegerField(null=True,default=0)
+    def save(self,send_alert = 1):
         cache.delete("getLastest_%s" % self.from_user.user.id)
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+
+
+
+
         try:
             if len(self.text) > 100:
                 rewrite = self.text[:100]
@@ -818,18 +812,14 @@ class Status(models.Model):
 
             #text =  text.decode("utf-8")
 
-<<<<<<< HEAD
-            tmp = rewrite.lower().replace("ı","i").replace("ç","c").replace("ş","s").replace("ö","o").replace("ü","u").replace("ğ","g")
-=======
-            tmp = rewrite.lower() #.replace("ı","i").replace("ç","c").replace("ş","s").replace("ö","o").replace("ü","u").replace("ğ","g")
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+            tmp = rewrite.lower().replace(u"ı","i").replace(u"ç","c").replace(u"ş","s").replace(u"ö","o").replace(u"ü","u").replace(u"ğ","g")
             #tmp = text.lower()
 
             re_dashify = re.compile(r'[-\s]+')
             cleanup= re_strip.sub('', tmp).strip().lower()
             rewrite =  re_dashify.sub('-', cleanup)
             k = True
-           
+
             while k:
                 s = Status.objects.filter(rewrite=rewrite , from_user=self.from_user).count()
                 if s > 0:
@@ -841,9 +831,9 @@ class Status(models.Model):
             print e
         try:
             super(Status, self).save() # Call the "real" save() method
+            cache.delete("getLastest_%s" % self.from_user.user.id)
             id = self.id
             import re
-<<<<<<< HEAD
             try:
                 REGEX_Ment          = "((![^\s]*))"
                 regex = re.compile(REGEX_Ment)
@@ -863,71 +853,143 @@ class Status(models.Model):
 
 
             
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             REGEX_Ment          = "((@[^\s]*))"
             regex = re.compile(REGEX_Ment)
             ment = regex.findall(self.text)
-            for i in ment:
-                sendAlert(i[0].replace("@",""),1,id)
+            print "send alert :",send_alert
+            if send_alert == 1:
+                for i in ment:
+                    print "#################################"
+                    print i
+                    ir = UserProfiles.objects.filter(user__username = i[0].replace("@","")).get()
+                    if ir != None:
+                        if ir.is_grup == 1:
+
+                            f = fallowers.objects.filter(to_user=ir).all()
+                            for zr in f:
+                                print "#################################"
+                                print zr.from_user
+                                k2 = userActions()
+                                k2.from_user = zr.from_user
+                                k2.post = self
+                                k2.times = md()
+                                k2.post_id = self.id
+                                k2.save()       
+
+                    sendAlert(i[0].replace("@",""),1,id,self.from_user.user.id)
 
 
         except Exception as e:
             print e
-
+    def report(self,user):
+        a = ReportPost()
+        a.from_user = user
+        a.from_status = self
+        a.save()
 
     def saveComment(self,user,text,time):
+        cmd = getPerms(self.from_user,"cmd")
+        if cmd == 4:
+            return 0
+        if cmd == 2 and user != self.from_user:
+            return 0
+
+        if cmd == 3:
+            dd = fallowers.objects.filter(from_user=self.from_user,to_user=user)
+            if dd.count() == 0:
+                return 0
+
         import json
         data = json.loads(self.comment_list)
         id = len(data)+13
-<<<<<<< HEAD
-        
+        asend = 1
+        sended = ""
+        REGEX_Ment          = "((@[^\s]*))"
+        regex = re.compile(REGEX_Ment)
+        ment = regex.findall(self.text)
+        for i in ment:
+            print i[0].replace("@","")
+            print str(user.user.username)
+            if i[0].replace("@","") == str(user.user.username):
+                asend = 0
 
-        
+                sended += "," +  i[0]
         
         #sendAlert(self.id,self.from_user.user,2)
-
+        
 
         try:
             if str(self.from_user.user) != str(user.user):
-                sendAlert(str(self.from_user.user),2,self.id)
+                sendAlert(str(self.from_user.user),2,self.id,user.id)
+                sended += "," +  str(self.from_user.user)
         except:
             pass
+
+
+        
         try:
             for i in data:
-                if i['username'] != str(self.from_user.user) and i['username'] != str(user.user):
-                    sendAlert(str(i['username']),2,self.id)
+                if i['username'] != str(self.from_user.user):
+                    if i['username'] != str(user.user.username):
+                        if sended.find(","+str(i['username'])) == -1:
+                            sendAlert(str(i['username']),2,self.id,user.id)
+                            sended += ","+str(i['username'])
+                    else:
+                        asend = 0
+                else:
+                    asend = 0
         except:
             pass
-        
-        data.append({"id":id,"username":str(user.user),"rewrite":user.rewrite,"text":text,"date":time})
-        
 
-=======
-        data.append({"id":id,"username":str(user.user),"rewrite":user.rewrite,"text":text,"date":time})
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+
+
+        
+        data.append({"id":id,"username":str(user.user),"rewrite":user.rewrite,"text":text,"date":time,"hide":0})
+        print "asend : " , asend
+
         self.comment_list = json.dumps(data)
-        self.save()
+        if sended.find(","+str(self.from_user.user)) == -1:
+            sendAlert(str(self.from_user.user),2,self.id,user.id)
+        self.save(asend)
         k2 = userActions()
         k2.from_user = user
         k2.post = self
         k2.times = time
         k2.post_id = self.id
         k2.save()
-        
+        cache.delete("getLastest_%s" % self.from_user.user.id)
     def saveLike(self,user,time):
         import json
         data = json.loads(self.like_list)
         data.append({'username':str(user.user),"rewrite":user.rewrite})
         self.like_list = json.dumps(data)
-        self.save()
+        self.save(0)
+        if self.from_user != user :
+            sendAlert(str(self.from_user.user),4,self.id,user.id)
         k2 = userActions()
         k2.from_user = user
         k2.post = self
         k2.times = time
         k2.post_id = self.id
         k2.save()
+    def postDelete(self):
+        cache.delete("getLastest_%s" % self.from_user.user.id)
+        a = DeletedStatus()
 
+        a.from_user       = self.from_user
+        a.send_time       = self.send_time 
+        a.text            = self.text
+        a.attachments     = self.attachments 
+        a.mood_point      =  self.mood_point  
+        a.mood_use	  = self.mood_use
+        a.last_update     = self.last_update
+        a.like_list       = self.like_list
+        a.rewrite         = self.rewrite
+        a.comment_list    = self.comment_list
+
+        
+        a.save()
+        self.delete()
     def deleteLike(self,user):
         import json
         data = json.loads(self.like_list)
@@ -940,19 +1002,16 @@ class Status(models.Model):
                 save = 1
         if save == 1:
             self.like_list = json.dumps(tmp_data)
+            self.send_alert = 0
             self.save()
     
     def editComment(self,id,user,text):
         import json
-<<<<<<< HEAD
         cache.delete("getLastest_%s" % self.from_user.user.id)
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         data = json.loads(self.comment_list)
         tmp_data = []
         save = 0
         for i in data:
-<<<<<<< HEAD
             if int(id) != int(i['id']):
                 tmp_data.append(i)
             else:
@@ -960,67 +1019,80 @@ class Status(models.Model):
                     tmp_data.append(i)
                 else:
                     i['text'] = text
-=======
-            if id != i.id:
-                tmp_data.append(i)
-            else:
-                if i.username != str(user.user):
-                    tmp_data.append(i)
-                else:
-                    i.text = text
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     tmp_data.append(i)
                     save = 1
         if save == 1:
             self.comment_list = json.dumps(tmp_data)
+
+            self.send_alert = 0
             self.save()
-      
-    def deleteComment(self,id,user):
+
+
+
+    def hideComment(self,id,user):
         import json
-<<<<<<< HEAD
         cache.delete("getLastest_%s" % self.from_user.user.id)
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         data = json.loads(self.comment_list)
         tmp_data = []
         save = 0
         for i in data:
-<<<<<<< HEAD
+            if int(id) != int(i['id']):
+                tmp_data.append(i)
+            else:
+                if str(user.user) == str(self.from_user.user):
+                    i['hide'] = 1
+                    save = 1
+                tmp_data.append(i)
+                
+        if save == 1:
+            self.comment_list = json.dumps(tmp_data)
+            self.send_alert = 0
+            self.save(0)
+    def showComment(self,id,user):
+        import json
+        cache.delete("getLastest_%s" % self.from_user.user.id)
+        data = json.loads(self.comment_list)
+        tmp_data = []
+        save = 0
+        for i in data:
+            if int(id) != int(i['id']):
+                tmp_data.append(i)
+            else:
+                if str(user.user) == str(self.from_user.user):
+                    i['hide'] = 0
+                    save = 1
+                tmp_data.append(i)
+
+        if save == 1:
+            self.comment_list = json.dumps(tmp_data)
+            self.send_alert = 0
+            self.save(0)
+    def deleteComment(self,id,user):
+        import json
+        cache.delete("getLastest_%s" % self.from_user.user.id)
+        data = json.loads(self.comment_list)
+        tmp_data = []
+        save = 0
+        for i in data:
             if int(id) != int(i['id']):
                 tmp_data.append(i)
             else:
                 if i['username'] != str(user.user):
-=======
-            if id != i.id:
-                tmp_data.append(i)
-            else:
-                if i.username != str(user.user):
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     tmp_data.append(i)
                 else:
                     save = 1
         if save == 1:
             self.comment_list = json.dumps(tmp_data)
-            self.save()
+            self.send_alert = 0
+            self.save(0)
         
           
-    def likes(self):
-        r = Likes.objects.filter(from_status = self)
-        if r.count() > 0:
-            return {"likes":r.all()[0],"count":(int(r.count())-1)}
-        
-    def getComments(self):
-        r = Comments.objects.filter(from_status=self.from_user).get()
-        return r
-    def getCommentsCount(self):
-        r = Comments.objects.filter(from_status=self)
-        #return r
-        if r.count() < 3:
-            return {"count":int(r.count()),"first":r.all(),"last":None}
-        else:
-            z = (int(r.count())-1)
-            return {"count2":z-2,"count":z,"first":r.all()[:2],"last":r.all()[z:z+1]}
+   
 
+
+class ReportPost(models.Model):
+    from_status = models.ForeignKey(Status)
+    from_user   = models.CharField(max_length=1000)
 
 class Comments(models.Model):
     from_status = models.ForeignKey(Status)
@@ -1060,8 +1132,12 @@ def create_user_profile(sender, instance, created, **kwargs):
        profile, created = UserProfiles.objects.get_or_create(user=instance)  
 
 
+def create_user_perms(sender, instance, created, **kwargs):
+    if created:
+       profile, created = perms.objects.get_or_create(user=instance)
 
 
 
 
 post_save.connect(create_user_profile, sender=User) 
+post_save.connect(create_user_perms, sender=UserProfiles)

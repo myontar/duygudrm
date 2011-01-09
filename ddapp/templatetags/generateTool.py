@@ -3,13 +3,14 @@ Created on 10.Kas.2010
 
 @author: Administrator
 '''
+from duygudrm.ddapp.models import UserProfiles
 from django.template import Library
 from django.conf import settings
 from django.template import Context, loader
-from duygudrm.ddapp.models import fallowers
-<<<<<<< HEAD
+from duygudrm.ddapp.models import fallowers , getPerms
 from duygudrm.ddapp.extras.ip import controlIPL
 from django import template
+from django.utils.translation import gettext as _
 
 import time
 import memcache
@@ -17,15 +18,6 @@ import memcache
 register = Library()
 import json
 cache = memcache.Client(['127.0.0.1:11211'])
-=======
-from django import template
-
-import time
-
-
-register = Library()
-import json
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 class getfallow(template.Node):
@@ -38,16 +30,18 @@ class getfallow(template.Node):
              if self.format_string.resolve(context) != None:
                  uu = self.format_string.resolve(context)
                  if request.user.is_authenticated() and str(uu) != str(request.user):
-                     a = fallowers.objects.filter(from_user=request.user,to_user=uu).count()
-                     if a == 1:
-                         return "<a href='#' class='unfallow' rel='"+str(uu)+"'><span>Unfallow</span></a>"
+                     ue = UserProfiles.objects.filter(user=request.user)
+                     a = fallowers.objects.filter(from_user=ue,to_user=uu).count()
+                     
+                     if a > 0:
+                         return "<a href='#' class='unfallow' rel='"+str(uu)+"'><span>"+_("Unfallow")+"</span></a>"
                      else:
-                         return "<a href='#' class='fallow' rel='"+str(uu)+"'><span>Fallow</span></a>"
+                         return "<a href='#' class='fallow' rel='"+str(uu)+"'><span>"+_("Fallow")+"</span></a>"
                  else:
                     return ""
          except Exception as e:
-             print e
-             pass
+             return  str(e)
+             
          return ""
 
 @register.tag
@@ -62,7 +56,6 @@ def do_fallow(parser,token):
 register.tag('fallow', do_fallow)
 
 
-<<<<<<< HEAD
 
 class getelm(template.Node):
     
@@ -86,12 +79,36 @@ register.tag('country', do_country)
 
 
 
+class AssignNode(template.Node):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def render(self, context):
+        context[self.name] = self.value.resolve(context, True)
+        return ''
+
+@register.tag
+def do_assign(parser, token):
+    """
+    Assign an expression to a variable in the current context.
+
+    Syntax::
+        {% assign [name] [value] %}
+    Example::
+        {% assign list entry.get_related %}
+
+    """
+    bits = token.contents.split()
+    if len(bits) != 3:
+        raise template.TemplateSyntaxError("'%s' tag takes two arguments" % bits[0])
+    value = parser.compile_filter(bits[2])
+    return AssignNode(bits[1], value)
+
+register.tag('assign', do_assign)
 
 
 
-
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 @register.filter
 def generatepost(post,user):
     try:
@@ -101,7 +118,6 @@ def generatepost(post,user):
             ulogin = 0
     except:
         ulogin = 0
-<<<<<<< HEAD
 
     import hashlib
     m = hashlib.md5()
@@ -121,12 +137,6 @@ def generatepost(post,user):
     render = t.render(c)
     cache.set("%s_%s" % (zr,ulogin),render,360000)
     return render
-=======
-    t = loader.get_template("post_template.html")
-    c =Context({'posts': post,"user":user,"userlogin":ulogin})
-
-    return t.render(c)
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 @register.filter
 def coord(post):
@@ -134,12 +144,28 @@ def coord(post):
     x,y = post.split(",")
 
     return "left:"+x+"px;top:"+y+"px";
+register.filter('coord', coord)
+@register.filter
+def perms(user,perm):
 
+
+    return getPerms(user,perm)
+
+
+
+@register.filter
+def isfallow(user,touser):
+    if user == touser:
+        return 1
+    f = fallowers.objects.filter(from_user = user , to_user =touser)
+    if f.count()==0:
+        return 0
+    else:
+        return 1
 
 @register.filter
 def generateurl(u,rewrite):
 
-<<<<<<< HEAD
     try:
         import hashlib
         m = hashlib.md5()
@@ -170,27 +196,6 @@ def generateurl(u,rewrite):
             return z.short
     except:
         pass
-=======
-    from duygudrm.ddapp.models import shorturi
-    k = shorturi.objects.filter(user=str(u),post=rewrite)
-    if k.count() == 0:
-        s = shorturi()
-        s.user = str(u)
-        s.post = rewrite
-        s.save()
-        from duygudrm.ddapp.extras import shorter
-        surl = shorter.encode_url(s.id)
-       
-        s.short = surl
-        s.save()
-       
-       
-        return surl
-    else:
-        z = k.get()
-       
-        return z.short
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 
@@ -297,8 +302,4 @@ def likes(val,user):
 register.filter('likes', likes)
 
     
-<<<<<<< HEAD
     
-=======
-    
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599

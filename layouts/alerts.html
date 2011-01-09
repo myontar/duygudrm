@@ -1,0 +1,52 @@
+
+{% load i18n %}
+
+<div class="alertHeader">
+                                                                        <div>{% trans "Mention" %}<br />
+                                                                         <div class="alertlists">
+                                                                        <div>
+                                                                            {% for r in ment %}
+                                                                            <div rel="/{{r.rew}}/{{r.rewrite}}"><a href="/{{r.username}}">{{r.username}}</a> {{r.text}} <br /></div>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                        </div>
+                                                                        </div>
+                                                                        <div>{% trans "Friends" %}<br />
+                                                                         <div class="alertlists">
+                                                                        <div>
+
+                                                                            {% for r in fri %}
+                                                                            {% if r.type == 9%}
+                                                                            <div  rel="/{{r.username}}"><a href="/{{r.username}}">{{r.username}}</a> seni takip etmeye başladı. <br /></div>
+                                                                            {% endif %}
+                                                                            {% if r.type == 8%}
+                                                                            <div rel="/{{r.username}}"><a href="/{{r.username}}">{{r.username}}</a> seni takip etmeyi bıraktı. <br /></div>
+                                                                            {% endif %}
+                                                                            {% endfor %}
+
+                                                                        </div></div>
+                                                                        </div>
+                                                                        <div>{% trans "Posts" %}<br />
+                                                                        <div class="alertlists">
+                                                                        <div class="brnone" style="border:none;border-right: none;">
+                                                                            {% for r in alerts %}
+                                                                            {% if r.type == 2%}
+                                                                            <div rel="/{{r.rew}}/{{r.rewrite}}"> <a href="/{{r.username}}">{{r.username}}</a>  senin <a href="/{{r.rew}}/{{r.rewrite}}"> girdine</a> yorum yaptı. <br /></div>
+                                                                            {% endif %}
+                                                                            {% if r.type == 4%}
+                                                                            <div rel="/{{r.rew}}/{{r.rewrite}}"><a href="/{{r.username}}">{{r.username}}</a>  senin <a href="/{{r.rew}}/{{r.rewrite}}"> girdini</a> beğendi. <br /></div>
+                                                                            {% endif %}
+                                                                            {% endfor %}
+
+                                                                        </div></div>
+                                                                        </div>
+                                                                        <br class="clear" />
+                                                                    </div>
+
+
+
+
+
+
+
+                                                                        <br class="clear" />

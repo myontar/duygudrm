@@ -1,4 +1,8 @@
 {% extends "base_template.html" %}
+{% load tdate%}
+{% load i18n %}
+{% load mood%}
+{% load html%}
 {% load generateTool%}
 
 {% block login %}
@@ -35,32 +39,54 @@
     </div>
     
     <div id="info">
-        
-        <div class="buts"> {% fallow user %} <img src="/statics/images/postitbut.png" id="pit" /></div>
+
+
+         {% assign pt 0 %}
+        {% if user|perms:"postit" == 1 %}
+            {% assign pt 1 %}
+        {% endif %}
+
+        {% if user|perms:"postit" == 3 and user == me %}
+            {% assign pt 1 %}
+        {% endif %}
+
+        {% if user|perms:"postit" == 2 and  user|isfallow:me == 1  %}
+            {% assign pt 1 %}
+        {% endif %}
+
+        <div class="buts"> {% fallow user %} {% if pt == 1 and user.is_grup == 0 %} <img src="/statics/images/postitbut.png" id="pit" /> {% endif %} </div>
         <h2>{{user}}</h2> 
         {{user.bio}}<br />
+      
         <br  class="clear"/>
-<<<<<<< HEAD
+        {% assign durum 0 %}
+        {% if user|perms:"feed" == 1 %}
+            {% assign durum 1 %}
+        {% endif %}
+        
+        {% if user|perms:"feed" == 3 and user == me %}
+            {% assign durum 1 %}
+        {% endif %}
+        
+        {% if user|perms:"feed" == 2 and  user|isfallow:me == 1  %}
+            {% assign durum 1 %}
+        {% endif %}
+        {% if user.is_grup == 1%}
+            {% trans "bu grubu" %} {{user.fallowedCount}} {% trans "kişi takip ediyor" %}
+        {% endif %}
+
+        {% if durum == 1  and user.is_grup == 0%}
         <div><a href="/{{user}}/fallows">{{user.fallwoersCount}}</a><br />fallows</div>
         <div><a href="/{{user}}/fallowers">{{user.fallowedCount}}</a><br />fallowers</div>
-=======
-        <div><a href="/{{user}}/fallowers">{{user.fallowedCount}}</a><br />fallows</div>
-        <div><a href="/{{user}}/fallowers">{{user.fallwoersCount}}</a><br />fallowers</div>
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         <div><a href="/{{user}}/mood">{{user.moodcount}}</a><br />mood</div>
         <div><a href="/{{user}}">{{user.allcount}}</a><br />post</div>
         <div><a href="/{{user}}/likes">{{user.user_likes}}</a><br />likes</div>
         <div><a href="/{{user}}/comments">{{user.user_comments}}</a><br />comment</div>
-<<<<<<< HEAD
         <div><a href="#">{{stat.min}}</a><br />min</div>
         <div><a href="#">{{stat.big}}</a><br />max</div>
         <div><a href="#">{{stat.ort}}</a><br />avg</div>
-=======
-        <div><a href="/{{user}}/fallowers">{{user.getStat.min}}</a><br />min</div>
-        <div><a href="/{{user}}/fallowers">{{user.getStat.big}}</a><br />max</div>
-        <div><a href="/{{user}}/fallowers">{{user.getStat.ort}}</a><br />avg</div>
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         <br  class="clear"/>
+        {% endif %}
       
 
     </div><br  class="clear"/>{% if me == user %} <a href="#ch" class="cpic">Change Picture</a> {% endif %}
@@ -68,18 +94,126 @@
 
 </div>
 <br />
-<<<<<<< HEAD
+{% if durum == 1 %}
 {% autoescape off %}
 {{user.gen_tags}}
 
 {% endautoescape %}
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+{% endif %}
 <br />
 <br class="clear" />
 				<div class="posts">
 			
-                            {{user.getSelf|generatepost:me}}
+                            {% if durum == 1 %}
+							{%for x in user.getSelf %}
+
+
+
+                        <div class="post" id="p_{{x.id}}">
+						
+
+						<div class="plefts">
+						<div class="post_image">
+							<div class="pimage">
+							{% if x.user != x.from_user %}
+                                                            <img src="/avatar/{{x.from_user}}.jpg" width="44" />
+                                                         {% else %}
+                                                             <img src="/avatar/{{x.user}}.jpg" width="44" />
+                                                         {% endif %}
+							</div>
+						</div>{% ifequal x.mood_use  1 %}
+
+							<div class="moodd">{{x.mood}}</div>
+						{% endifequal %}
+						</div>
+						<div class="mainpost">
+							<div class="phdr">
+							{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}" class="pname">{{x.from_user}}</a>{% else %}
+			<a href="/{{x.user.rewrite}}"  class="pname">{{x.user}}</a>{% endif %}
+			{% if x.user != x.from_user and user.user != x.from_user.user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile){% endif %}{% endif %}</div>
+							<div class="pmdl">
+							{{x.text|phtml }}
+							</div>
+							<div class="pbtm"></div>
+							<br class="clear" />
+							<div class="tools">
+								<span><a href="/{{x.from_user}}/{{x.rewrite}}" class="tdate" time="{{x.time}}">{{x.time|tdate}}</a> <!--<a href="">birgo</a> hizmetinden--></span>
+                                                                {% if user.user %}
+                                                                {% if  x.from_user|perms:"cmd" == 1%}
+                                                                    <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% endif %}
+
+                                                                {% if  x.from_user|perms:"cmd" == 2 and x.from_user == user %}
+                                                                    <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% endif %}
+
+
+                                                                {% if  x.from_user|perms:"cmd" == 3 and x.from_user|isfallow:user == 1 %}
+                                                                    <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% endif %}
+
+                                                                {% if x.likes|likech:user == "plike" %}
+                                                                <a href="#comment" class="plike">{% trans "Begen" %}</a>
+                                                                {% else %}
+                                                                <a href="#comment" class="plike_on">{% trans "Begeniyi Kaldir" %}</a>
+                                                                {% endif %}
+																{% if x.from_user.user == user.user %}
+																	<a href="#report" class="pdele" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Sil" %}</a>
+																{% endif %}
+																<a href="#report" class="prep" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Rapor Et" %}</a>
+                                                                {% endif %}<a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Paylas" %}</a>
+
+							</div>
+							<!--
+
+								<a href="" class="first">Mustafa Yontar</a> , <a href="" class="cuser">Begum C</a> ve <a href="#">10 kisi</a> daha begendi.
+							-->
+                                                        <div class="plikes">
+                                                        {% autoescape off %}
+
+                                                        {{ x.likes|likes:user }}
+                                                        {% endautoescape %}
+                                                        </div>
+                                                        {%  if x.comments|commentsc < 5 %}
+                                                        {% for i in x.comments|comments %}
+							<div class="comments">
+                                                            {% if i.hide == 1%}  <a href="/{{i.rewrite}}">{{i.username}}</a> yorumu <a href="/{{x.from_user.user}}">{{x.from_user.user}}</a> tarafından gizlendi. {% if user.user == x.from_user.user %} <a class="ehidcom" href="javascript:;" rel="{{i.id}}">{% trans "göster" %}</a> {% endif %} {% else %} <span>{{i.text}}</span> <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a class="remcom" href="javascript:;" rel="{{i.id}}">sil</a> <a class="edicom" href="javascript:;" rel="{{i.id}}">düzenle</a> {% else %} {% if user.user == x.from_user.user %} <a class="hidcom" href="javascript:;" rel="{{i.id}}">{% trans "gizle" %}</a> {% endif %} {% endif %} {% endif %}
+							</div>
+
+                                                        {% endfor %}
+                                                        {% else %}
+
+                                                            {% for i in x.comments|commentst %}
+
+                                                                {% if i.t == 3 %}
+
+                                                                {% for z in x.comments|commentsx %}
+                                                                <div class="comments" style="display:none;">
+								{{z.text}} <a href="/{{z.rewrite}}">{{z.username}}</a>
+                                                                </div>
+
+                                                                {% endfor %}
+
+                                                                <div class="moreComment">{{i.count}} {% blocktrans  %} daha yorum var {% endblocktrans %}</div>
+                                                                {% endif %}
+                                                                <div class="comments">
+                                                                        <span>{{i.text}}</span> <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a class="remcom" href="javascript:;" rel="{{i.id}}">sil</a> <a class="edicom" href="javascript:;" rel="{{i.id}}">düzenle</a> {% else %} {% if user.user == x.from_user.user %} <a class="hidcom" href="javascript:;" rel="{{i.id}}">{% trans "gizle" %}</a> {% endif %} {% endif %}
+                                                                </div>
+
+                                                            {% endfor %}
+                                                        {% endif %}
+						<div class="cigo"></div>
+						</div>
+						<br class="clear" />
+					</div>
+
+
+
+			
+			{%endfor%}
+                        {% else %}
+                        {% trans "This profile is hidden" %}
+                        {% endif %}
                                 </div>
 
 

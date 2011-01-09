@@ -1,0 +1,56 @@
+{% extends "base_template.html" %}
+{% load i18n %}
+
+{% block body %}
+<div id="index_b">
+    
+	<h2>{% trans "Privacy" %}</h2>
+	{% if msgSave == 1 %}
+        <div class="success">{% trans "Your settings has been saved" %}</div>
+        {% endif %}
+	<form method="post" action="" id="priv">
+			
+			
+			<label>{% trans "Comment on post" %}</label> <select name="cmd" id="cmdss">
+				
+				<option value="2" {% if me.cmd == 2 %} selected="selected" {% endif %}>{% trans "Only Me" %}</option>
+				<option value="3" {% if me.cmd == 3 %} selected="selected" {% endif %}>{% trans "Only Friends" %}</option>
+				<option value="1" {% if me.cmd == 1 %} selected="selected" {% endif %}>{% trans "Everyone" %}</option>
+				<option value="4" {% if me.cmd == 4 %} selected="selected" {% endif %}>{% trans "Disable" %}</option>
+			</select><br />
+			
+			<label>{% trans "Friendship" %}</label> <select name="freq" id="freq">
+				
+				<option value="1" {% if me.freq == 1 %} selected="selected" {% endif %}>{% trans "Not need request" %}</option>
+				<option value="2" {% if me.freq == 2 %} selected="selected" {% endif %}>{% trans "Need request" %}</option>
+			</select><br />
+			
+			<label>{% trans "Feed Showing" %}</label> <select name="feed" id="feed">
+				
+				<option value="1" {% if me.feed == 1 %} selected="selected" {% endif %}>{% trans "Everyone" %}</option>
+				<option value="2" {% if me.feed == 2 %} selected="selected" {% endif %}>{% trans "Only Friends" %}</option>
+				<option value="3" {% if me.feed == 3 %} selected="selected" {% endif %}>{% trans "Only Me" %}</option>
+			</select><br />
+			
+			<label>{% trans "Post-it Send" %}</label> <select name="postit" id="postit">
+				
+				<option value="1" {% if me.postit == 1 %} selected="selected" {% endif %}>{% trans "Everyone" %}</option>
+				<option value="2" {% if me.postit == 2 %} selected="selected" {% endif %}>{% trans "Only Friends" %}</option>
+				<option value="3" {% if me.postit == 3 %} selected="selected" {% endif %}>{% trans "Only Me" %}</option>
+			</select><br />
+			
+			<label>{% trans "Direct Message Send" %}</label> <select name="dim" id="dim">
+				
+				<option value="1" {% if me.dim == 1 %} selected="selected" {% endif %}>{% trans "Everyone" %}</option>
+				<option value="2" {% if me.dim == 2 %} selected="selected" {% endif %}>{% trans "Only Friends" %}</option>
+				<option value="3" {% if me.dim == 3 %} selected="selected" {% endif %}>{% trans "Disabled" %}</option>
+			</select><br />
+			<button class="btn">{% trans "Save" %}</button>
+			{% csrf_token %}
+	</form>
+	
+	
+</div>
+
+
+{% endblock %}

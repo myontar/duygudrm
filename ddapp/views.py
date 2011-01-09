@@ -7,9 +7,11 @@ Created on 04.Kas.2010
 from django.contrib.auth import authenticate
 from django.contrib.auth import  login
 
+from duygudrm.ddapp.models import fallowers
 import os.path
 from django.utils.encoding import *
 from duygudrm.ddapp.extras.mtoken import makeToken , controltoken
+from duygudrm.ddapp.extras import linkedin
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import Context, loader
@@ -27,22 +29,13 @@ import time , StringIO
 from PIL import Image
 import memcache
 from django.contrib.auth.models import User
-<<<<<<< HEAD
-from duygudrm.ddapp.models import UserProfiles , UserAlerts
-=======
-from duygudrm.ddapp.models import UserProfiles
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+from duygudrm.ddapp.models import UserProfiles , UserAlerts , sendAlert , groupowners
 from oauthtwitter import OAuthApi
 from duygudrm.ddapp.extras.friendfeed import *
 import oauth.oauth as oauth
 from django.template import RequestContext
-<<<<<<< HEAD
 from duygudrm.ddapp.extras.ip import controlIPL
 cache = memcache.Client(['127.0.0.1:11211'])
-=======
-
-cache = memcache.Client(['192.168.1.4:11211'])
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 def MakingRender(template,request=None,params={}):
@@ -60,7 +53,6 @@ def MakingRender(template,request=None,params={}):
     if request.user.is_authenticated():
         logged = request.user
     c['login'] = logged
-<<<<<<< HEAD
     ucontrol = controlIPL(request.META['REMOTE_ADDR'])
     c['ucontrol'] = ucontrol
 
@@ -104,10 +96,239 @@ def loginyahoo(request):
     # make public request for data oauth requests for profiles
     oauthapp = yahoo.application.OAuthApplication(consumer_key = ck, consumer_secret  = cks,application_id=app)
     req_token = oauthapp.get_request_token(YCALLBACK_URL)
-    return HttpResponse(json.dumps(req_token))
-    request.session['req_token'] = req_token
-    return HttpResponseRedirect(oauthapp.get_authorization_url(req_token))
+    print req_token
     
+    #return HttpResponse(str(req_token))
+    request.session['req_token'] = str(req_token.to_string())
+    
+    return HttpResponseRedirect(oauthapp.get_authorization_url(req_token))
+def logincyahoo(request):
+    import oauth
+
+    import yahoo.oauth, yahoo.yql, yahoo.application
+
+
+    # Yahoo! OAuth Credentials - http://developer.yahoo.com/dashboard/
+    YCONSUMER_KEY      = 'dj0yJmk9MnlQMlNYZkRtVHVXJmQ9WVdrOU1FVnVUREpOTkdjbWNHbzlORGsyTnpRM05EWXkmcz1jb25zdW1lcnNlY3JldCZ4PWNh'
+    YCONSUMER_SECRET   = '270fac3cd355956be9060adf35f96b6287ee2944'
+    YAPPLICATION_ID    = '0EnL2M4g'
+    YCALLBACK_URL      = 'http://framemind.com/connect_yahoo'
+    ck  = YCONSUMER_KEY
+    cks = YCONSUMER_SECRET
+    app = YAPPLICATION_ID
+    cb  = YCALLBACK_URL
+
+
+
+    # make public request for data oauth requests for profiles
+    oauthapp = yahoo.application.OAuthApplication(consumer_key = ck, consumer_secret  = cks,application_id=app)
+    req_token = oauthapp.get_request_token(YCALLBACK_URL)
+    print req_token
+
+    #return HttpResponse(str(req_token))
+    request.session['req_token'] = str(req_token.to_string())
+
+    return HttpResponseRedirect(oauthapp.get_authorization_url(req_token))
+
+
+class tkn(object):
+    
+    secret = ""
+    oauth_token = ""
+    callback = ""
+    oauth_expires_in = ""
+
+@csrf_exempt
+def login_linkedin(request):
+
+    KEY = "7h7EKQN7fWF6MKHsHCp3HcviIaaK9CZ3ot5ODXA2OdGLAAT7gfuFFg2462l44SY3"
+    SCR = "nA8mntGQcUAtrBSQhriB12RQypqHcE7HbutQs-bxPX4qFfoT-VDeRdlkDS-xyF4v"
+
+    api = linkedin.LinkedIn(KEY, SCR, "http://framemind.com/signin_linkedin")
+    result = api.requestToken()
+    request.session['linreq'] = api.request_token
+    request.session['linreqsc'] = api.request_token_secret
+    return HttpResponseRedirect( api.getAuthorizeURL())
+
+def loginconnect_linkedin(request):
+
+    KEY = "7h7EKQN7fWF6MKHsHCp3HcviIaaK9CZ3ot5ODXA2OdGLAAT7gfuFFg2462l44SY3"
+    SCR = "nA8mntGQcUAtrBSQhriB12RQypqHcE7HbutQs-bxPX4qFfoT-VDeRdlkDS-xyF4v"
+
+    api = linkedin.LinkedIn(KEY, SCR, "http://framemind.com/connect_linkedin")
+    result = api.requestToken()
+    request.session['linreq'] = api.request_token
+    request.session['linreqsc'] = api.request_token_secret
+    return HttpResponseRedirect( api.getAuthorizeURL())
+
+
+def unameControl(uname):
+    while True:
+        if User.objects.filter(username=uname).count() == 0:
+            return uname
+        else:
+            uname = uname + "-" + "1"
+
+
+
+def groups(request):
+    error = 0
+    sc    = 0
+    if "group" in request.POST:
+        if request.user.is_authenticated():
+
+
+
+            gg = User.objects.filter(username=request.POST['group']).count()
+            if gg == 0:
+                u = User()
+                u.username = request.POST['group']
+                u.save()
+                rewrite = u"%s" % request.POST['group']
+            
+            
+
+                tmp = rewrite.lower().replace(u"ı","i").replace(u"ç","c").replace(u"ş","s").replace(u"ö","o").replace(u"ü","u").replace(u"ğ","g")
+            #tmp = text.lower()
+                re_strip = re.compile(r'[^\w\s-]')
+
+                re_dashify = re.compile(r'[-\s]+')
+                cleanup= re_strip.sub('', tmp).strip().lower()
+                rewrite =  re_dashify.sub('-', cleanup)
+
+
+                u2 = UserProfiles.objects.filter(user=u).get()
+                u2.user = u
+                u2.is_grup = 1
+                u2.rewrite = rewrite
+                u2.save()
+
+                g = groupowners()
+                g.grup = u2
+                u3 = UserProfiles.objects.filter(user=request.user).get()
+                g.owner = u3
+                g.save()
+                sc = 1
+            else:
+                error = 1
+
+    
+    if request.user.is_authenticated():
+        u3 = UserProfiles.objects.filter(user=request.user).get()
+        mygroups = fallowers.objects.filter(from_user = u3 , to_user__is_grup = 1 ).all()
+        mygroups.query.group_by =['to_user_id']
+        u4 = UserProfiles.objects.filter(is_grup=1).all()
+        return MakingRender("groups.html",request,{"s":sc,"e":error,"fallows":mygroups,"groups":u4})
+    else:
+        return HttpResponseRedirect("/login")
+
+
+def signin_linkedin(request):
+    KEY = "7h7EKQN7fWF6MKHsHCp3HcviIaaK9CZ3ot5ODXA2OdGLAAT7gfuFFg2462l44SY3"
+    SCR = "nA8mntGQcUAtrBSQhriB12RQypqHcE7HbutQs-bxPX4qFfoT-VDeRdlkDS-xyF4v"
+
+    api = linkedin.LinkedIn(KEY, SCR, "http://framemind.com/signin_linkedin")
+
+    ove = request.GET.get('oauth_verifier','')
+    aa = api.accessToken(request.session['linreq'],request.session['linreqsc'],ove)
+
+    if 1 == 1:
+    #try:
+        profile = api.GetProfile(fields=['first-name','last-name','id'])
+
+
+        uid = profile.id
+        #return HttpResponse(uid)
+        name = profile.first_name
+        sname = profile.last_name
+        uname = profile.first_name + "-" + profile.last_name
+        email = "none@none.com"
+        access_token = ""
+
+        
+
+        pu = userLoginService.objects.filter(service_uid = uid)
+
+
+        if pu.count() == 0:
+                
+                uname = unameControl(uname)
+                u = User()
+                u.username = uname
+                u.first_name = name
+                u.last_name = sname
+                u.email     = email
+                u.is_active    = True
+                u.set_password('admin001')
+                u.save()
+                u2 = UserProfiles.objects.filter(user=u).get()
+                #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+                u2.rewrite = uname
+                u2.save()
+                user = authenticate(username=uname, password='admin001')
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+str(uid)+',"access_token":"'+str(access_token)+'"}'
+                uys.service_uid = uid
+                uys.service = "linkedin"
+                uys.user = u2
+                uys.save()
+            
+        else:
+            u = pu.get()
+            #printu.user.user_id
+
+            userx = User.objects.filter(id=u.user.user_id).get()
+            #printuserx
+            userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+            
+            #account = get_account_from_hash(ux.hash)
+            user = authenticate(username=userx.username,external=1)
+            #printuser
+            #user = ux
+        #request.session
+        login(request,user)
+        
+       
+        return HttpResponse("<script>opener.document.location='/';window.close(); </script>")
+    #except Exception as e:
+    #    return HttpResponse("<br /><br /><br /><center><a href='/login_linkedin'>please try again...</a></center>"+str(e))
+
+def connect_linkedin(request):
+    KEY = "7h7EKQN7fWF6MKHsHCp3HcviIaaK9CZ3ot5ODXA2OdGLAAT7gfuFFg2462l44SY3"
+    SCR = "nA8mntGQcUAtrBSQhriB12RQypqHcE7HbutQs-bxPX4qFfoT-VDeRdlkDS-xyF4v"
+
+    api = linkedin.LinkedIn(KEY, SCR, "http://framemind.com/connect_linkedin")
+
+    ove = request.GET.get('oauth_verifier','')
+    aa = api.accessToken(request.session['linreq'],request.session['linreqsc'],ove)
+
+    if 1 == 1:
+    #try:
+        profile = api.GetProfile(fields=['first-name','last-name','id'])
+        uid = profile.id
+        access_token = ""
+        pu = userLoginService.objects.filter(service_uid = uid)
+        if pu.count() == 0:
+
+
+                u2 = UserProfiles.objects.filter(user=request.user).get()
+                #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+str(uid)+',"access_token":"'+str(access_token)+'"}'
+                uys.service_uid = uid
+                uys.service = "linkedin"
+                uys.user = u2
+                uys.save()
+
+
+        
+
+        return HttpResponse("<script>opener.document.location = opener.document.location;window.close(); </script>")
+    #except Exception as e:
+    #    return HttpResponse("<br /><br /><br /><center><a href='/login_linkedin'>please try again...</a></center>"+str(e))
+    
+ 
 @csrf_exempt
 def sigyaho(request):
     import oauth
@@ -124,14 +345,162 @@ def sigyaho(request):
     cks = YCONSUMER_SECRET
     app = YAPPLICATION_ID
     cb  = YCALLBACK_URL
+    tokenall = yahoo.oauth.RequestToken(YCONSUMER_KEY,YCONSUMER_SECRET)
+    tokenall = tokenall.from_string(request.session['req_token'])
+    #token = list()
+    
 
-    oauthapp = yahoo.application.OAuthApplication( ck, cks,YCALLBACK_URL,app,request.GET['oauth_token'])
-    data =  oauthapp.get_access_token(request.session['req_token'],request.GET['oauth_verifier'])
+    
+    
+    oauthapp = yahoo.application.OAuthApplication( ck, cks,app,YCALLBACK_URL)
+    
+    data =  oauthapp.get_access_token(tokenall,request.GET['oauth_verifier'])
+    #access_token = str(data)
     profile = "http://social.yahooapis.com/v1/user/%s/profile" % data.yahoo_guid
+    oauthapp2 = yahoo.application.OAuthApplication( ck, cks,app,YCALLBACK_URL,data)
+    profile = profile + "?access_token="
+    import oauthlib.oauth
+   
+    guid = data.yahoo_guid
+    url =  'http://social.yahooapis.com/v1/user/%s/profile' % guid
+    parameters = { 'format': 'json' }
+    requests = oauthlib.oauth.OAuthRequest.from_consumer_and_token(oauthapp2.consumer, token=oauthapp2.token, http_method='GET', http_url=url, parameters=parameters)
+    requests.sign_request(oauthapp2.signature_method_hmac_sha1, oauthapp2.consumer, data)
+    aldata = oauthapp2.client.access_resource(requests)
+    data = json.loads( aldata)
+    brit_date =data['profile']['birthdate'] + "/" + str(data['profile']['birthYear'])
+    access_token = ""
+    uname = data['profile']['nickname'].replace(" ","-")
+    email = data['profile']['emails'][0]['handle']
+    name  = data['profile']['givenName']
+    sname = data['profile']['familyName']
+    gender = 2
+    if data['profile']['gender'] == "M":
+        gender = 1
+    uid = guid
 
-    profile = profile + "?"
-    return HttpResponse( data.yahoo_guid )
+
+    pu = userLoginService.objects.filter(service_uid = uid)
+
+
+    if pu.count() == 0:
+            u23 = User.objects.filter(email=email)
+            if u23.count() > 0:
+                userx = u23.get()
+                userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+
+                #account = get_account_from_hash(ux.hash)
+                user = authenticate(username=userx.username,external=1)
+                #printuser
+                #user = ux
+                u2 = UserProfiles.objects.filter(user=userx).get()
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+                uys.service_uid = uid
+                uys.service = "yahoo"
+                uys.user = u2
+                uys.save()
+                login(request,user)
+
+                return HttpResponseRedirect("/")
+            
+            u = User()
+            u.username = uname
+            u.first_name = name
+            u.last_name = sname
+            u.email     = email
+            u.is_active    = True
+            u.set_password('admin001')
+            u.save()
+            u2 = UserProfiles.objects.filter(user=u).get()
+            u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+            u2.rewrite = uname
+            u2.save()
+            user = authenticate(username=uname, password='admin001')
+            uys = userLoginService()
+            uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+            uys.service_uid = uid
+            uys.service = "yahoo"
+            uys.user = u2
+            uys.save()
+        
+    else:
+        u = pu.get()
+        #printu.user.user_id
+
+        userx = User.objects.filter(id=u.user.user_id).get()
+        #printuserx
+        userx.backend = 'duygudrm.ddapp.models.MyLoginBackend'
+        
+        #account = get_account_from_hash(ux.hash)
+        user = authenticate(username=userx.username,external=1)
+        #printuser
+        #user = ux
+    #request.session
+    login(request,user)
+    
+   
     return HttpResponse("<script>opener.document.location='/';window.close(); </script>")
+def connect_yahoo(request):
+    import oauth
+
+    import yahoo.oauth, yahoo.yql, yahoo.application
+
+
+    # Yahoo! OAuth Credentials - http://developer.yahoo.com/dashboard/
+    YCONSUMER_KEY      = 'dj0yJmk9MnlQMlNYZkRtVHVXJmQ9WVdrOU1FVnVUREpOTkdjbWNHbzlORGsyTnpRM05EWXkmcz1jb25zdW1lcnNlY3JldCZ4PWNh'
+    YCONSUMER_SECRET   = '270fac3cd355956be9060adf35f96b6287ee2944'
+    YAPPLICATION_ID    = '0EnL2M4g'
+    YCALLBACK_URL      = 'http://framemind.com/connect_yahoo'
+    ck  = YCONSUMER_KEY
+    cks = YCONSUMER_SECRET
+    app = YAPPLICATION_ID
+    cb  = YCALLBACK_URL
+    tokenall = yahoo.oauth.RequestToken(YCONSUMER_KEY,YCONSUMER_SECRET)
+    tokenall = tokenall.from_string(request.session['req_token'])
+    #token = list()
+
+
+
+
+    oauthapp = yahoo.application.OAuthApplication( ck, cks,app,YCALLBACK_URL)
+
+    data =  oauthapp.get_access_token(tokenall,request.GET['oauth_verifier'])
+    #access_token = str(data)
+    profile = "http://social.yahooapis.com/v1/user/%s/profile" % data.yahoo_guid
+    oauthapp2 = yahoo.application.OAuthApplication( ck, cks,app,YCALLBACK_URL,data)
+    profile = profile + "?access_token="
+    import oauthlib.oauth
+
+    guid = data.yahoo_guid
+    url =  'http://social.yahooapis.com/v1/user/%s/profile' % guid
+    parameters = { 'format': 'json' }
+    requests = oauthlib.oauth.OAuthRequest.from_consumer_and_token(oauthapp2.consumer, token=oauthapp2.token, http_method='GET', http_url=url, parameters=parameters)
+    requests.sign_request(oauthapp2.signature_method_hmac_sha1, oauthapp2.consumer, data)
+    aldata = oauthapp2.client.access_resource(requests)
+    data = json.loads( aldata)
+
+    access_token = ""
+   
+    uid = guid
+
+
+    pu = userLoginService.objects.filter(service_uid = uid)
+
+
+    if pu.count() == 0:
+
+            u2 = UserProfiles.objects.filter(user=request.user).get()
+
+            uys = userLoginService()
+            uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+            uys.service_uid = uid
+            uys.service = "yahoo"
+            uys.user = u2
+            uys.save()
+
+
+    return HttpResponse("<script>opener.document.location=opener.document.location;window.close(); </script>")
     
 
 @csrf_exempt
@@ -143,10 +512,6 @@ def gopass(request):
         response.set_cookie("pass_country","yes",365*60*60)
     return response
 
-=======
-    return render_to_response(template, c, context_instance=RequestContext(request))
-
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 def reg_facebook(request):
     return MakingRender("regface.html",request,{})
 @csrf_exempt
@@ -155,27 +520,16 @@ def register_to_facebook(request):
     return HttpResponse(a)
 def loginfacebook(request):
     
-<<<<<<< HEAD
     cokie = request.GET['token']
     cookies = {}
 
     access_token = cokie
     uid = request.GET['uid']
-=======
-    cokie = request.COOKIES['fbs_535c96a06491b8e94bd16eafc32cf3b2'].split("&")
-    cookies = {}
-
-    for c in cokie:
-        cookies[c.split("=")[0]] = c.split("=")[1]
-
-    access_token = cookies['access_token']
-    uid = cookies['uid']
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
     import urllib2
     std_headers = {
             'User-Agent': 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.11) Gecko/20101019 Firefox/3.6.11',
-            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+            'Accept-Charset': ' ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-us,en;q=0.5',
         }
@@ -213,6 +567,7 @@ def loginfacebook(request):
                 uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
                 uys.service_uid = uid
                 uys.user = u2
+                uys.service = "facebook"
                 uys.save()
                 login(request,user)
 
@@ -234,6 +589,7 @@ def loginfacebook(request):
             uys = userLoginService()
             uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
             uys.service_uid = uid
+            uys.service = "facebook"
             uys.user = u2
             uys.save()
         
@@ -253,6 +609,54 @@ def loginfacebook(request):
     login(request,user)
     
     return HttpResponseRedirect("/")
+def connectfacebook(request):
+
+    cokie = request.GET['token']
+    cookies = {}
+
+    access_token = cokie
+    uid = request.GET['uid']
+
+    import urllib2
+    std_headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.11) Gecko/20101019 Firefox/3.6.11',
+            'Accept-Charset': ' ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-us,en;q=0.5',
+        }
+    ##printrequest.GET['p']
+    urequest = urllib2.Request("https://graph.facebook.com/me?access_token="+access_token, None, std_headers)
+    video_info_webpage = urllib2.urlopen(urequest).read()
+
+    data = json.loads(video_info_webpage)
+    gender = 2
+    if data['gender'] == "male":
+        gender = 1
+
+    brit_date  = data['birthday']
+    name       = data['name']
+    last_name  = data['last_name']
+    first_name = data['first_name']
+    locale     = data['locale']
+    email     = data['email']
+
+    pu = userLoginService.objects.filter(service_uid = uid)
+
+
+    if pu.count() == 0:
+
+
+            u2 = UserProfiles.objects.filter(user=request.user).get()
+
+            uys = userLoginService()
+            uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+            uys.service_uid = uid
+            uys.service = "facebook"
+            uys.user = u2
+            uys.save()
+
+   
+    return HttpResponseRedirect("/connect")
 def msnregister(request):
 
     cokie = request.session['userinfo']
@@ -281,6 +685,7 @@ def msnregister(request):
                 uys = userLoginService()
                 uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
                 uys.service_uid = uid
+                uys.service = "msn"
                 uys.user = u2
                 uys.save()
 
@@ -305,6 +710,7 @@ def msnregister(request):
             uys = userLoginService()
             uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
             uys.service_uid = uid
+            uys.service = "msn"
             uys.user = u2
             uys.save()
 
@@ -324,6 +730,33 @@ def msnregister(request):
     login(request,user)
 
     return HttpResponse("<script>opener.document.location='/';window.close(); </script>")
+
+def msnconnect(request):
+
+    cokie = request.session['userinfo']
+
+    #brit_date  = data['birthday']
+
+    uid     = cokie['uid']
+    access_token = ''
+    pu = userLoginService.objects.filter(service_uid = uid)
+
+
+    if pu.count() == 0:
+
+            u2 = UserProfiles.objects.filter(user=request.user).get()
+            #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+
+            uys = userLoginService()
+            uys.service_param = '{"uid":'+uid+',"access_token":"'+access_token+'"}'
+            uys.service_uid = uid
+            uys.service = "msn"
+            uys.user = u2
+            uys.save()
+
+
+
+    return HttpResponse("<script>opener.document.location=opener.document.location;window.close(); </script>")
 
 
 def twitterreturn(request):
@@ -345,11 +778,7 @@ def twitterreturn(request):
 		# Redirect the user to the login page
 		return HttpResponse("Something wrong! Tokens do not match...")
         try:
-<<<<<<< HEAD
             twitter = OAuthApi("AJHPnBap3l0WzRtYAtDT8g", "Bs9t4xrIjz10in0NiYUCqPbnjPwYNcsXwYjKjSN9iQw",token)
-=======
-            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA",token)
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             access_token = twitter.getAccessToken()
         except Exception as e:
             print e
@@ -369,17 +798,29 @@ def twitterreturn(request):
 	#	return HttpResponse("Unable to authenticate you!")
         print access_token
         try:
-            print access_token
-<<<<<<< HEAD
             twitter = OAuthApi("AJHPnBap3l0WzRtYAtDT8g", "Bs9t4xrIjz10in0NiYUCqPbnjPwYNcsXwYjKjSN9iQw", access_token)
-=======
-            twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA", access_token)
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
             userinfo = twitter.GetUserInfo()
             import json
             data = userinfo
             data =  json.loads(str(data))
             uid = str(data['id'])
+        except:
+            pass
+
+        if "connect" in request.session:
+                u2 = UserProfiles.objects.filter(user=request.user).get()
+
+
+                uys = userLoginService()
+                uys.service_param = '{"uid":'+uid+',"access_token":"'+str(access_token)+'"}'
+                uys.service_uid = uid
+                uys.user = u2
+                uys.service = "twitter"
+                uys.save()
+                return HttpResponseRedirect("/connect")
+        try:
+            print access_token
+           
             username = str(data['screen_name'])
             first_name = str(data['screen_name'])
             last_name = ""
@@ -408,6 +849,7 @@ def twitterreturn(request):
                 uys.service_param = '{"uid":'+uid+',"access_token":"'+str(access_token)+'"}'
                 uys.service_uid = uid
                 uys.user = u2
+                uys.service = "twitter"
                 uys.save()
 
             else:
@@ -433,13 +875,12 @@ def twitterreturn(request):
             #print"asdasd asd asd "
 	# authentication was successful, use is now logged in
 	return HttpResponseRedirect("/")
-<<<<<<< HEAD
 def msntxt(request):
 	return HttpResponse("Mu925J6SBdmClSEpaWjPEGFFaK/KeZPxQrFI+XBbRr4=")
 
 
 
-def fallowers(request,x):
+def fallowersx(request,x):
         u2 = None
         try:
             u2 = UserProfiles.objects.filter(user=request.user).get()
@@ -464,8 +905,105 @@ def ufallowers(request):
 
         return MakingRender("fallower.html",request,{'user':u2,"me":u2})
 
+    
+def priv(request):
+    if request.user.is_authenticated():
+        u2 = None
+        msgSave = 0
+        try:
+            
+                
+            u2 = perms.objects.filter(user=request.user)
+            if u2.count() == 0:
+                u2 = perms()
+                u2.user = UserProfiles.objects.filter(user=request.user).get()
+                u2.save()
+                u2 = perms.objects.filter(user=request.user).get()
+            else:
+                u2 = u2.get()
 
-def fallows(request,x):
+            if "cmd" in request.POST:
+                u2.cmd = request.POST['cmd']
+                u2.freq = request.POST['freq']
+                u2.feed = request.POST['feed']
+                u2.dim = request.POST['dim']
+                u2.postit = request.POST['postit']
+                u2.save()
+                msgSave = 1
+                perm = cache.get("perms")
+                u2 = perms.objects.filter(user=request.user).get()
+                pp = {'dim':u2.dim,'cmd':u2.cmd,"feed":u2.feed,"postit":u2.postit}
+                perm["%s" % str(request.user)] = json.dumps(pp)
+
+                cache.set("perms",perm,360000)
+
+        except Exception as e:
+            return HttpResponse(str(e))
+        return MakingRender("perms.html",request,{"me":u2,"msgSave":msgSave})
+    else:
+        return HttpResponseRedirect("/login")
+def getalertsx(request):
+    u = UserProfiles.objects.filter(user=request.user).get()
+    ss = UserAlerts.objects.filter(user=u).all()
+    for i in ss:
+
+        i.read = 1
+        i.save()
+    return HttpResponse("ok")
+
+def getalerts(request):
+    u = UserProfiles.objects.filter(user=request.user).get()
+
+    aa = UserAlerts.objects.raw(""" SELECT
+ddapp_status.text,
+ddapp_status.rewrite,
+auth_user.username,
+ddapp_useralerts.type,
+ddapp_useralerts.`read`,
+ddapp_userprofiles.rewrite as rew,
+ddapp_useralerts.id as pk,
+ddapp_useralerts.id
+FROM
+ddapp_status
+INNER JOIN ddapp_useralerts ON ddapp_status.id = ddapp_useralerts.post_id
+INNER JOIN auth_user ON auth_user.id = ddapp_useralerts.from_user
+INNER JOIN ddapp_userprofiles ON ddapp_userprofiles.id = ddapp_status.from_user_id
+where ddapp_useralerts.user_id = %s and ddapp_useralerts.read = 0 and (ddapp_useralerts.type = 2 or ddapp_useralerts.type = 4  or ddapp_useralerts.type = 6)
+""" % u.id)
+    ment = UserAlerts.objects.raw(""" SELECT
+ddapp_status.text,
+ddapp_status.rewrite,
+auth_user.username,
+ddapp_useralerts.type,
+ddapp_useralerts.`read`,
+ddapp_userprofiles.rewrite as rew,
+ddapp_useralerts.id as pk,
+ddapp_useralerts.id
+FROM
+ddapp_status
+INNER JOIN ddapp_useralerts ON ddapp_status.id = ddapp_useralerts.post_id
+INNER JOIN auth_user ON auth_user.id = ddapp_useralerts.from_user
+INNER JOIN ddapp_userprofiles ON ddapp_userprofiles.id = ddapp_status.from_user_id
+where ddapp_useralerts.user_id = %s and ddapp_useralerts.read = 0 and ddapp_useralerts.type = 1
+""" % u.id)
+    fri = UserAlerts.objects.raw(""" SELECT
+auth_user.username,
+ddapp_useralerts.type,
+ddapp_useralerts.`read`,
+ddapp_useralerts.id AS pk,
+ddapp_useralerts.id
+FROM
+ddapp_useralerts
+INNER JOIN auth_user ON auth_user.id = ddapp_useralerts.from_user
+where ddapp_useralerts.user_id = %s and ddapp_useralerts.read = 0 and (ddapp_useralerts.type = 8 or ddapp_useralerts.type = 9)
+ """ %  u.id)
+    data = {'user':u,"alerts":aa,"ment":ment,"fri":fri}
+    
+
+    return MakingRender("alerts.html",request,data)
+    
+
+def fallowsx(request,x):
         u2 = None
         try:
             u2 = UserProfiles.objects.filter(user=request.user).get()
@@ -494,23 +1032,12 @@ def friendfeed(request):
         FRIENDFEED_API_TOKEN = dict(
                                 key="ebeb6de3c71042b89da4ba2eda9c929e",
                                 secret="615f26dd9d534dc88bd3913f3d704a47412d9640c1954f17bc1ca1b4944fb75b"
-=======
-
-def friendfeed(request):
-        FRIENDFEED_API_TOKEN = dict(
-                                key="1f6618554afd47eda4786a0984f25ba7",
-                                secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                             )
         facelogin = fetch_oauth_request_token(FRIENDFEED_API_TOKEN)
         ##printfacelogin
         ##printfacelogin["key"]
         data = "|".join([facelogin["key"], facelogin["secret"]])
-<<<<<<< HEAD
 
-=======
-        ##printdata
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         #cookieutil = LilCookies(self.parent
         #                                        , "kaiytbluewyth8ceywpbtdrskcutcoatlceutlbueatbice")
         #cookieutil.set_cookie(name = 'FF_API_REQ_A', value = data, expires_days= 365*100)
@@ -518,16 +1045,41 @@ def friendfeed(request):
         fflogin_url = get_oauth_authentication_url(facelogin)
         return  HttpResponseRedirect(fflogin_url)
 
+
+def connect_friendfeed(request):
+    request.session['connect'] = 1
+    return HttpResponseRedirect("/signin_friendfeed")
+def connect_twitter(request):
+    request.session['connect'] = 1
+    return HttpResponseRedirect("/signin_twitter")
+
+
+def connect(request):
+    if request.user.is_authenticated():
+        u = 1
+        u2 = UserProfiles.objects.filter(user=request.user).get()
+        data = userLoginService.objects.raw(" select service , id , id as pk from ddapp_userloginservice where user_id = %s group by service " % u2.id )
+        dd = {}
+        dd['facebook'] = 0
+        dd['twitter'] = 0
+        dd['friendfeed'] = 0
+        dd['linkedin'] = 0
+        dd['yahoo'] = 0
+        dd['msn'] = 0
+
+        for i in data:
+            dd['%s' % i.service] = 1
+
+        return MakingRender("connect.html",request,{'service':dd,"user":u2})
+
+        
+
+    return ""
 def ffauth(request):
     ar = request
     FRIENDFEED_API_TOKEN = dict(
-<<<<<<< HEAD
                             key="ebeb6de3c71042b89da4ba2eda9c929e",
                             secret="615f26dd9d534dc88bd3913f3d704a47412d9640c1954f17bc1ca1b4944fb75b",
-=======
-                            key="1f6618554afd47eda4786a0984f25ba7",
-                            secret="d47c00f577704d84aa80d177ae6d5d3baa2ffd9e88914ec7baba999142c0ad2e",
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                         )
     #if self.parent.get("oauth_token"):
     #cookieutil = LilCookies(self.parent
@@ -556,7 +1108,18 @@ def ffauth(request):
     username = data['name']
     last_name = ''
     email = 'none@none.com'
-    
+    if "connect" in request.session:
+        u2 = UserProfiles.objects.filter(user=request.user).get()
+        #u2.britdate = int(time.mktime((int(brit_date.split("/")[2]),int(brit_date.split("/")[1]), int(brit_date.split("/")[0]), 0 , 0 , 0,0,0,0)))
+
+        user = authenticate(username=first_name+""+last_name, password='admin001')
+        uys = userLoginService()
+        uys.service_param = '{"uid":'+uid+',"access_token":"'+str(access_token)+'"}'
+        uys.service_uid = uid
+        uys.service = "friendfeed"
+        uys.user = u2
+        uys.save()
+        return HttpResponseRedirect("/connect")
     pu = userLoginService.objects.filter(service_uid = uid)
     if pu.count() == 0:
 
@@ -576,6 +1139,7 @@ def ffauth(request):
         uys = userLoginService()
         uys.service_param = '{"uid":'+uid+',"access_token":"'+str(access_token)+'"}'
         uys.service_uid = uid
+        uys.service = "friendfeed"
         uys.user = u2
         uys.save()
 
@@ -610,11 +1174,7 @@ def ffauth(request):
     return HttpResponseRedirect("/registerask")
 
 def signin(request):
-<<<<<<< HEAD
 	twitter = OAuthApi("AJHPnBap3l0WzRtYAtDT8g", "Bs9t4xrIjz10in0NiYUCqPbnjPwYNcsXwYjKjSN9iQw")
-=======
-	twitter = OAuthApi("A27FxTIkM1gEgy1VPgviw", "v2oGHkAOFARF5JjpIRR3MJVcGZSYHhzBwf0QlKrA")
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 	request_token = twitter.getRequestToken()
 	request.session['request_token'] = request_token.to_string()
 	signin_url = twitter.getSigninURL(request_token)
@@ -693,24 +1253,14 @@ def handle_uploaded_file(f,username):
     #printf.name
     #print'statics/users/avatar/'+username
     e = ""
-<<<<<<< HEAD
     if os.path.exists('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e):
         os.remove('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e)
         os.remove('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/'+username+".jpg")
-=======
-    if os.path.exists('statics/users/avatar/main_'+username+"."+e):
-        os.remove('statics/users/avatar/main_'+username+"."+e)
-        os.remove('statics/users/avatar/'+username+".jpg")
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     
     e = str(f.name).split(".")[len(str(f.name).split("."))-1]
 #print'statics/users/avatar/'+username+"."+e
     e = e.lower()
-<<<<<<< HEAD
     destination = open('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e, 'ab+')
-=======
-    destination = open('statics/users/avatar/main_'+username+"."+e, 'ab+')
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
@@ -718,13 +1268,8 @@ def handle_uploaded_file(f,username):
     #imagefile  = StringIO.StringIO(i.read())
    
     #print"geldik"
-<<<<<<< HEAD
     thumbnail('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e,(120,120),'/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/'+username+".jpg")
     os.remove('/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/main_'+username+"."+e)
-=======
-    thumbnail('statics/users/avatar/main_'+username+"."+e,(120,120),'statics/users/avatar/'+username+".jpg")
-    os.remove('statics/users/avatar/main_'+username+"."+e)
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     
     return '/home/django/duygudrm/statics/users/avatar/'+username
 def short(request,s):
@@ -786,7 +1331,6 @@ def getcomment(request,x):
     #printasx
     return MakingRender("profile_1.html",request,{'me':u2,"user":x2,'post':asx})
 
-<<<<<<< HEAD
 def getcommentt(request):
     
     if request.user.is_authenticated():
@@ -803,8 +1347,6 @@ def getcommentt(request):
         return MakingRender("profile_1.html",request,{'me':u2,"user":u2,'post':asx})
     return HttpResponseRedirect("/")
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
 def getlike(request,x):
@@ -853,8 +1395,23 @@ def user(request,x):
         uname = request.path.replace("/","")
         u = UserProfiles.objects.filter(rewrite=x).get()
         postits = postit.objects.filter(user=u).all()
-<<<<<<< HEAD
         return MakingRender("profile.html",request,{'user':u,"stat":u.getStat(),"me":u2,"postit":postits})
+        #return MakingRender("profile.html",request)
+def meprofile(request):
+        u2 = None
+        try:
+            u2 = UserProfiles.objects.filter(user=request.user).get()
+        except:
+            pass
+        if 'file' in request.FILES:
+            handle_uploaded_file(request.FILES['file'],str(request.user))
+            return HttpResponseRedirect("/"+str(u2.rewrite))
+
+
+       
+        
+        postits = postit.objects.filter(user=u2).all()
+        return MakingRender("profile.html",request,{'user':u2,"stat":u2.getStat(),"me":u2,"postit":postits})
         #return MakingRender("profile.html",request)
 
 def moodlist(request,x):
@@ -872,9 +1429,6 @@ def moodlist(request,x):
         u = UserProfiles.objects.filter(rewrite=x).get()
         #postits = postit.objects.filter(user=u).all()
         return MakingRender("mood.html",request,{'user':u,"me":u2})
-=======
-        return MakingRender("profile.html",request,{'user':u,"me":u2,"postit":postits})
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         #return MakingRender("profile.html",request)
 
 def usermini(request,x):
@@ -916,12 +1470,9 @@ def upload(request):
             
     return HttpResponse("dememe")
 
-<<<<<<< HEAD
 
 
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 def proxy(request):
     import hashlib 
     h = request.GET['p']
@@ -977,23 +1528,16 @@ def imgproxy(request):
 
 
 def avatarControl(request,avat):
-<<<<<<< HEAD
     if os.path.exists("/var/ftp/virtual_users/framemind/http/duygudrm/statics/users/avatar/"+avat):
-=======
-    if os.path.exists("statics/users/avatar/"+avat):
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         return HttpResponseRedirect("/statics/users/avatar/"+avat)
     else:
         return HttpResponseRedirect("/statics/users/avatar/default.jpg")
 @csrf_protect 
 def index(request):
-<<<<<<< HEAD
 
     #if request.META['HTTP_HOST'] != "framemind.com":
     #    return HttpResponseRedirect("http://framemind.com")
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
     request.encoding = 'utf-8'
     if not request.user.is_authenticated():
         return MakingRender("index.html",request)
@@ -1024,7 +1568,6 @@ def index(request):
                     #if len(all) == 0:
                     #    all = None
                     ##printall
-<<<<<<< HEAD
 
                     try:
                         ix = UserAlerts.objects.raw(""" SELECT COUNT(*) as count , ddapp_useralerts.id , ddapp_useralerts.id as pk from ddapp_useralerts  where ddapp_useralerts.user_id = %s and ddapp_useralerts.read = 0 """ % str(u.user.id))
@@ -1038,9 +1581,6 @@ def index(request):
                     except Exception as e:
                         return HttpResponse(e)
                     
-=======
-                    k = {'time':md(),"result":all[0],"token":all[1]}
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     #print"##############################"
                     #printjson.dumps(k)
 
@@ -1057,27 +1597,25 @@ def index(request):
                            ux = referer.split("/")[-1]
                            uto = UserProfiles.objects.filter(user__username=ux).get()
                            p = postit(user=uto,to_user=u,id=request.POST['postitdel']).delete()
-<<<<<<< HEAD
             if 'fallow' in request.POST:
 
                 ux = UserProfiles.objects.filter(user__username=request.POST['fallow']).get()
                 a = fallowers()
                 a.from_user = u
                 a.to_user = ux
+                sendAlert(ux.user.username,9,0,u.user.id)
                 a.save()
                 return HttpResponse("ok")
 
 
             if 'unfallow' in request.POST:
 
-                ux = UserProfiles.objects.filter(user__username=request.POST['fallow']).get()
+                ux = UserProfiles.objects.filter(user__username=request.POST['unfallow']).get()
                 a = fallowers.objects.filter(from_user = u,to_user = ux).get()
                 a.delete()
-                
+                sendAlert(ux.user.username,8,0,u.user.id)
                 return HttpResponse("ok")
 
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
 
             if 'postit' in request.POST:
@@ -1131,11 +1669,25 @@ def index(request):
                     pass
                     #printtype(inst)
                 #return HttpResponse( str(inst))
-<<<<<<< HEAD
             if 'rc' in request.POST:
                 s = Status.objects.filter(id=request.POST['id']).get()
                 
                 s.deleteComment(request.POST['rc'],u)
+                response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                response.set_cookie("token",makeToken(request,0))
+                return response
+            
+            if 'hc' in request.POST:
+                s = Status.objects.filter(id=request.POST['id']).get()
+
+                s.hideComment(request.POST['hc'],u)
+                response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                response.set_cookie("token",makeToken(request,0))
+                return response
+            if 'ehc' in request.POST:
+                s = Status.objects.filter(id=request.POST['id']).get()
+
+                s.showComment(request.POST['ehc'],u)
                 response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                 response.set_cookie("token",makeToken(request,0))
                 return response
@@ -1147,15 +1699,31 @@ def index(request):
                 response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
                 response.set_cookie("token",makeToken(request,0))
                 return response
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+
+            if 'rppost' in request.POST:
+                s = Status.objects.filter(id=request.POST['rppost']).get()
                 
+                s.report(u)
+                response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                response.set_cookie("token",makeToken(request,0))
+                return response
+
+
+            if 'dpost' in request.POST:
+                s = Status.objects.filter(id=request.POST['dpost'],from_user = u).get()
+                
+                s.postDelete()
+                response =  HttpResponse(json.dumps({"response:":"ok","token":makeToken(request)}))
+                response.set_cookie("token",makeToken(request,0))
+                return response
+                
+              
             if 'reply' in request.POST:
                 try:
                     reply = request.POST['reply'].replace("p_","")
                     s = Status.objects.filter(id=reply).get()
                     s.last_update = md()
-                    s.save()
+                    s.save(0)
                     u.user_comments = u.user_comments + 1
                     u.save()
                     s.saveComment(u,request.POST['text'],md())
@@ -1165,15 +1733,9 @@ def index(request):
                     response.set_cookie("token",makeToken(request,0))
                     return response
                 except Exception as inst:
-<<<<<<< HEAD
                     #print inst
                     #pass
                     return HttpResponse( str(inst))
-=======
-                    print inst
-                    pass
-                   #return HttpResponse( str(inst))
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 
             if 'msg' in request.POST:
                 try:
@@ -1196,12 +1758,8 @@ def index(request):
                         s.send_time =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                         s.last_update =  time.mktime((dd.year,dd.month,dd.day,dd.hour,dd.minute,dd.second,0,0,0))
                         s.text = smart_unicode(request.POST['msg'], encoding='utf-8', strings_only=False, errors='strict')
-<<<<<<< HEAD
                         #return HttpResponse(int(request.POST['usemood']))
                         if int(request.POST['usemood']) > 0:
-=======
-                        if request.POST['usemood'] > 0:
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 				s.mood_use = 1
 			else:
 				s.mood_use = 0
@@ -1263,7 +1821,8 @@ def index(request):
 
         
         u = UserProfiles.objects.filter(user=request.user).get()
-       
+
+ 
         return MakingRender("main.html",request,{'user':u})
 
 

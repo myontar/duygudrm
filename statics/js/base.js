@@ -12,15 +12,28 @@ var action = 0;
 var internval = 0;
 var updaters = new Array("t","p","g","l");
 var upchose = 0;
-<<<<<<< HEAD
 var alert_count = 0;
 var ajax_pos = 1;
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 jQuery(document).ready(function() {
 	jQuery("#topbr > textarea").bind("click",main.showSalt);
 	jQuery("#topbr > textarea").bind("focus",main.showSalt);
 	jQuery("#topbr > textarea").bind("keydown",main.movText);
+        jQuery(".walerts").click(function() {
+            jQuery(".alertList").slideDown(1000);
+            main.sendPost("/getAlerts","",function(data) {
+                jQuery(".alertList").html(data);
+                jQuery(".alertlists  > div > div").click(function(){
+                    var er = jQuery(this).attr("rel");
+                    document.location = er;
+                });
+                jQuery(".alertlists  > div > div").hover(function() {
+                    jQuery(this).css("background","#ededed");
+                } , function() {
+                   jQuery(this).css("background","#fff");
+                });
+            });
+             main.sendPost("/getAlertsx","");
+        });
 	//jQuery("#topbr > textarea").bind("keypress",main.movText);
 	//jQuery("#topbr > textarea").bind("keydown",main.movText);
 	jQuery(".posts").click(main.hideSalt);
@@ -36,14 +49,15 @@ jQuery(document).ready(function() {
 	jQuery(".pshare").click(main.share);
 	jQuery("#gomood").click(main.sendMood);
 	jQuery(".moreComment").click(main.moreComment);
+	jQuery(".prep").click(main.report_post);
 	jQuery(".fallow").click(main.fallow);
 	jQuery(".unfallow").click(main.unfallow);
 	jQuery("#pit").click(main.postit);
 	jQuery(".postit > div > a").click(main.postiter);
 	jQuery(".cpic").click(main.cpic);
 	jQuery(".deletepostit").click(main.postitex);
-<<<<<<< HEAD
-	
+	jQuery(".pdele").click(main.delete_post);
+        
 	jQuery(window).bind("focus",function() {
 		if(ajax_pos == 0) ajax_pos = 1;
 	
@@ -55,9 +69,9 @@ jQuery(document).ready(function() {
 	
 	jQuery(".remcom").click(main.removeComment);
 	jQuery(".edicom").click(main.editComment);
+	jQuery(".hidcom").click(main.hideComment);
+	jQuery(".ehidcom").click(main.ehideComment);
 	
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         $(".postit").draggable();
         //$(".postits").draggable({stop:mini.dragpostit});
 
@@ -79,19 +93,51 @@ jQuery(document).ready(function() {
                 main.lazyLoad();
             }
          });
-
-         interval = setInterval(main.update,10000);
+         main.update();
+         interval = setInterval(main.update,5000);
 });
 
 var main = {
-<<<<<<< HEAD
 		
 		
-		repost_post:function() {
-			var parent = jQuery(this).parent().parent().parent().parent().attr("id");
+		report_post:function() {
+			var parent = jQuery(this).parent().parent().parent().parent().attr("id").replace("p_","");
 			main.sendPost("/","rppost="+parent,function() {
-				main.modal('Tamamlandı','İsteğiniz üzere bu post şikayet edildi');
+				main.modal(gettext('Tamamlandı'),gettext('İsteğiniz üzere bu post şikayet edildi'));
 			});
+		},
+		
+		winopen:function(url,w,h) {
+			win = window.open(url,"","width="+w+"px,height="+h+"px");
+			win.parent = window
+			win.opener = window
+			
+		
+		},
+		
+		delete_post:function() {
+			var parent = jQuery(this).parent().parent().parent().parent().attr("id").replace("p_","");
+			var pp = jQuery(this).parent().parent().parent().parent()
+			$( "#dialog-message" ).attr("title",gettext("Dikkat!"));
+			$( "#dialog-message" ).html(gettext("Bu girdiyi silmek istediğinize emin misiniz ?"));
+                        e = gettext("Evet")
+                        h = gettext("Hayır")
+			$( "#dialog-message" ).dialog({
+                            modal: true,
+                            buttons: {
+                                    e:function() {
+										$( this ).dialog( "close" );
+										main.sendPost("/","dpost="+parent,function() {
+											pp.slideUp(1000,function() {pp.remove();main.modal(gettext('Tamamlandı'),gettext('İsteğiniz üzere bu post silindi'));});		
+											
+										});
+									},
+									h:function() {$( this ).dialog( "close" );}
+                            }
+                    });
+			
+			
+			
 		},
 		
 		editComment:function() {
@@ -100,7 +146,7 @@ var main = {
 			var k = this
 			var par = jQuery(this).parent();
 			text = jQuery(this).parent().find("span").text();
-			html = jQuery("<div id='edt'><textarea style='width:300px;'>"+text+"</textarea><button class='btn'>düzenle</button></div>");
+			html = jQuery("<div id='edt'><textarea style='width:300px;'>"+text+"</textarea><button class='btn'>"+gettext("Düzenle")+"</button></div>");
 			html.find("button").click(function(){
 				ret_text = jQuery(this).parent().find("textarea").val();
 				
@@ -114,6 +160,46 @@ var main = {
 			//main.sendPost("/","ec="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {jQuery(k).parent().remove()})});
 		
 		},
+		hideComment:function() {
+			var id = jQuery(this).parent().parent().parent().attr("id").replace("p_","");
+			var cid = jQuery(this).attr("rel");
+			var k = this
+			var par = jQuery(this).parent();
+			text = jQuery(this).parent().find("span").text();
+			html = gettext("Bu yorum gizlendi!");
+			//html.find("button").click(function(){
+			//	ret_text = jQuery(this).parent().find("textarea").val();
+
+				k = this
+				main.sendPost("/","hc="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {j = jQuery(k).parent(); j.html(html); j.slideDown();})});
+			//});
+			//jQuery(this).parent().html(html);
+
+
+			//jQuery(".sendEdit")
+			//main.sendPost("/","ec="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {jQuery(k).parent().remove()})});
+
+		},
+		ehideComment:function() {
+			var id = jQuery(this).parent().parent().parent().attr("id").replace("p_","");
+			var cid = jQuery(this).attr("rel");
+			var k = this
+			var par = jQuery(this).parent();
+			text = jQuery(this).parent().find("span").text();
+			html = jQuery(gettext("bu girdi gizlendi!"));
+			//html.find("button").click(function(){
+			//	ret_text = jQuery(this).parent().find("textarea").val();
+
+				k = this
+				main.sendPost("/","ehc="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {jQuery(k).parent().remove();par.text(html)})});
+			//});
+			//jQuery(this).parent().html(html);
+
+
+			//jQuery(".sendEdit")
+			//main.sendPost("/","ec="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {jQuery(k).parent().remove()})});
+
+		},
 
 		removeComment:function() {
 			var id = jQuery(this).parent().parent().parent().attr("id").replace("p_","");
@@ -122,11 +208,6 @@ var main = {
 			main.sendPost("/","rc="+cid+"&id="+id,function() {main.update();jQuery(k).parent().slideUp(1000,function() {jQuery(k).parent().remove()})});
 		
 		},
-=======
-
-
-
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         moreComment:function() {
           jQuery(this).parent().find(".comments").css("display","block");
           jQuery(this).remove();
@@ -169,12 +250,17 @@ var main = {
         update:function() {
             e = new Date();
             t = e.getTime() / 1000;
-            csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
+            try {
+            csrf = jQuery("#gotToken").find("input").val();
+            } catch (e) {
+                data = jQuery("#gotToken").html();
+                data = data.split("value=")[1].split(" ")[0];
+                csrf = data;
+            }
             upelement = updaters[upchose];
             var elm;
-            elm = upelement+"="+timex+"&t_time="+t+"&csrfmiddlewaretoken="+csrfmiddlewaretoken;
+            elm = upelement+"="+timex+"&t_time="+t+"&csrfmiddlewaretoken="+csrf;
             //e = jQuery(elm).serialize(true);
-<<<<<<< HEAD
 			
 			if (ajax_pos == 1) {
 				main.sendPost("/",elm,function(data){
@@ -197,15 +283,6 @@ var main = {
 				  timex = r['time'];
 				});
 			}
-=======
-            main.sendPost("/",elm,function(data){
-              r = null;
-              eval("r="+data);
-              main.createNew(r['result'],1);
-              
-              timex = r['time'];
-            });
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
         //	alert(elm);
         },
         createNew:function(data,p) {
@@ -323,7 +400,7 @@ var main = {
             var t = jQuery(this);
              main.sendPost("/","fallow="+jQuery(this).attr("rel"),function(){
                 t.removeClass("fallow").addClass("unfallow");
-                t.find("span").html("Unfallow");
+                t.find("span").html(gettext("Unfallow"));
                 t.unbind("click");
                 t.bind("click",main.unfallow);
              });
@@ -364,8 +441,8 @@ var main = {
         },
         unfallow:function() {
             var t = jQuery(this);
-             main.sendPost("/","fallow="+jQuery(this).attr("rel"),function(){
-                t.removeClass("unfallow").addClass("fallow").find("span").html("Fallow");
+             main.sendPost("/","unfallow="+jQuery(this).attr("rel"),function(){
+                t.removeClass("unfallow").addClass("fallow").find("span").html(gettext("Fallow"));
                 t.unbind("click");
                 t.bind("click",main.fallow);
              });
@@ -450,7 +527,7 @@ var main = {
 	},
         cpic:function() {
             csrfmiddlewaretoken = jQuery("#gotToken").find("input").val();
-            main.modal('Change Picture','<form method="post" action="" id="gopost" enctype="multipart/form-data"><input type="hidden" name="csrfmiddlewaretoken" value="'+csrfmiddlewaretoken+'" /><input type="file" name="file" id="file" /></form>',1,function() {jQuery("#gopost").submit()});
+            main.modal(gettext('Change Picture'),'<form method="post" action="" id="gopost" enctype="multipart/form-data"><input type="hidden" name="csrfmiddlewaretoken" value="'+csrfmiddlewaretoken+'" /><input type="file" name="file" id="file" /></form>',1,function() {jQuery("#gopost").submit()});
 
         },
 	share:function() {
@@ -463,11 +540,7 @@ var main = {
                 jQuery(this).css("background","url(/statics/images/load-anim-16.gif) no-repeat")
 
 		
-<<<<<<< HEAD
                 main.sendPost("/","like="+jQuery(this).parent().parent().parent().parent().attr("id"),function(){
-=======
-                main.sendPost("/","like="+jQuery(this).parent().parent().parent().attr("id"),function(){
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
                     main.update();
                     jQuery(this).removeClass("plike").addClass("plike_on");
                     //jQuery(this).text("BeÄŸeniyi kaldÄ±r");
@@ -480,11 +553,11 @@ var main = {
                 jQuery(this).css("background","url(/statics/images/load-anim-16.gif) no-repeat");
                 t = jQuery(this);
 		//alert("ona1");
-                main.sendPost("/","unlike="+jQuery(this).parent().parent().parent().attr("id"),function(){
+                main.sendPost("/","unlike="+jQuery(this).parent().parent().parent().parent().attr("id"),function(){
                     //main.update();
                     t.css("background","");
                     t.removeClass("plike_on").addClass("plike");
-                    t.text("BeÄŸen");
+                    t.text(gettext("Beğen"));
                     main.rebindLike();
                 });
 		
@@ -538,7 +611,7 @@ var main = {
             });
 	},
 	ajaxError:function() {
-		main.modal("Hata!","Sunucu beklenmeyen bir hata oluşturdu. Lütfen tekrar deneyiniz.")
+		main.modal(gettext("Hata!"),gettext("Sunucu beklenmeyen bir hata oluşturdu. Lütfen tekrar deneyiniz."))
 	},
 	toActive:function() {
 		jQuery("#tos").css("border","1px inset #ccc");
@@ -584,11 +657,8 @@ var main = {
 
 	
 	addComment:function() {
-<<<<<<< HEAD
-		var parent = jQuery(this).parent().parent().parent().parent().attr("id");
-=======
 		var parent = jQuery(this).parent().parent().parent().attr("id");
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
+                alert(parent);
 		jQuery(".cigo").find("textarea").slideUp(500,function() {
 			jQuery(this).parent().find("button").hide("slow",function() {jQuery(this).remove()});
 			jQuery(this).remove();
@@ -624,11 +694,7 @@ var main = {
 				slide: function( event, ui ) {
 				$( "#mood" ).val( parseFloat(ui.value) );
 				$( "#inslider" ).text( parseFloat(ui.value) );
-<<<<<<< HEAD
                                 jQuery("#usemood").val("1");
-=======
-
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 				if(ui.value < 5) {
 					var u = 5/100;
 					var p = ui.value / u;
@@ -666,10 +732,7 @@ var main = {
 		jQuery("#to_all").unbind("hover");
 		jQuery("#to_all").hover(main.toAllHover,main.toAllHover);
 		activeMovbar = 0;
-<<<<<<< HEAD
                 jQuery("#usemood").val("0");
-=======
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 		
 
 	},

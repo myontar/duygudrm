@@ -14,15 +14,7 @@
 
 				</div>
 
-				<div id="to_all">
-				<div id="tolid"> {% trans "Ekle / Duzenle" %} </div>
-					<div id="to_text">{% trans "Alici" %} :</div>
-					<div id="tos">
-                                            <div id="tox"><a rel="all">{% trans "Herkese" %}<span>x</span></a></div><input type="text" id="getu" />
-                                            <br class="clear" />
-					</div>
-					<br class="clear" />
-				</div>
+				
 				<form id="topbr">
 					
                                         <textarea id="msg" name="msg"></textarea>
@@ -35,7 +27,6 @@ id="usemood" name="usemood" value="0" />
 				<br class="clear" />
 				<div class="posts">
 			
-<<<<<<< HEAD
 			{%for x in user.myStatusList %}
 
 
@@ -60,22 +51,39 @@ id="usemood" name="usemood" value="0" />
 							<div class="phdr">
 							{% if x.user != x.from_user %}<a href="/{{x.from_user.rewrite}}" class="pname">{{x.from_user}}</a>{% else %}
 			<a href="/{{x.user.rewrite}}"  class="pname">{{x.user}}</a>{% endif %}
-			{% if x.user != x.from_user and user.user != x.from_user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile){% endif %}{% endif %}</div>
+			{% if x.user != x.from_user and user.user != x.from_user.user %}{% if user.user != x.user.user %} (<b>{{x.user}}</b>  ile){% endif %}{% endif %}</div>
 							<div class="pmdl">
 							{{x.text|phtml }}
 							</div>
 							<div class="pbtm"></div>
 							<br class="clear" />
 							<div class="tools">
-								<span><a href="/{{x.from_user}}/{{x.rewrite}}" class="tdate" time="{{x.time}}">{{x.time|tdate}}</a> <!--<a href="">birgo</a> hizmetinden</span>-->
+								<span><a href="/{{x.from_user}}/{{x.rewrite}}" class="tdate" time="{{x.time}}">{{x.time|tdate}}</a> <!--<a href="">birgo</a> hizmetinden--></span>
                                                                 {% if user.user %}
-                                                                <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% if  x.from_user|perms:"cmd" == 1%}
+                                                                    <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% endif %}
+                                                                
+                                                                {% if  x.from_user|perms:"cmd" == 2 and x.from_user == user %}
+                                                                    <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% endif %}
+
+
+                                                                {% if  x.from_user|perms:"cmd" == 3 and x.from_user|isfallow:user == 1 %}
+                                                                    <a href="#comment" class="pcmmd">{% trans "Yorum yaz" %}</a>
+                                                                {% endif %}
+
                                                                 {% if x.likes|likech:user == "plike" %}
                                                                 <a href="#comment" class="plike">{% trans "Begen" %}</a>
                                                                 {% else %}
                                                                 <a href="#comment" class="plike_on">{% trans "Begeniyi Kaldir" %}</a>
                                                                 {% endif %}
+																{% if x.from_user.user == user.user %}
+																	<a href="#report" class="pdele" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Sil" %}</a>
+																{% endif %}
+																<a href="#report" class="prep" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Rapor Et" %}</a>
                                                                 {% endif %}<a href="#comment" class="pshare" rel="/s/{{x.from_user|generateurl:x.rewrite}};/{{x.from_user}}/{{x.rewrite}}">{% trans "Paylas" %}</a>
+																
 							</div>
 							<!--
                                                         
@@ -90,7 +98,7 @@ id="usemood" name="usemood" value="0" />
                                                         {%  if x.comments|commentsc < 5 %}
                                                         {% for i in x.comments|comments %}
 							<div class="comments">
-								<span>{{i.text}}</span> <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a class="remcom" href="javascript:;" rel="{{i.id}}">sil</a> <a class="edicom" href="javascript:;" rel="{{i.id}}">düzenle</a>{% endif %}
+                                                            {% if i.hide == 1%}  <a href="/{{i.rewrite}}">{{i.username}}</a> yorumu <a href="/{{x.from_user.user}}">{{x.from_user.user}}</a> tarafından gizlendi. {% if user.user == x.from_user.user %} <a class="ehidcom" href="javascript:;" rel="{{i.id}}">{% trans "göster" %}</a> {% endif %} {% else %} <span>{{i.text}}</span> <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a class="remcom" href="javascript:;" rel="{{i.id}}">sil</a> <a class="edicom" href="javascript:;" rel="{{i.id}}">düzenle</a> {% else %} {% if user.user == x.from_user.user %} <a class="hidcom" href="javascript:;" rel="{{i.id}}">{% trans "gizle" %}</a> {% endif %} {% endif %} {% endif %}
 							</div>
 
                                                         {% endfor %}
@@ -110,7 +118,7 @@ id="usemood" name="usemood" value="0" />
                                                                 <div class="moreComment">{{i.count}} {% blocktrans  %} daha yorum var {% endblocktrans %}</div>
                                                                 {% endif %}
                                                                 <div class="comments">
-                                                                        <span>{{i.text}}</span> <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a class="remcom" href="javascript:;" rel="{{i.id}}">sil</a> <a class="edicom" href="javascript:;" rel="{{i.id}}">düzenle</a>{% endif %}
+                                                                        <span>{{i.text}}</span> <a href="/{{i.rewrite}}">{{i.username}}</a>-{% if i.username == user.user.username %}<a class="remcom" href="javascript:;" rel="{{i.id}}">sil</a> <a class="edicom" href="javascript:;" rel="{{i.id}}">düzenle</a> {% else %} {% if user.user == x.from_user.user %} <a class="hidcom" href="javascript:;" rel="{{i.id}}">{% trans "gizle" %}</a> {% endif %} {% endif %}
                                                                 </div>
 
                                                             {% endfor %}
@@ -130,9 +138,6 @@ id="usemood" name="usemood" value="0" />
 			
 			
 			
-=======
-			{{user.myStatusList|generatepost:user}}
->>>>>>> 243e70bd7b01e3cc9c701cb812b05c4ef8954599
 		</div>
 				
 

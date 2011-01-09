@@ -1,0 +1,29 @@
+{% extends "base_template.html" %}
+
+{%if isuser == 1%}
+{% block login %}
+	hoşgeldin {{user.user}} <span id="msgcount">0</span><span id="alertcount">0</span><span id="addcount">0</span>
+{% endblock %}
+{% endif %}
+{% block body %}
+	<div class="posts">
+		
+			{% autoescape off %}
+			{% for i in html %}
+			<div id="{{i.id}}" class="post">
+			
+			
+			{{i.html}}</div>
+			
+			{% endfor %}
+			{% endautoescape %}
+		
+	</div>
+	
+	
+	{% csrf_token %}
+	<script>
+		timex = {{time}};
+		upchose = 3;
+	</script> 
+{% endblock %}

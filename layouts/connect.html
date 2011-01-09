@@ -1,0 +1,41 @@
+{% extends "base_template.html" %}
+{% load i18n %}
+
+{% block body %}
+<div id="index_b">
+    
+	<h2>{% trans "Social Connect" %}</h2>
+
+        <div class="ir">
+        <div class="msn_connect">Windows Messenger Connect</div> {% if service.msn %}<div class="connect_ok"></div>{% else %} <div class="go_connect"><a href="javascript:;" onclick="main.winopen('/messenger/connect', 500,400);" >Connect</a> </div>{% endif %}<br />
+        <div class="yahoo_connect">Yahoo! Connect</div> {% if service.yahoo %}<div class="connect_ok"></div>{% else %} <div class="go_connect"><a href="javascript:;" onclick="main.winopen('/yahoo_clogin', 500,400);" >Connect</a> </div>{% endif %}<br />
+        <div class="facebook_connect">Facebook Connect</div> {% if service.facebook %}<div class="connect_ok"></div>{% else %} <div class="go_connect"><a href="javascript:;" onclick="login.fblogin();">Connect</a> </div>{% endif %}<br />
+        <div class="twitter_connect">Twitter Connect</div> {% if service.twitter %}<div class="connect_ok"></div>{% else %} <div class="go_connect"><a href="/connect_twitter">Connect</a> </div>{% endif %}<br />
+        <div class="ff_connect">FriendFeed Connect</div> {% if service.friendfeed %}<div class="connect_ok"></div>{% else %} <div class="go_connect"><a href="/connect_friendfeed">Connect</a> </div>{% endif %}<br />
+        <div class="linkedin_connect">Linked-in Connect</div> {% if service.linkedin %}<div class="connect_ok"></div>{% else %} <div class="go_connect"><a href="javascript:;" onclick="main.winopen('/linkedin_clogin', 500,400);">Connect</a> </div>{% endif %}<br />
+        
+        </div>
+	
+</div>
+        <script  type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
+<div id="fb-root"></div> 
+<script type="text/javascript">
+      // initialize the library with the API key
+          var timex = 0;
+	  jQuery(document).ready( function(){
+			FB.init({ apiKey: 'ce3bc8f4194becec1aebded8cd050392' });
+		});
+      // fetch the status on load
+      var login = {
+	  fblogin:function() {
+		  FB.login(function(response) {
+				 if (response.perms) {
+					 document.location = '/connect_facebook?token='+response.session['access_token']+"&uid="+response.session['uid'];
+
+				  }
+				}, {perms:'user_photos,read_stream,user_birthday,email,publish_stream,offline_access,photo_upload,video_upload'});
+		}
+		}
+
+	</script>
+{% endblock %}

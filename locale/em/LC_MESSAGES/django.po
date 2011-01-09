@@ -1,0 +1,392 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-01-08 20:03-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Ocak"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Subat"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Mart"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Nisan"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Mayis"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Haziran"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Temmuz"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Agustos"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Eylul"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Ekim"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Kasim"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:32
+msgid "Aralik"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:33
+msgid "Pazartesi"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:33
+msgid "Sali"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:33
+msgid "Carsamba"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:33
+msgid "Persembe"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:33
+msgid "Cuma"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:44
+msgid "Bir kac saniye once"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:46
+#, python-format
+msgid "%(dakika)s dakika once"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:48
+#, python-format
+msgid "%(saat)s saat once"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:51
+#, python-format
+msgid "Dun %(saat)s"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:53
+#, python-format
+msgid "Gecen Hafta %(gun)s %(saat)s"
+msgstr ""
+
+#: ddapp/templatetags/tdate.py:56
+#, python-format
+msgid "%(gun)d Gun once %(saat)s"
+msgstr ""
+
+#: layouts/alerts.html:5
+msgid "Mention"
+msgstr ""
+
+#: layouts/alerts.html:14
+msgid "Friends"
+msgstr ""
+
+#: layouts/alerts.html:29
+msgid "Posts"
+msgstr ""
+
+#: layouts/base_template.html:66
+msgid "Ara"
+msgstr ""
+
+#: layouts/base_template.html:73
+msgid "Çıkış"
+msgstr ""
+
+#: layouts/base_template.html:73 layouts/base_template.html.py:128
+msgid "Ayarlar"
+msgstr ""
+
+#: layouts/base_template.html:79
+msgid "Lütfen bekleyiniz.."
+msgstr ""
+
+#: layouts/base_template.html:118
+msgid "Ana Feed"
+msgstr ""
+
+#: layouts/base_template.html:120
+msgid "Arkadaşlarım"
+msgstr ""
+
+#: layouts/base_template.html:121
+msgid "Profile"
+msgstr ""
+
+#: layouts/base_template.html:122
+msgid "Mesajlar"
+msgstr ""
+
+#: layouts/base_template.html:123
+msgid "Yorumlarım"
+msgstr ""
+
+#: layouts/base_template.html:124
+msgid "Beğendiklerim"
+msgstr ""
+
+#: layouts/base_template.html:129
+msgid "Profil Ayarları"
+msgstr ""
+
+#: layouts/base_template.html:130
+msgid "Bağlantılar"
+msgstr ""
+
+#: layouts/base_template.html:131
+msgid "Gizlilik"
+msgstr ""
+
+#: layouts/base_template.html:132
+msgid "Gruplar"
+msgstr ""
+
+#: layouts/base_template.html:145
+msgid "Giriş Yapmanın Diğer Yolları"
+msgstr ""
+
+#: layouts/connect.html:7
+msgid "Social Connect"
+msgstr ""
+
+#: layouts/groups.html:7
+msgid "Groups"
+msgstr ""
+
+#: layouts/groups.html:10
+msgid "Group Name"
+msgstr ""
+
+#: layouts/groups.html:11 layouts/perms.html:48
+msgid "Save"
+msgstr ""
+
+#: layouts/index.html:6
+msgid ""
+"Hislerini paylaş , hislerini puanla yada sadece muhabbet et seçim senin! "
+msgstr ""
+
+#: layouts/index.html:7
+msgid ""
+"Framemind.com duygularını hissettiklerini paylaşabileceğin sosyal bir ağ. "
+"Sadece sosyal bir ağ olması tabi ki de işe yaramazaynı zamanda diğer sosyal "
+"ağlarda ki hesaplarının da akışlarını takip edebileceğin bir araç. Aslında "
+"kullanabilirsen eğer herşey."
+msgstr ""
+
+#: layouts/index.html:9
+msgid "Hemen Üye Ol"
+msgstr ""
+
+#: layouts/index.html:11
+msgid "Ad"
+msgstr ""
+
+#: layouts/index.html:12
+msgid "Soyad"
+msgstr ""
+
+#: layouts/index.html:13
+msgid "Kullanıcı Adı"
+msgstr ""
+
+#: layouts/index.html:14 layouts/index.html.py:27
+msgid "E-posta"
+msgstr ""
+
+#: layouts/index.html:15 layouts/index.html.py:28
+msgid "Şifre"
+msgstr ""
+
+#: layouts/index.html:16
+msgid "Şifre (Doğrulama)"
+msgstr ""
+
+#: layouts/index.html:17
+msgid "Register"
+msgstr ""
+
+#: layouts/index.html:24
+msgid "Giriş Yap"
+msgstr ""
+
+#: layouts/index.html:29
+msgid "Login"
+msgstr ""
+
+#: layouts/index.html:30
+msgid "Lost Password"
+msgstr ""
+
+#: layouts/main.html:26 layouts/search.html:32
+msgid "Ekle"
+msgstr ""
+
+#: layouts/main.html:26 layouts/search.html:32
+msgid "Fotoğraf"
+msgstr ""
+
+#: layouts/main.html:26 layouts/search.html:32
+msgid "Diğer"
+msgstr ""
+
+#: layouts/main.html:26 layouts/search.html:32
+msgid "Send"
+msgstr ""
+
+#: layouts/main.html:64 layouts/main.html.py:68 layouts/main.html.py:73
+#: layouts/post_template.html:39 layouts/profile.html:141
+#: layouts/single_post.html:38
+msgid "Yorum yaz"
+msgstr ""
+
+#: layouts/main.html:77 layouts/post_template.html:41 layouts/profile.html:143
+#: layouts/single_post.html:40
+msgid "Begen"
+msgstr ""
+
+#: layouts/main.html:79 layouts/post_template.html:43 layouts/profile.html:145
+#: layouts/single_post.html:42
+msgid "Begeniyi Kaldir"
+msgstr ""
+
+#: layouts/main.html:82 layouts/profile.html:148
+msgid "Sil"
+msgstr ""
+
+#: layouts/main.html:84 layouts/profile.html:150
+msgid "Rapor Et"
+msgstr ""
+
+#: layouts/main.html:85 layouts/post_template.html:45 layouts/profile.html:151
+#: layouts/single_post.html:44
+msgid "Paylas"
+msgstr ""
+
+#: layouts/main.html:101
+msgid "göster"
+msgstr ""
+
+#: layouts/main.html:101 layouts/main.html.py:121
+msgid "gizle"
+msgstr ""
+
+#: layouts/main.html:118 layouts/post_template.html:77
+#: layouts/profile.html:184 layouts/single_post.html:76
+msgid " daha yorum var "
+msgstr ""
+
+#: layouts/perms.html:7
+msgid "Privacy"
+msgstr ""
+
+#: layouts/perms.html:9
+msgid "Your settings has been saved"
+msgstr ""
+
+#: layouts/perms.html:14
+msgid "Comment on post"
+msgstr ""
+
+#: layouts/perms.html:16 layouts/perms.html.py:32 layouts/perms.html.py:39
+msgid "Only Me"
+msgstr ""
+
+#: layouts/perms.html:17 layouts/perms.html.py:31 layouts/perms.html.py:38
+#: layouts/perms.html:45
+msgid "Only Friends"
+msgstr ""
+
+#: layouts/perms.html:18 layouts/perms.html.py:30 layouts/perms.html.py:37
+#: layouts/perms.html:44
+msgid "Everyone"
+msgstr ""
+
+#: layouts/perms.html:19
+msgid "Disable"
+msgstr ""
+
+#: layouts/perms.html:22
+msgid "Friendship"
+msgstr ""
+
+#: layouts/perms.html:24
+msgid "Not need request"
+msgstr ""
+
+#: layouts/perms.html:25
+msgid "Need request"
+msgstr ""
+
+#: layouts/perms.html:28
+msgid "Feed Showing"
+msgstr ""
+
+#: layouts/perms.html:35
+msgid "Post-it Send"
+msgstr ""
+
+#: layouts/perms.html:42
+msgid "Direct Message Send"
+msgstr ""
+
+#: layouts/perms.html:46
+msgid "Disabled"
+msgstr ""
+
+#: layouts/profile.html:202
+msgid "This profile is hidden"
+msgstr ""
+
+#: layouts/search.html:18
+msgid "Ekle / Duzenle"
+msgstr ""
+
+#: layouts/search.html:19
+msgid "Alici"
+msgstr ""
+
+#: layouts/search.html:21
+msgid "Herkese"
+msgstr ""

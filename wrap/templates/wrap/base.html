@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Python OAuth WRAP Example</title>
+        <link rel="stylesheet" href="wrap/media/style/live_sample.css" type="text/css" />
+    </head>
+    <body>
+        {# I need to seperate out the sections here into differnet template snippets and use a base #}
+        <form method="post" action="/wrap/consent">
+		{% if wrap.consent_response%}
+            <div class="sampleActive"  >
+		{% else %}
+            <div class="sample"  >
+		{%endif %}
+                <div class="title">Requesting Consent</div>
+                <div class="code">
+                    <table>
+                        <tr>
+                            <td>
+                                AppId
+                            </td>
+                            <td>
+                                <textarea name="consentAppId" class="input">{{wrap.app_id}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Return Url
+                            </td>
+                            <td>
+                                <textarea name="consentCallbackUrl" class="input">{{wrap.callback}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Options / Offers / Scope
+                            </td>
+                            <td>
+                                <textarea name="consentOptions" class="input">{{wrap.scope}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="submit" value="Request Consent" name="consent"/>
+                            </td>
+                        </tr>
+                        {% if wrap.consent_response %}
+                            {% for key, value in wrap.consent_response.items %}
+                                <tr>
+                                    <td>{{key}}</td>
+                                    <td><textarea>{{value}}</textarea></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </table>
+                </div>
+                <div class="desc">
+                    <p>When we first want to access a users information we need
+                        to request consent to access a certain scope of that
+                        users information.</p>
+                    <p>This is accomplished by issuing to the LIVE consent service,
+                        which prompts a user to give access to your application.</p>
+                </div>
+            </div>
+        </form>
+        <form method="post" action="/wrap/access">
+		{% if wrap.access_response%}
+            <div class="sampleActive"  >
+		{% else %}
+            <div class="sample"  >
+		{%endif %}
+                <div class="title">Access Token Request</div>
+                <div class="code">
+                    <table>
+                        <tr>
+                            <td>
+                                AppId
+                            </td>
+                            <td>
+                                <textarea class="input" disabled="disabled">{{wrap.app_id}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                App Secret Key
+                            </td>
+                            <td>
+                                <textarea name="accessAppSecret" class="input">{{wrap.app_secret}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Return url
+                            </td>
+                            <td>
+                                <textarea class="input" disabled="disabled">{{wrap.callback}}</textarea>
+                            </td>
+                        </tr
+                        <tr>
+                            <td>Verification Code</td>
+                            <td><textarea class="input" disabled="disabled">{{wrap.verification_code}}</textarea></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="submit" value="Request Access" name="access"/>
+                            </td>
+                        </tr>
+                        
+                        {% if wrap.access_response %}
+                            {% for key, value in wrap.access_response.items %}
+                                <tr>
+                                    <td>{{key}}</td>
+                                    <td><textarea>{{value}}</textarea></td>
+                                </tr>
+                            {% endfor %}
+                        
+                        {{wrap.userdata}}    
+                        {% endif %}
+
+                    </table>
+
+                </div>
+                <div class="desc">
+                    <p>After our application has been granted consent by the
+                        user using the Live services, we need to use the returned
+                        consent token to request an access token. To access the data
+                        that we have requested with our consent scope we need to get a
+                        authoristation token.</p>
+                    <p>To do this we submit another request to the live services,
+                        this time passing in the verification code that we received
+                        after the user consented to accessing their data.</p>
+                </div>
+            </div>
+        </form>
+        <form method="post" action="/wrap/refresh">
+		{% if wrap.refresh_response%}
+            <div class="sampleActive"  >
+		{% else %}
+            <div class="sample"  >
+		{%endif %}
+                <div class="title">Requesting a Refresh</div>
+                <div class="code">
+                    <table>
+                        <tr>
+                            <td>
+                                AppId
+                            </td>
+                            <td>
+                                <textarea class="input" disabled="disabled">{{wrap.app_id}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                App Secret Key
+                            </td>
+                            <td>
+                                <textarea class="input">{{wrap.app_secret}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Refresh Token
+                            </td>
+                            <td>
+                                <textarea class="input" disabled="disabled">{{wrap.refresh_code}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><input type="submit" value="Refresh Token" name="refresh"/></td>
+                        </tr>
+                        {% if wrap.refresh_response %}
+                            {% for key, value in wrap.refresh_response.items %}
+                                <tr>
+                                    <td>{{key}}</td>
+                                    <td><textarea>{{value}}</textarea></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </table>
+
+                </div>
+                <div class="desc">
+                    <p>An authorisation token has an expiry. Once that expiry period
+                        elapsed the token will no longer allow access to
+                        a users data. </p>
+                    <p>Once this happens we need to either
+                        request that user consents to our application again
+                        (redoing the first step), or we simply detect
+                        that the authorisation token has expired; then
+                        using the refresh token request a new access token. </p>
+                </div>
+            </div>
+        </form>
+    </body>
+</html>
